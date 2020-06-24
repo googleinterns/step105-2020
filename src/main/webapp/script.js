@@ -13,6 +13,11 @@ async function getAuthToken() {
   spotifyApi.setAccessToken(myToken);
   let playlist = await spotifyApi.getPlaylist('4vHIKV7j4QcZwgzGQcZg1x');
   let trackList = playlist.tracks.items;
+  let previewURL = trackList[3].track.preview_url;
+  console.log(previewURL);
+  document.getElementById("song-url").src = previewURL;
+  audio.load();
+  audio.play();
   // let data = {
   //   trackList: trackList
   // };
