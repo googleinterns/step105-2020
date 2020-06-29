@@ -7,9 +7,9 @@
     <script src="script.js"></script>
   </head>
   <body>
-    <form action="/game" method="POST">
+    <form>
       <input id="playlist-id" name="playlist-link" type="text"></input>
-      <button onclick="getAuthToken()" type="button">Enter</button>
+      <button onclick="playTrackFromPlaylist()" type="button">Enter</button>
     </form>
     <audio id = "audio" controls>
         <source id= "song-url" src="" type="audio/mpeg">
