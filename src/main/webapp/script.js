@@ -11,28 +11,21 @@ async function getAuthToken() {
   let myToken = authToken[0];
   let spotifyApi = new SpotifyWebApi();
   spotifyApi.setAccessToken(myToken);
-  let playlist = await spotifyApi.getPlaylist('4vHIKV7j4QcZwgzGQcZg1x');
+  let playlistID = getIdFromURL(document.getElementById("playlist-id").value);
+  console.log(playlistID);
+  let playlist = await spotifyApi.getPlaylist(playlistID);
   let trackList = playlist.tracks.items;
-  let previewURL = trackList[3].track.preview_url;
+  var previewURL = trackList[Math.floor(Math.random() * trackList.length)].track.preview_url;
   console.log(previewURL);
   document.getElementById("song-url").src = previewURL;
   audio.load();
   audio.play();
-  // let data = {
-  //   trackList: trackList
-  // };
   console.log(trackList);
-  // let response = await fetch('/game', { 
-  //   headers: {
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json'
-  //   },
-  //   method: 'POST',
-  //   body: JSON.stringify(data)
-  // });
+
 }
 
 let url = "https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM?si=0pUHoH8QSt-go4_x4SvGVA";
 
 
 getAuthToken();
+

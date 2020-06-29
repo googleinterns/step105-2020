@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>The Subtraction Game</title>
+    <title>The Spotify Game</title>
     <script src="spotify-web-api.js"></script>
     <script src="script.js"></script>
   </head>
   <body>
     <form action="/game" method="POST">
-      <input name="playlist-link" type="text"></input>
-      <input type="submit"></input>
+      <input id="playlist-id" name="playlist-link" type="text"></input>
+      <button onclick="getAuthToken()" type="button">Enter</button>
     </form>
     <audio id = "audio" controls>
         <source id= "song-url" src="" type="audio/mpeg">
