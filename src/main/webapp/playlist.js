@@ -1,3 +1,6 @@
+// imports
+const authToken = require('/.authToken');
+
 async function playTrackFromPlaylist() {
   let previewURL = await getRandomPreviewURL();
   document.getElementById("song-url").src = previewURL;
@@ -7,7 +10,7 @@ async function playTrackFromPlaylist() {
 
 
 async function getPlaylist() {
-  let authToken = await getAuthToken();
+  let authToken = await authToken.getAuthToken();
   let spotifyApi = new SpotifyWebApi();
   spotifyApi.setAccessToken(authToken);
   let playlistID = getIdFromURL(document.getElementById("playlist-id").value);
