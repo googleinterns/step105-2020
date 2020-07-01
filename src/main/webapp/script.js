@@ -1,5 +1,6 @@
 async function playTrackFromPlaylist() {
   let previewURL = await getRandomPreviewURL();
+  let audio = document.getElementById("audio");
   document.getElementById("song-url").src = previewURL;
   audio.load();
   audio.play();
