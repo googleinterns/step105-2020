@@ -30,9 +30,17 @@ async function getAuthToken() {
 }
 
 function getIdFromURL(url) {
-  var start = url.lastIndexOf('/') + 1;
-  var end = url.indexOf('?', start);
-  return url.slice(start, end);
+  if (url.search('open.spotify.com/playlist/')) {
+    var start = url.lastIndexOf('/') + 1;
+    if (url.search('?')) {
+      var end = url.indexOf('?', start);  
+    } else {
+      var end = str.length + 1;  
+    } 
+    return url.slice(start, end);
+  } else {
+    throw "Must be a playlist link from Spotify."
+  }
 }
 
 // Testing exports
