@@ -39,7 +39,9 @@ function getIdFromURL(url) {
     } 
     return url.slice(start, end);
   } else {
-    throw "Must be a playlist link from Spotify."
+    console.log(url + "is not a valid Spotify URL")
+    message = document.getElementById("error-message");
+    message.innerHTML = "Must be a playlist link from Spotify.";
   }
 }
 
