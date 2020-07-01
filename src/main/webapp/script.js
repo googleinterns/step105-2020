@@ -5,13 +5,6 @@ async function playTrackFromPlaylist() {
   audio.play();
 }
 
-async function getRandomPreviewURL() {
-  let playlist = await getPlaylist();
-  let trackList = playlist.tracks.items;
-  var randomTrack = trackList[Math.floor(Math.random() * trackList.length)];
-  var previewURL = randomTrack.track.preview_url;
-  return previewURL;
-}
 
 async function getPlaylist() {
   let authToken = await getAuthToken();
@@ -22,15 +15,5 @@ async function getPlaylist() {
   return playlist;
 }
 
-async function getAuthToken() {
-  let authTokenRequest = await fetch('/game', {method: 'GET'});
-  let authTokenResponse = await authTokenRequest.json();
-  let authToken = authTokenResponse[0];
-  return authToken;
-}
 
-function getIdFromURL(url) {
-  var start = url.lastIndexOf('/') + 1;
-  var end = url.indexOf('?', start);
-  return url.slice(start, end);
-}
+
