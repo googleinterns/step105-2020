@@ -12,4 +12,5 @@ function getIdFromURL(url) {
     return previewURL;
 }
 
-module.exports = playlistURL;
+exports.getIdFromURL = getIdFromURL;
+exports.getRandomPreviewURL = getRandomPreviewURL;
