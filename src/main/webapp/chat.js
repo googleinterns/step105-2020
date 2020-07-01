@@ -20,7 +20,7 @@ function updateChat(data) {
   chat.appendChild(newMessage);
 }
 
-Pusher.logToConsole = true;
+Pusher.logToConsole = false;
 
 var pusher = new Pusher("d15fbbe1c77552dc5097", {
   cluster: "us2",
