@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "production": "webpack -p",
     "test": "jest"
   },
   "repository": {
@@ -19,5 +20,8 @@
   "homepage": "https://github.com/googleinterns/step105-2020#readme",
   "devDependencies": {
     "jest": "^26.1.0"
+  },
+  "dependencies": {
+    "webpack": "^4.43.0"
   }
 }
