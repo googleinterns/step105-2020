@@ -11,3 +11,5 @@ function getIdFromURL(url) {
     var previewURL = randomTrack.track.preview_url;
     return previewURL;
 }
+
+module.exports = playlistURL;
