@@ -35,6 +35,14 @@ public final class GameServlet extends HttpServlet {
 
   }
 
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Get user name
+    String name = request.getParameter("user-name");
+    response.setContentType("text/html;");
+    response.getWriter().println("Name: " + name);
+  }
+
   private String getAuthToken() {
     String clientId = "1c29ff191b444611a6d9dbb4a354642f";
     String clientSecret = "6b92b6eb8fe24d5e98178407d3099bd8";
