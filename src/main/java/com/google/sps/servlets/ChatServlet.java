@@ -17,21 +17,35 @@ public final class ChatServlet extends HttpServlet {
   final private String APP_ID = "1024158";
   final private String CLIENT_KEY = "d15fbbe1c77552dc5097";
   final private String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private Pusher pusher;
+  private Gson gson;
+
+  @Override
+  public void init() {
+    pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
+    pusher.setCluster("us2");
+    pusher.setEncrypted(true);
+    gson = new Gson();
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-
-    Gson gson = new Gson();
-    Map pusherData = gson.fromJson(requestJSONString, Map.class);
-    Pusher pusher = new Pusher("1024158", "d15fbbe1c77552dc5097", "91fd789bf568ec43d2ee");
-    pusher.setCluster("us2");
-    pusher.setEncrypted(true);
-    pusher.trigger("spotify-game-app", "chat-update", pusherData);
-    response.setContentType("application/json");
-    String responseJsonString = gson.toJson(Collections.singletonMap("message", "complete"));
-    response.getWriter().println(responseJsonString);
+    Map dataForChatClients = readJSONFromRequest(request);
+    pusher.trigger("spotify-game-app", "chat-update", dataForChatClients);
+    sendResponseToClient(response, "complete");
     return;
   }
+
+  public Map readJSONFromRequest(HttpServletRequest request) throws IOException {
+    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
+    Map jsonData = gson.fromJson(requestJSONString, Map.class);
+    return jsonData;
+  }
+
+  public void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
+    response.setContentType("application/json");
+    String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
+    response.getWriter().println(responseJsonString);
+  }
+
 }
