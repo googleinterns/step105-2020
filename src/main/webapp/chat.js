@@ -1,20 +1,16 @@
 async function addToChat() {
   let chatInput = document.getElementById("chat-input").value;
-  // let data = `message=${chatInput}&name=Jill`;
-
   let data = {
     message: chatInput,
   };
 
   let response = await fetch("/chat", {
-    method: "POST", // or 'PUT'
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
-  //   let responseJSON = await response.json();
-  //   console.log(responseJSON);
 }
 
 function updateChat(data) {
@@ -24,7 +20,6 @@ function updateChat(data) {
   chat.appendChild(newMessage);
 }
 
-// // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true;
 
 var pusher = new Pusher("d15fbbe1c77552dc5097", {
@@ -33,6 +28,5 @@ var pusher = new Pusher("d15fbbe1c77552dc5097", {
 
 var channel = pusher.subscribe("spotify-game-app");
 channel.bind("chat-update", function (data) {
-  console.log(data);
   updateChat(data);
 });
