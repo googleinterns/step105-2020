@@ -19,9 +19,9 @@ public final class ChatServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // String chatInput = request.getParameter("message");
-    // java.util.Map<java.lang.String, java.lang.String[]> vals = request.getParameterMap();
-    // for (String name : vals.keySet()) System.out.println("key: " + name);
+    String chatInput = request.getParameter("message");
+    java.util.Map<java.lang.String, java.lang.String[]> vals = request.getParameterMap();
+    for (String name : vals.keySet()) System.out.println("key: " + name);
 
     String body = request.getReader().lines().collect(Collectors.joining());
     // System.out.println(chatInput);

@@ -17,6 +17,13 @@ async function addToChat() {
   //   console.log(responseJSON);
 }
 
+function updateChat(data) {
+  let newMessage = document.createElement("li");
+  newMessage.appendChild(document.createTextNode(data.message));
+  let chat = document.getElementById("chat");
+  chat.appendChild(newMessage);
+}
+
 // // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true;
 
@@ -27,4 +34,5 @@ var pusher = new Pusher("d15fbbe1c77552dc5097", {
 var channel = pusher.subscribe("spotify-game-app");
 channel.bind("chat-update", function (data) {
   console.log(data);
+  updateChat(data);
 });
