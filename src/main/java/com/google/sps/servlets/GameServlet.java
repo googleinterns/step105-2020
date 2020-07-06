@@ -1,6 +1,6 @@
 package com.google.sps.servlets;
 
-import com.google.sps.data.SubtractionGame;
+import com.google.sps.data.Date;
 import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
 
+  private Date date = new Date();
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String authToken = getAuthToken();
@@ -32,6 +34,7 @@ public final class GameServlet extends HttpServlet {
     String jsonData = gson.toJson(jsonArray);
     response.setContentType("application/json;");
     response.getWriter().println(jsonData);
+    date.main();
 
   }
 
