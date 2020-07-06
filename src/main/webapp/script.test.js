@@ -19,6 +19,8 @@ test('extract playlist id from url that spotify gives', () => {
 })
 
 test('does not accept non-spotify playlist links', () => {
+  var testDiv = document.createElement("div");
+  testDiv.setAttribute("id", "error-message");
   expect(
   script.getIdFromURL("https://open.spotify.com/track/7t86fVeDAd63ThaR0ZkxXS?si=XhyN7KA5QAimaXB3SF-G_g")  
   ).toBe(undefined)
