@@ -1,10 +1,5 @@
 const script = require('./script');
-const fs = require('fs');
-const path = require('path');
-const html = fs.readFileSync(path.resolve(__dirname, '../webapp/index.html'), 'utf8');
 
-jest
-    .dontMock('fs');
 
 test('extract playlist id from address bar url', () => {
   expect(
