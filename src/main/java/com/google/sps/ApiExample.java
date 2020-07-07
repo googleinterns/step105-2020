@@ -73,7 +73,7 @@ public class ApiExample {
      *
      * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
      */
-    public static void main(String[] args)
+    public static ChannelListResponse main(String[] args)
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
         YouTube youtubeService = getService();
         // Define and execute the API request
@@ -82,5 +82,6 @@ public class ApiExample {
         ChannelListResponse response = request.setId("UC_x5XG1OV2P6uZZ5FSM9Ttw").execute();
         System.out.println(response);
         System.out.println("hello");
+        return response;
     }
 }
