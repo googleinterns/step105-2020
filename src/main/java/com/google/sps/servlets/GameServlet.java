@@ -29,21 +29,33 @@ public final class GameServlet extends HttpServlet {
     private static final String APPLICATION_NAME = "API code samples";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
+    private PlaylistListResponse information = new PlaylistListResponse();
+
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
-    String json = new Gson().toJson(main("PLOU2XLYxmsIL32BnYVuSqwgS0ClB_csKd"));
+    String json = new Gson().toJson(information);
     response.getWriter().println(json);
-    System.out.println("HELLLOOOOOOO^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^THER");
+    System.out.println("HELLLOOOOOOO^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^THERE");
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
     String link = getParameter(request, "playlist-link", "");
-
+    String playlistID = getIdFromURL(link);
+    information = getPlaylistInfo(playlistID);
   }
+
+  public String getIdFromURL(String url){
+     if (url.contains("youtube.com/playlist?list=")) {
+   int start = url.lastIndexOf('=') + 1;
+    int end = url.length();
+    return url.substring(start, end);}
+   return "";
+  }
+
 
 
     /**
@@ -65,7 +77,7 @@ public final class GameServlet extends HttpServlet {
      *
      * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
      */
-    public static PlaylistListResponse main(String playlistID)
+    public static PlaylistListResponse getPlaylistInfo(String playlistID)
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
         YouTube youtubeService = getService();
         // Define and execute the API request
@@ -79,6 +91,18 @@ public final class GameServlet extends HttpServlet {
         System.out.println(response);
         return response;
     }
+
+  /**
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   */
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
+  }
 
 
 }
