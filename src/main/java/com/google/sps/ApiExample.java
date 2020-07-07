@@ -30,7 +30,7 @@ public class ApiExample {
     private static final Collection<String> SCOPES =
         Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
-    private static final String APPLICATION_NAME = "API code samples";
+    private static final String APPLICATION_NAME = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     /**
@@ -77,9 +77,10 @@ public class ApiExample {
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
         YouTube youtubeService = getService();
         // Define and execute the API request
-        YouTube.Channels.List request = youtubeService.channels()
+         YouTube.Channels.List request = youtubeService.channels()
             .list("snippet,contentDetails,statistics");
         ChannelListResponse response = request.setId("UC_x5XG1OV2P6uZZ5FSM9Ttw").execute();
         System.out.println(response);
+        System.out.println("hello");
     }
 }

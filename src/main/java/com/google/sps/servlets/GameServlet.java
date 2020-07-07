@@ -14,8 +14,9 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // response.setContentType("application/json");
-    // String json = new Gson().toJson(game);
+    // String json = new Gson().toJson();
     // response.getWriter().println(json);
+     System.out.println("HELLLOOOOOOO^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^THER");
   }
 
 
