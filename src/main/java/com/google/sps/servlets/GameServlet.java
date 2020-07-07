@@ -1,7 +1,9 @@
 package com.google.sps.servlets;
 
-import com.google.sps.data.Date;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +25,6 @@ import java.util.ArrayList;
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
 
-  private Date date = new Date();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -34,9 +35,15 @@ public final class GameServlet extends HttpServlet {
     String jsonData = gson.toJson(jsonArray);
     response.setContentType("application/json;");
     response.getWriter().println(jsonData);
-    date.main();
 
+    Entity roundEntity = new Entity("Round");
+    roundEntity.setProperty("begin", System.currentTimeMillis() + 5000);
+    roundEntity.setProperty("end", System.currentTimeMillis() + 30000);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(roundEntity);
   }
+  
 
   private String getAuthToken() {
     String clientId = "1c29ff191b444611a6d9dbb4a354642f";
