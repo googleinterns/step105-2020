@@ -24,10 +24,12 @@ import java.util.ArrayList;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
-
+  private static final int TIME_OFFSET = 3000;
+  private static final int ROUND_LENGTH = 30000;
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
     String authToken = getAuthToken();
     ArrayList<String> jsonArray = new ArrayList<String>();
     jsonArray.add(authToken);
@@ -37,8 +39,9 @@ public final class GameServlet extends HttpServlet {
     response.getWriter().println(jsonData);
 
     Entity roundEntity = new Entity("Round");
-    roundEntity.setProperty("begin", System.currentTimeMillis() + 5000);
-    roundEntity.setProperty("end", System.currentTimeMillis() + 30000);
+
+    roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
+    roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(roundEntity);
