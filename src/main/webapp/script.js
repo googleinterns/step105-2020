@@ -30,6 +30,6 @@
 function embedPlaylist(){
 fetch ('/game').then(response => response.json()).then((playlist) => {
   const ytPlayer = document.getElementById("ytplayer");
-  ytPlayer.innerHTMl = playlist.player.embedHtml;
+  ytPlayer.innerHTMl = playlist.items;
 });
 }

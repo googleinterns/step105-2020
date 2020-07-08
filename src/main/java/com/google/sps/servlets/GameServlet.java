@@ -45,6 +45,7 @@ public final class GameServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    System.out.println("IN DO GET DFILE8888888888888888888");
     response.setContentType("application/json");
     String json = new Gson().toJson(information);
     response.getWriter().println(json);
@@ -53,6 +54,7 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
+    System.out.println("IN DO POST DFILE8888888888888888888");
     String link = getParameter(request, "playlist-link", "");
     String playlistID = getIdFromURL(link);
     try{
@@ -64,6 +66,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   public String getIdFromURL(String url){
+    System.out.println("IN GET ID FROM URL DFILE8888888888888888888");
      if (url.contains("youtube.com/playlist?list=")) {
    int start = url.lastIndexOf('=') + 1;
     int end = url.length();
@@ -78,6 +81,7 @@ public final class GameServlet extends HttpServlet {
      * @throws IOException
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
+      System.out.println("IN CREDENTIAL DFILE8888888888888888888");
         // Load client secrets.
         InputStream in = GameServlet.class.getResourceAsStream(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
@@ -98,6 +102,7 @@ public final class GameServlet extends HttpServlet {
      * @throws GeneralSecurityException, IOException
      */ 
     public static YouTube getService() throws GeneralSecurityException, IOException {
+      System.out.println("IN YOUTUBE DFILE8888888888888888888");
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = authorize(httpTransport);
         return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
@@ -114,10 +119,11 @@ public final class GameServlet extends HttpServlet {
      */
     public static PlaylistItemListResponse getPlaylistInfo(String playlistID)
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+          System.out.println("IN RESPONSE DFILE8888888888888888888");
         YouTube youtubeService = getService();
         // Define and execute the API request
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
-            .list(Arrays.asList("snippet", "contentDetails"));
+            .list(Arrays.asList("snippet"));
         PlaylistItemListResponse response = request.setMaxResults(25L)
             .setPlaylistId(playlistID)
             .execute();
@@ -130,6 +136,7 @@ public final class GameServlet extends HttpServlet {
    *         was not specified by the client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    System.out.println("IN GER PARAMETER DFILE8888888888888888888");
     String value = request.getParameter(name);
     if (value == null) {
       return defaultValue;
