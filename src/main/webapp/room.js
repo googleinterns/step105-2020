@@ -11,10 +11,7 @@ const createUser = (ev)=>{
     }
     players.push(user);
 
-    console.log('added', {players});
-
     //saving to cookies
-    //document.cookie = 'username=' + user.username + '; expires=' + new Date(2025, 0, 1).toUTCString();
     document.cookie = 'userID=' + user.userID + '; expires=' + new Date(2025, 0, 1).toUTCString();
 }
 document.addEventListener('DOMContentLoaded', ()=>{
