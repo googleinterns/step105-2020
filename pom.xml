@@ -50,10 +50,9 @@
           <deploy.projectId>YOUR_PROJECT_ID_HERE</deploy.projectId>
           <deploy.version>1</deploy.version>
           <port>8282</port>
-         <address>0.0.0.0</address>
+          <address>0.0.0.0</address>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -101,3 +100,4 @@
     </plugins>
   </build>
 </project>
+
