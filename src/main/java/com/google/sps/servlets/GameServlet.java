@@ -22,6 +22,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.YouTubeRequestInitializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +70,7 @@ public final class GameServlet extends HttpServlet {
   //  int start = url.lastIndexOf('=') + 1;
   //   int end = url.length();
   //   // return url.substring(start, end);}
-   return "PLBCF2DAC6FFB574DEPLBCF2DAC6FFB574DE";
+   return "RDQM_imuc_M9hgc";
   }
 
     /**
@@ -102,9 +103,11 @@ public final class GameServlet extends HttpServlet {
     public static YouTube getService() throws GeneralSecurityException, IOException {
       System.out.println("IN YOUTUBE FUNCTIONE8888888888888888888");
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        Credential credential = authorize(httpTransport);
+        Credential credential = null;
+        // Credential credential = authorize(httpTransport);
         return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
             .setApplicationName(APPLICATION_NAME)
+            .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
             .build();
     }
 
@@ -121,9 +124,10 @@ public final class GameServlet extends HttpServlet {
         YouTube youtubeService = getService();
         // Define and execute the API request
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
-            .list(Arrays.asList("snippet"));
-        PlaylistItemListResponse response = request.setMaxResults(25L)
-            .setPlaylistId(playlistID)
+            .list(Arrays.asList("snippet")).setMaxResults(25L)
+            .setPlaylistId(playlistID);
+        System.out.println(request);
+        PlaylistItemListResponse response = request
             .execute();
         System.out.println(response);
         return response;
@@ -141,7 +145,7 @@ public final class GameServlet extends HttpServlet {
         return response;
     }
 
-    // #get length of playlist
+    // #get length of playlis
     // #make array of just id and if its been used(stretch)
     // get first element in playlist and return that video
 
