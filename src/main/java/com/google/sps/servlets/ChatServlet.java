@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
 
-  final static private String APP_ID = "1024158";
-  final static private String CLIENT_KEY = "d15fbbe1c77552dc5097";
-  final static private String CLIENT_SECRET = "91fd789bf568ec43d2ee";
-  final static private String PUSHER_APPLICATION_NAME = "spotify-game-app";
-  final static private String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+  private final static String APP_ID = "1024158";
+  private final static String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  private final static String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private final static String PUSHER_APPLICATION_NAME = "song-guessing-game";
+  private final static String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
   private Pusher pusher;
   private Gson gson;
 

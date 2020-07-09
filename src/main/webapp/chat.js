@@ -1,6 +1,6 @@
 const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
-const PUSHER_APPLICATION_NAME = "spotify-game-app";
+const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
 
 async function addToChat() {
