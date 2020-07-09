@@ -17,9 +17,11 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.VideoListResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,16 +48,17 @@ public final class GameServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    System.out.println("IN DO GET DFILE8888888888888888888");
+    System.out.println("IN DO GET FUNCTION8888888888888888888");
     response.setContentType("application/json");
     String json = new Gson().toJson(information);
     response.getWriter().println(json);
+    System.out.println("IN DO GET FUNCTION8888888888888888888");
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
-    System.out.println("IN DO POST DFILE8888888888888888888");
+    System.out.println("IN DO POST FUNCTION+++++++++++++++8888888888888888888");
     String link = getParameter(request, "playlist-link", "");
     System.out.println(link);
     String playlistID = getIdFromURL(link);
@@ -68,7 +71,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   public String getIdFromURL(String url){
-    System.out.println("IN GET ID FROM URL DFILE8888888888888888888");
+    System.out.println("IN GET ID FROM URL FUNCTION8888888888888888888");
   //    if (url.contains("youtube.com/playlist?list=")) {
   //  int start = url.lastIndexOf('=') + 1;
   //   int end = url.length();
@@ -83,7 +86,7 @@ public final class GameServlet extends HttpServlet {
      * @throws IOException
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
-      System.out.println("IN CREDENTIAL DFILE8888888888888888888");
+      System.out.println("IN CREDENTIAL FUNCTION8888888888888888888");
         // Load client secrets.
         InputStream in = GameServlet.class.getResourceAsStream(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
@@ -104,7 +107,7 @@ public final class GameServlet extends HttpServlet {
      * @throws GeneralSecurityException, IOException
      */ 
     public static YouTube getService() throws GeneralSecurityException, IOException {
-      System.out.println("IN YOUTUBE DFILE8888888888888888888");
+      System.out.println("IN YOUTUBE FUNCTIONE8888888888888888888");
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = authorize(httpTransport);
         return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
@@ -121,7 +124,7 @@ public final class GameServlet extends HttpServlet {
      */
     public static PlaylistItemListResponse getPlaylistInfo(String playlistID)
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
-          System.out.println("IN RESPONSE DFILE8888888888888888888");
+          System.out.println("IN RESPONSE FUNCTION8888888888888888888");
         YouTube youtubeService = getService();
         // Define and execute the API request
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
@@ -133,12 +136,32 @@ public final class GameServlet extends HttpServlet {
         return response;
     }
 
+
+    public static VideoListResponse main(String videoID)
+        throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+        YouTube youtubeService = getService();
+        // Define and execute the API request
+        YouTube.Videos.List request = youtubeService.videos()
+            .list(Arrays.asList("snippet","contentDetails","statistics"));
+        VideoListResponse response = request.setId(Arrays.asList("Ks-_Mh1QhMc")).execute();
+        System.out.println(response);
+        return response;
+    }
+
+    // #get length of playlist
+    // #make array of just id and if its been used(stretch)
+    // get first element in playlist and return that video
+
+    // public static getVideoFromPlaylist(PlaylistItemListResponse playlistItem) {
+
+    // }
+
   /**
    * @return the request parameter, or the default value if the parameter
    *         was not specified by the client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    System.out.println("IN GER PARAMETER DFILE8888888888888888888");
+    System.out.println("IN GET PARAMETER FUNCTION88888888888888");
     String value = request.getParameter(name);
     if (value == null) {
       return defaultValue;
