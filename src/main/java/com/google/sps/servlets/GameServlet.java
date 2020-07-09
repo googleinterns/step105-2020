@@ -36,7 +36,7 @@ public final class GameServlet extends HttpServlet {
   
 
     private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
-    private static final String CLIENT_SECRETS= "client_secret.json";
+    private static final String CLIENT_SECRETS= "/client_secret.json";
     private static final Collection<String> SCOPES =
         Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
@@ -44,16 +44,6 @@ public final class GameServlet extends HttpServlet {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     private PlaylistItemListResponse information = new PlaylistItemListResponse();
-
-
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    System.out.println("IN DO GET FUNCTION8888888888888888888");
-    response.setContentType("application/json");
-    String json = new Gson().toJson(information);
-    response.getWriter().println(json);
-    System.out.println("IN DO GET FUNCTION8888888888888888888");
-  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -67,6 +57,9 @@ public final class GameServlet extends HttpServlet {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    response.setContentType("application/json");
+    String json = new Gson().toJson(information);
+    response.getWriter().println(json);
     
   }
 
