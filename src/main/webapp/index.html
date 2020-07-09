@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>The Spotify Game</title>
-    <script src="spotify-web-api.js"></script>
     <script src="script.js"></script>
   </head>
   <body>
-    <form action="/game">
+    <form action="/game" method="POST">
       <input id="playlist-id" name="playlist-link" type="text"></input>
       <button onClick="embedPlaylist()" type="button">Enter</button>
     </form>

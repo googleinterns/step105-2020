@@ -31,6 +31,7 @@ import java.util.Collection;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
+  
 
     private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
     private static final String CLIENT_SECRETS= "client_secret.json";
@@ -56,6 +57,7 @@ public final class GameServlet extends HttpServlet {
     // Get the input from the form.
     System.out.println("IN DO POST DFILE8888888888888888888");
     String link = getParameter(request, "playlist-link", "");
+    System.out.println(link);
     String playlistID = getIdFromURL(link);
     try{
        information = getPlaylistInfo(playlistID);
@@ -67,11 +69,11 @@ public final class GameServlet extends HttpServlet {
 
   public String getIdFromURL(String url){
     System.out.println("IN GET ID FROM URL DFILE8888888888888888888");
-     if (url.contains("youtube.com/playlist?list=")) {
-   int start = url.lastIndexOf('=') + 1;
-    int end = url.length();
-    return url.substring(start, end);}
-   return "";
+  //    if (url.contains("youtube.com/playlist?list=")) {
+  //  int start = url.lastIndexOf('=') + 1;
+  //   int end = url.length();
+  //   // return url.substring(start, end);}
+   return "PLBCF2DAC6FFB574DEPLBCF2DAC6FFB574DE";
   }
 
     /**
