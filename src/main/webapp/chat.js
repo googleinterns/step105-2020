@@ -1,10 +1,15 @@
+const APP_ID = "1024158";
+const CLIENT_KEY = "d15fbbe1c77552dc5097";
+const PUSHER_APPLICATION_NAME = "spotify-game-app";
+const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+
 async function addToChat() {
   let chatInput = document.getElementById("chat-input").value;
   let data = {
     message: chatInput,
   };
 
-  let response = await fetch("/chat", {
+  await fetch("/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,11 +27,11 @@ function updateChat(data) {
 
 Pusher.logToConsole = false;
 
-var pusher = new Pusher("d15fbbe1c77552dc5097", {
+var pusher = new Pusher(CLIENT_KEY, {
   cluster: "us2",
 });
 
-var channel = pusher.subscribe("spotify-game-app");
-channel.bind("chat-update", function (data) {
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
 });

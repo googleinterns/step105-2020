@@ -14,9 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
 
-  final private String APP_ID = "1024158";
-  final private String CLIENT_KEY = "d15fbbe1c77552dc5097";
-  final private String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  final static private String APP_ID = "1024158";
+  final static private String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  final static private String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  final static private String PUSHER_APPLICATION_NAME = "spotify-game-app";
+  final static private String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
   private Pusher pusher;
   private Gson gson;
 
@@ -31,18 +33,18 @@ public final class ChatServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map dataForChatClients = readJSONFromRequest(request);
-    pusher.trigger("spotify-game-app", "chat-update", dataForChatClients);
+    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, dataForChatClients);
     sendResponseToClient(response, "complete");
     return;
   }
 
-  public Map readJSONFromRequest(HttpServletRequest request) throws IOException {
+  private Map readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map jsonData = gson.fromJson(requestJSONString, Map.class);
     return jsonData;
   }
 
-  public void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
+  private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
     response.setContentType("application/json");
     String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
     response.getWriter().println(responseJsonString);
