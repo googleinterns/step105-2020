@@ -44,7 +44,15 @@ public final class GameServlet extends HttpServlet {
 
     private static final String APPLICATION_NAME = "Song Guessing Game";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static int PLAYLIST_SIZE = 0;
+    private int PLAYLIST_SIZE;
+    private String videoID;
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      response.setContentType("application/json");
+      String json = new Gson().toJson(videoID);
+      response.getWriter().println(json);
+    }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -60,14 +68,15 @@ public final class GameServlet extends HttpServlet {
     response.setContentType("application/json");
     String playlistItemJson = new Gson().toJson(playlistItem);
     ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
-    String videoID = getRandomVideo(playlistVideos);
+    PLAYLIST_SIZE = playlistVideos.size();
+    videoID = getRandomVideo(playlistVideos);
     try{
       videoItem = getVideoInfo(videoID);
    } catch (Exception e) {
      e.printStackTrace();
    }
     String videoItemJson = new Gson().toJson(videoItem);
-    response.sendRedirect("/game.html");
+    response.sendRedirect("/game.html");  
   }
 
   public String getIdFromURL(String url){
@@ -85,7 +94,10 @@ public final class GameServlet extends HttpServlet {
 
   private String getRandomVideo(ArrayList<String> playlistVideos){
      Random randomGenerator = new Random();
+     System.out.println("SIZE OF ARRAY IN GET RANDOM VIDEO FUNCTION. " + playlistVideos.size());
      int index = randomGenerator.nextInt(PLAYLIST_SIZE);
+     System.out.println("THIS IS THE INDEX. " + index);
+     System.out.println("THIS IS THE VALUE OF PLAYLIST_SIZE VARIABLE. " + PLAYLIST_SIZE);
      String videoID = playlistVideos.get(index);
      System.out.println("Random video: " + videoID);
      return videoID;
@@ -141,14 +153,15 @@ public final class GameServlet extends HttpServlet {
     private ArrayList<String> parsePlaylistItem(String playlistItemJson){
       String[] playlistItemData = playlistItemJson.split("\",\"");
       ArrayList<String> playlistVideos= new ArrayList<String>();
+      System.out.println("SIZE OF ARRAY BEFORE BEING ADDED TO. " + playlistVideos.size() );
       for (String data : playlistItemData)
         if(data.startsWith("videoId\":\"")){
           int idStart = data.indexOf("\":\"") + 3;
           int idEnd = data.indexOf("\"", idStart);
           String videoID = data.substring(idStart, idEnd);
           playlistVideos.add(videoID);
-          PLAYLIST_SIZE++;
         }
+      System.out.println("SIZE OF ARRRAY AFTER BEING ADDED TO. " + playlistVideos.size());
       return playlistVideos;
     }
 
