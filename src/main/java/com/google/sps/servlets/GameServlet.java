@@ -88,12 +88,8 @@ public final class GameServlet extends HttpServlet {
 
   private String getRandomVideo(ArrayList<String> playlistVideos){
      Random randomGenerator = new Random();
-     System.out.println("SIZE OF ARRAY IN GET RANDOM VIDEO FUNCTION. " + playlistVideos.size());
      int index = randomGenerator.nextInt(PLAYLIST_SIZE);
-     System.out.println("THIS IS THE INDEX. " + index);
-     System.out.println("THIS IS THE VALUE OF PLAYLIST_SIZE VARIABLE. " + PLAYLIST_SIZE);
      String videoID = playlistVideos.get(index);
-     System.out.println("Random video: " + videoID);
      return videoID;
   }
 
@@ -125,10 +121,8 @@ public final class GameServlet extends HttpServlet {
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
             .list(Arrays.asList("snippet")).setMaxResults(25L)
             .setPlaylistId(playlistID);
-        // System.out.println(request);
         PlaylistItemListResponse response = request
-            .execute();
-        // System.out.println(response);    
+            .execute();    
         return response;
     }
 
@@ -136,7 +130,6 @@ public final class GameServlet extends HttpServlet {
     private ArrayList<String> parsePlaylistItem(String playlistItemJson){
       String[] playlistItemData = playlistItemJson.split("\",\"");
       ArrayList<String> playlistVideos= new ArrayList<String>();
-      System.out.println("SIZE OF ARRAY BEFORE BEING ADDED TO. " + playlistVideos.size() );
       for (String data : playlistItemData)
         if(data.startsWith("videoId\":\"")){
           int idStart = data.indexOf("\":\"") + 3;
@@ -144,7 +137,6 @@ public final class GameServlet extends HttpServlet {
           String videoID = data.substring(idStart, idEnd);
           playlistVideos.add(videoID);
         }
-      System.out.println("SIZE OF ARRRAY AFTER BEING ADDED TO. " + playlistVideos.size());
       return playlistVideos;
     }
 
