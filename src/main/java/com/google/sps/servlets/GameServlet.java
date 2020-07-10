@@ -48,7 +48,6 @@ public final class GameServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      response.setContentType("application/json");
       String json = new Gson().toJson(videoID);
       response.getWriter().println(json);
     }
@@ -56,6 +55,11 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String url = getParameter(request, "playlist-link", "");
+    setVideoID(url);
+    response.sendRedirect("/game.html");  
+  }
+
+  public void setVideoID(String url){
     String playlistID = getIdFromURL(url);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     try{
@@ -63,13 +67,10 @@ public final class GameServlet extends HttpServlet {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    response.setContentType("application/json");
     String playlistItemJson = new Gson().toJson(playlistItem);
     ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
     PLAYLIST_SIZE = playlistVideos.size();
     videoID = getRandomVideo(playlistVideos);
-
-    response.sendRedirect("/game.html");  
   }
 
   public String getIdFromURL(String url){
