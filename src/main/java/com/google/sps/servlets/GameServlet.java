@@ -63,11 +63,15 @@ public final class GameServlet extends HttpServlet {
   }
 
   public String getIdFromURL(String url){
-  //    if (url.contains("youtube.com/playlist?list=")) {
-  //  int start = url.lastIndexOf('=') + 1;
-  //   int end = url.length();
-  //   // return url.substring(start, end);}
-   return "RDQM_imuc_M9hgc";
+     if (url.contains("youtube.com/playlist?list=")) {
+      int start = url.lastIndexOf('=') + 1;
+      int end = url.length(); 
+      return url.substring(start, end);
+    }else{
+      System.err.println(url + " is not a valid YouTube Playlist URL");
+      return "";
+      //do something more complicated to handle this error
+    }
   }
 
     /**
@@ -139,7 +143,7 @@ public final class GameServlet extends HttpServlet {
         return response;
     }
 
-    // #get length of playlis
+    // #get length of playlist
     // #make array of just id and if its been used(stretch)
     // get first element in playlist and return that video
 
