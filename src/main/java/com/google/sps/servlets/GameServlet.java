@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public final class GameServlet extends HttpServlet {
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
-
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
