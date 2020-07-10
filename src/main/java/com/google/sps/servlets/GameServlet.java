@@ -48,9 +48,8 @@ public final class GameServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get the input from the form.
-    String link = getParameter(request, "playlist-link", "");
-    String playlistID = getIdFromURL(link);
+    String url = getParameter(request, "playlist-link", "");
+    String playlistID = getIdFromURL(url);
     try{
        information = getPlaylistInfo(playlistID);
     } catch (Exception e) {
