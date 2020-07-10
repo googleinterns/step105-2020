@@ -1,0 +1,34 @@
+#chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+#chatbox {
+  background: #ddd;
+  padding: 5px 10px;
+  margin: 10px 0;
+  overflow-y: scroll;
+  height: 500px;
+  width: 300px;
+}
+
+.message-spectator {
+  color: #daa520;
+}
+
+.message-correct-guess {
+  color: green;
+}
+
+.message-anouncement {
+  color: #b34700;
+}
+
+.username {
+  font-weight: bold;
+}

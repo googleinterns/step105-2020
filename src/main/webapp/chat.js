@@ -1,5 +1,5 @@
 async function addToChat() {
-  let chatInput = document.getElementById("chat-input").value;
+  let chatInput = document.getElementById("chat-input-box").value;
   let data = {
     message: chatInput,
   };
@@ -14,10 +14,11 @@ async function addToChat() {
 }
 
 function updateChat(data) {
-  let newMessage = document.createElement("li");
-  newMessage.appendChild(document.createTextNode(data.message));
-  let chat = document.getElementById("chat");
-  chat.appendChild(newMessage);
+  let message = data.message;
+  let newChatItem = `<p class="message"><span class="username">User: </span>${message}</p>`;
+  $("#chatbox").append(newChatItem);
+  let elem = document.getElementById("chatbox");
+  elem.scrollTop = elem.scrollHeight;
 }
 
 Pusher.logToConsole = false;
