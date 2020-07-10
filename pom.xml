@@ -3,8 +3,8 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.google.sps</groupId>
-  <artifactId>subtraction-game</artifactId>
+  <groupId>com.google.songgame</groupId>
+  <artifactId>song-guessing-game</artifactId>
   <version>1</version>
   <packaging>war</packaging>
 
@@ -57,6 +57,10 @@
   <version>1.0.0</version>
     </dependency>
 
+      <groupId>com.pusher</groupId>
+      <artifactId>pusher-http-java</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 
   <build>
