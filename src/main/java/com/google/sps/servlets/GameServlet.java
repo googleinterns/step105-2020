@@ -21,7 +21,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
-import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
 
 import java.io.IOException;
@@ -59,7 +58,6 @@ public final class GameServlet extends HttpServlet {
     String url = getParameter(request, "playlist-link", "");
     String playlistID = getIdFromURL(url);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
-    VideoListResponse videoItem = new VideoListResponse();
     try{
        playlistItem = getPlaylistInfo(playlistID);
     } catch (Exception e) {
@@ -70,12 +68,7 @@ public final class GameServlet extends HttpServlet {
     ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
     PLAYLIST_SIZE = playlistVideos.size();
     videoID = getRandomVideo(playlistVideos);
-    try{
-      videoItem = getVideoInfo(videoID);
-   } catch (Exception e) {
-     e.printStackTrace();
-   }
-    String videoItemJson = new Gson().toJson(videoItem);
+
     response.sendRedirect("/game.html");  
   }
 
@@ -138,17 +131,6 @@ public final class GameServlet extends HttpServlet {
         return response;
     }
 
-
-    public static VideoListResponse getVideoInfo(String videoID)
-        throws GeneralSecurityException, IOException, GoogleJsonResponseException {
-        YouTube youtubeService = getService();
-        // Define and execute the API request
-        YouTube.Videos.List request = youtubeService.videos()
-            .list(Arrays.asList("snippet","contentDetails","statistics"));
-        VideoListResponse response = request.setId(Arrays.asList("Ks-_Mh1QhMc")).execute();
-        // System.out.println(response);
-        return response;
-    }
 
     private ArrayList<String> parsePlaylistItem(String playlistItemJson){
       String[] playlistItemData = playlistItemJson.split("\",\"");
