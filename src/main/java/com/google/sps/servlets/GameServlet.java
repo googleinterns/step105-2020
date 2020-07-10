@@ -31,6 +31,7 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -43,22 +44,30 @@ public final class GameServlet extends HttpServlet {
 
     private static final String APPLICATION_NAME = "Song Guessing Game";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static int PLAYLIST_SIZE = 0;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String url = getParameter(request, "playlist-link", "");
     String playlistID = getIdFromURL(url);
-    PlaylistItemListResponse information = new PlaylistItemListResponse();
-    // String playlistVideos =
+    PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
+    VideoListResponse videoItem = new VideoListResponse();
     try{
-       information = getPlaylistInfo(playlistID);
+       playlistItem = getPlaylistInfo(playlistID);
     } catch (Exception e) {
       e.printStackTrace();
     }
     response.setContentType("application/json");
-    String json = new Gson().toJson(information);
-    parsePlaylistItem(json);
-    response.getWriter().println(json);   
+    String playlistItemJson = new Gson().toJson(playlistItem);
+    ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
+    String videoID = getRandomVideo(playlistVideos);
+    try{
+      videoItem = getVideoInfo(videoID);
+   } catch (Exception e) {
+     e.printStackTrace();
+   }
+    String videoItemJson = new Gson().toJson(videoItem);
+    response.getWriter().println(videoItemJson);   
   }
 
   public String getIdFromURL(String url){
@@ -72,6 +81,14 @@ public final class GameServlet extends HttpServlet {
       return "";
       //do something more complicated to handle this error
     }
+  }
+
+  private String getRandomVideo(ArrayList<String> playlistVideos){
+     Random randomGenerator = new Random();
+     int index = randomGenerator.nextInt(PLAYLIST_SIZE);
+     String videoID = playlistVideos.get(index);
+     System.out.println("Random video: " + videoID);
+     return videoID;
   }
 
     /**
@@ -105,42 +122,34 @@ public final class GameServlet extends HttpServlet {
         // System.out.println(request);
         PlaylistItemListResponse response = request
             .execute();
+        // System.out.println(response);    
         return response;
     }
 
 
-    public static VideoListResponse main(String videoID)
+    public static VideoListResponse getVideoInfo(String videoID)
         throws GeneralSecurityException, IOException, GoogleJsonResponseException {
         YouTube youtubeService = getService();
         // Define and execute the API request
         YouTube.Videos.List request = youtubeService.videos()
             .list(Arrays.asList("snippet","contentDetails","statistics"));
         VideoListResponse response = request.setId(Arrays.asList("Ks-_Mh1QhMc")).execute();
-        System.out.println(response);
-        System.out.println("THE TYPE OF THIS RESPONSE IS:" + response.getClass().getSimpleName());
+        // System.out.println(response);
         return response;
     }
 
-    // #get length of playlist
-    // #make array of just id and if its been used(stretch)
-    // get first element in playlist and return that video
-
-    // public static getVideoFromPlaylist(PlaylistItemListResponse playlistItem) {
-
-    // }
-
-    private void parsePlaylistItem(String playlistItem){
-      String[] playlistItemData = playlistItem.split("\",\"");
+    private ArrayList<String> parsePlaylistItem(String playlistItemJson){
+      String[] playlistItemData = playlistItemJson.split("\",\"");
       ArrayList<String> playlistVideos= new ArrayList<String>();
       for (String data : playlistItemData)
         if(data.startsWith("videoId\":\"")){
-          System.out.println(data);
           int idStart = data.indexOf("\":\"") + 3;
           int idEnd = data.indexOf("\"", idStart);
           String videoID = data.substring(idStart, idEnd);
-          System.out.println(videoID);
           playlistVideos.add(videoID);
+          PLAYLIST_SIZE++;
         }
+      return playlistVideos;
     }
 
   /**
