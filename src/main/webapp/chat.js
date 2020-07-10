@@ -22,6 +22,7 @@ function updateChat(data) {
   let message = data.message;
   let newChatItem = `<p class="message"><span class="username">User: </span>${message}</p>`;
   $("#chatbox").append(newChatItem);
+  // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
   elem.scrollTop = elem.scrollHeight;
 }
