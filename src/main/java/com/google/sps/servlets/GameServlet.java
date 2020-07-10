@@ -44,12 +44,11 @@ public final class GameServlet extends HttpServlet {
     private static final String APPLICATION_NAME = "Song Guessing Game";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-    private PlaylistItemListResponse information = new PlaylistItemListResponse();
-
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String url = getParameter(request, "playlist-link", "");
     String playlistID = getIdFromURL(url);
+    PlaylistItemListResponse information = new PlaylistItemListResponse();
     try{
        information = getPlaylistInfo(playlistID);
     } catch (Exception e) {
