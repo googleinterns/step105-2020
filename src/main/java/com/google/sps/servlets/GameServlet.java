@@ -67,6 +67,7 @@ public final class GameServlet extends HttpServlet {
       int start = url.lastIndexOf('=') + 1;
       int end = url.length(); 
       return url.substring(start, end);
+      // handle more complicated URL's
     }else{
       System.err.println(url + " is not a valid YouTube Playlist URL");
       return "";
