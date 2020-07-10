@@ -60,7 +60,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   public void setVideoID(String url){
-    String playlistID = getIdFromURL(url);
+    String playlistID = getIDFromURL(url);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     try{
        playlistItem = getPlaylistInfo(playlistID);
@@ -73,7 +73,7 @@ public final class GameServlet extends HttpServlet {
     videoID = getRandomVideo(playlistVideos);
   }
 
-  public String getIdFromURL(String url){
+  public String getIDFromURL(String url){
      if (url.contains("youtube.com/playlist?list=")) {
       int start = url.indexOf("list=") + 5;
       int end = url.length(); 
@@ -128,10 +128,14 @@ public final class GameServlet extends HttpServlet {
         return response;
     }
 
-
+    /**
+     * @param playlistItemJson
+     * @return an ArrayList of video IDs
+     */
     private ArrayList<String> parsePlaylistItem(String playlistItemJson){
       String[] playlistItemData = playlistItemJson.split("\",\"");
       ArrayList<String> playlistVideos= new ArrayList<String>();
+      // extract video ID from sections
       for (String data : playlistItemData)
         if(data.startsWith("videoId\":\"")){
           int idStart = data.indexOf("\":\"") + 3;
