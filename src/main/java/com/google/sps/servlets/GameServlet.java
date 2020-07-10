@@ -75,14 +75,16 @@ public final class GameServlet extends HttpServlet {
 
   public String getIdFromURL(String url){
      if (url.contains("youtube.com/playlist?list=")) {
-      int start = url.lastIndexOf('=') + 1;
+      int start = url.indexOf("list=") + 5;
       int end = url.length(); 
+      if (url.contains("&")) {
+        end = url.indexOf("&", start);
+       }
       return url.substring(start, end);
-      // handle more complicated URL's
     }else{
       System.err.println(url + " is not a valid YouTube Playlist URL");
       return "";
-      //do something more complicated to handle this error
+      //TODO @hdee: do something more complicated to handle this error
     }
   }
 
@@ -91,7 +93,7 @@ public final class GameServlet extends HttpServlet {
      int index = randomGenerator.nextInt(PLAYLIST_SIZE);
      String videoID = playlistVideos.get(index);
      return videoID;
-  }
+  } 
 
     /**
      * Build and return an authorized API client service.
