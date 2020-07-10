@@ -67,7 +67,7 @@ public final class GameServlet extends HttpServlet {
      e.printStackTrace();
    }
     String videoItemJson = new Gson().toJson(videoItem);
-    response.getWriter().println(videoItemJson);   
+    response.sendRedirect("/game.html");
   }
 
   public String getIdFromURL(String url){
