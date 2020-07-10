@@ -49,6 +49,7 @@ public final class GameServlet extends HttpServlet {
     String url = getParameter(request, "playlist-link", "");
     String playlistID = getIdFromURL(url);
     PlaylistItemListResponse information = new PlaylistItemListResponse();
+    // String playlistVideos =
     try{
        information = getPlaylistInfo(playlistID);
     } catch (Exception e) {
@@ -56,8 +57,8 @@ public final class GameServlet extends HttpServlet {
     }
     response.setContentType("application/json");
     String json = new Gson().toJson(information);
-    response.getWriter().println(json);
-    
+    parsePlaylistItem(json);
+    response.getWriter().println(json);   
   }
 
   public String getIdFromURL(String url){
@@ -90,8 +91,7 @@ public final class GameServlet extends HttpServlet {
 
 
        /**
-     * Call function to create API service object. Define and
-     * execute API request. Print API response.
+     * Call function to create API service object.
      *
      * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
      */
@@ -102,10 +102,9 @@ public final class GameServlet extends HttpServlet {
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
             .list(Arrays.asList("snippet")).setMaxResults(25L)
             .setPlaylistId(playlistID);
-        System.out.println(request);
+        // System.out.println(request);
         PlaylistItemListResponse response = request
             .execute();
-        System.out.println(response);
         return response;
     }
 
@@ -118,6 +117,7 @@ public final class GameServlet extends HttpServlet {
             .list(Arrays.asList("snippet","contentDetails","statistics"));
         VideoListResponse response = request.setId(Arrays.asList("Ks-_Mh1QhMc")).execute();
         System.out.println(response);
+        System.out.println("THE TYPE OF THIS RESPONSE IS:" + response.getClass().getSimpleName());
         return response;
     }
 
@@ -128,6 +128,20 @@ public final class GameServlet extends HttpServlet {
     // public static getVideoFromPlaylist(PlaylistItemListResponse playlistItem) {
 
     // }
+
+    private void parsePlaylistItem(String playlistItem){
+      String[] playlistItemData = playlistItem.split("\",\"");
+      ArrayList<String> playlistVideos= new ArrayList<String>();
+      for (String data : playlistItemData)
+        if(data.startsWith("videoId\":\"")){
+          System.out.println(data);
+          int idStart = data.indexOf("\":\"") + 3;
+          int idEnd = data.indexOf("\"", idStart);
+          String videoID = data.substring(idStart, idEnd);
+          System.out.println(videoID);
+          playlistVideos.add(videoID);
+        }
+    }
 
   /**
    * @return the request parameter, or the default value if the parameter
