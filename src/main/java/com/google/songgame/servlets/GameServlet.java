@@ -1,7 +1,9 @@
-package com.google.sps.servlets;
+package com.google.songgame.servlets;
 
-import com.google.sps.data.SubtractionGame;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,9 +24,12 @@ import java.util.ArrayList;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
-
+  private static final int TIME_OFFSET = 3000;
+  private static final int ROUND_LENGTH = 30000;
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
     String authToken = getAuthToken();
     ArrayList<String> jsonArray = new ArrayList<String>();
     jsonArray.add(authToken);
@@ -33,7 +38,15 @@ public final class GameServlet extends HttpServlet {
     response.setContentType("application/json;");
     response.getWriter().println(jsonData);
 
+    Entity roundEntity = new Entity("Round");
+
+    roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
+    roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(roundEntity);
   }
+  
 
   private String getAuthToken() {
     String clientId = "1c29ff191b444611a6d9dbb4a354642f";
