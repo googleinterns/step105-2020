@@ -74,26 +74,6 @@ public final class GameServlet extends HttpServlet {
   }
 
     /**
-     * Create an authorized Credential object.
-     *
-     * @return an authorized Credential object.
-     * @throws IOException
-     */
-    public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
-        // Load client secrets.
-        InputStream in = GameServlet.class.getResourceAsStream(CLIENT_SECRETS);
-        GoogleClientSecrets clientSecrets =
-          GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-            new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
-            .build();
-        Credential credential =
-            new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        return credential;
-    }
-
-    /**
      * Build and return an authorized API client service.
      *
      * @return an authorized API client service
@@ -102,7 +82,6 @@ public final class GameServlet extends HttpServlet {
     public static YouTube getService() throws GeneralSecurityException, IOException {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = null;
-        // Credential credential = authorize(httpTransport);
         return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
             .setApplicationName(APPLICATION_NAME)
             .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
