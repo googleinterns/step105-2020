@@ -41,7 +41,7 @@ public final class GameServlet extends HttpServlet {
     private static final Collection<String> SCOPES =
         Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
-    private static final String APPLICATION_NAME = "API code samples";
+    private static final String APPLICATION_NAME = "Song Guessing Game";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     private PlaylistItemListResponse information = new PlaylistItemListResponse();
