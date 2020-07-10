@@ -5,6 +5,7 @@
     <title>The Spotify Game</title>
     <script src="spotify-web-api.js"></script>
     <script src="script.js"></script>
+    <script src="room.js"></script>
   </head>
   <body>
     <form>
@@ -14,10 +15,11 @@
     <audio id = "audio" controls>
         <source id= "song-url" src="" type="audio/mpeg">
     </audio>
-    <form action="/room" method="POST">
+    <p id="error-message"></p>
+    <form>
       <input id="new-player-id" name="user-name" type="text"
        placeholder="Enter your name"></input>
-      <button type="submit">Enter</button>
+      <button id="new-player-btn">Enter</button>
     </form>
   </body>
 </html>
