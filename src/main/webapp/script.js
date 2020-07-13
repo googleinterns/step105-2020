@@ -5,5 +5,4 @@ fetch ('/game').then(response => response.json()).then((videoID) => {
 });
 }
 
-// Testing exports
-exports.getIdFromURL = getIdFromURL;
+// Add testing exports here
