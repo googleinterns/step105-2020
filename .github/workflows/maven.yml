@@ -26,7 +26,3 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Test with Maven
         run: mvn clean test
-      - name: Install modules
-        run: yarn
-      - name: Run tests
-        run: yarn test
