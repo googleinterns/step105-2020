@@ -60,6 +60,18 @@ public final class GameServlet extends HttpServlet {
     setVideoID(url);
     response.sendRedirect("/game.html");
   }
+  
+  /**
+   * @return the request parameter, or the default value if the parameter was not specified by the
+   *     client
+   */
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
+  }
 
   /**
    * Use url to connect to YouTube API and set video ID.
@@ -102,33 +114,8 @@ public final class GameServlet extends HttpServlet {
       // TODO @hdee: do something more complicated to handle this error
     }
   }
-  /**
-   * @param playlistVideos
-   * @return video ID
-   */
-  private String getRandomVideo(ArrayList<String> playlistVideos) {
-    Random randomGenerator = new Random();
-    int index = randomGenerator.nextInt(PLAYLIST_SIZE);
-    String videoID = playlistVideos.get(index);
-    return videoID;
-  }
 
-  /**
-   * Build and return an authorized API client service.
-   *
-   * @return an authorized API client service
-   * @throws GeneralSecurityException, IOException
-   */
-  public static YouTube getService() throws GeneralSecurityException, IOException {
-    final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    Credential credential = null;
-    return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
-        .setApplicationName(APPLICATION_NAME)
-        .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
-        .build();
-  }
-
-  /**
+    /**
    * Call function to create API service object.
    *
    * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
@@ -146,6 +133,22 @@ public final class GameServlet extends HttpServlet {
     PlaylistItemListResponse response = request.execute();
     return response;
   }
+
+  /**
+   * Build and return an authorized API client service.
+   *
+   * @return an authorized API client service
+   * @throws GeneralSecurityException, IOException
+   */
+  public static YouTube getService() throws GeneralSecurityException, IOException {
+    final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    Credential credential = null;
+    return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
+        .setApplicationName(APPLICATION_NAME)
+        .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
+        .build();
+  }
+
 
   /**
    * @param playlistItemJson
@@ -166,14 +169,13 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @return the request parameter, or the default value if the parameter was not specified by the
-   *     client
+   * @param playlistVideos
+   * @return video ID
    */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
+  private String getRandomVideo(ArrayList<String> playlistVideos) {
+    Random randomGenerator = new Random();
+    int index = randomGenerator.nextInt(PLAYLIST_SIZE);
+    String videoID = playlistVideos.get(index);
+    return videoID;
   }
 }
