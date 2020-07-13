@@ -31,7 +31,20 @@ async function getAuthToken() {
 }
 
 function getIdFromURL(url) {
-  var start = url.lastIndexOf('/') + 1;
-  var end = url.indexOf('?', start);
-  return url.slice(start, end);
+  if (url.search("open.spotify.com\/playlist\/") != -1) {
+    var start = url.lastIndexOf('/') + 1;
+    var end = url.length;
+    if (url.search('\\?') != -1) {
+     console.log('? detected');
+     end = url.indexOf('?', start);  
+    }
+    return url.slice(start, end);
+  } else {
+    console.log(url + "is not a valid Spotify URL");
+    let message = document.getElementById("error-message");
+    message.innerHTML = "Must be a playlist link from Spotify.";
+  }
 }
+
+// Testing exports
+exports.getIdFromURL = getIdFromURL;
