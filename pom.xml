@@ -130,7 +130,7 @@
         </executions>
       </plugin>
     </plugins>
-        <resources>
+      <resources>
         <resource>
             <directory>/src/main/resources</directory>
             <includes>

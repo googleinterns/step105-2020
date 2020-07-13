@@ -52,7 +52,6 @@ public final class GameServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(roundEntity);
   }
-  
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -148,7 +147,6 @@ public final class GameServlet extends HttpServlet {
         .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
         .build();
   }
-
 
   /**
    * @param playlistItemJson
