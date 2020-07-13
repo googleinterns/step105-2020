@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+package com.google.songgame.servlets;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -10,6 +10,9 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -33,12 +36,23 @@ public final class GameServlet extends HttpServlet {
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private int PLAYLIST_SIZE;
   private String videoID;
+  private static final int TIME_OFFSET = 3000;
+  private static final int ROUND_LENGTH = 30000;
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String json = new Gson().toJson(videoID);
     response.getWriter().println(json);
+    // Create a round
+    Entity roundEntity = new Entity("Round");
+
+    roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
+    roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(roundEntity);
   }
+  
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
