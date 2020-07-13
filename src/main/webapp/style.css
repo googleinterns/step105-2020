@@ -1,3 +1,10 @@
+:root {
+  --chat-bg: #ddd;
+  --anouncement-color: #b34700;
+  --correct-color: #008000;
+  --spectator-color: #daa520;
+}
+
 #chat {
   align-items: center;
   border-width: 1px;
@@ -5,12 +12,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10px 10px;
-
+  padding: 10px;
 }
 
 #chatbox {
-  background: #ddd;
+  background: var(--chat-bg);
   height: 500px;
   margin: 10px 0;
   overflow-y: scroll;
@@ -19,15 +25,15 @@
 }
 
 .message-anouncement {
-  color: #b34700;
+  color: var(--anouncement-color);
 }
 
 .message-correct {
-  color: green;
+  color: var(--correct-color);
 }
 
 .message-spectator {
-  color: #daa520;
+  color: var(--spectator-color);
 }
 
 .username {
