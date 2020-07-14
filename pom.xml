@@ -34,9 +34,9 @@
       <version>6.1.0</version>
     </dependency>
     <dependency>
-     <groupId>com.google.apis</groupId>
+      <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-youtube</artifactId>
-      <version>v3-rev20200618-1.30.9</version>
+      <version>v3-rev222-1.25.0</version>
     </dependency>
     <dependency>
     <groupId>com.google.oauth-client</groupId>
