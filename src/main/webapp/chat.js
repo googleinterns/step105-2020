@@ -28,7 +28,8 @@ async function addToChat() {
 
 function updateChat(data) {
   let message = data.message;
-  let newChatItem = `<p class="message"><span class="username">User: </span>${message}</p>`;
+
+  let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
   // Autoscroll to bottom on chat update
