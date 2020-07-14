@@ -9,10 +9,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
-import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public final class GameServlet extends HttpServlet {
     setVideoID(url);
     response.sendRedirect("/game.html");
   }
-  
+
   /**
    * @return the request parameter, or the default value if the parameter was not specified by the
    *     client
@@ -114,7 +114,7 @@ public final class GameServlet extends HttpServlet {
     }
   }
 
-    /**
+  /**
    * Call function to create API service object.
    *
    * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
@@ -126,7 +126,7 @@ public final class GameServlet extends HttpServlet {
     YouTube.PlaylistItems.List request =
         youtubeService
             .playlistItems()
-            .list(Arrays.asList("snippet"))
+            .list("snippet")
             .setMaxResults(25L)
             .setPlaylistId(playlistID);
     PlaylistItemListResponse response = request.execute();

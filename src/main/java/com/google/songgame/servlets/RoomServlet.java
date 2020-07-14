@@ -1,6 +1,5 @@
 package com.google.songgame.servlets;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

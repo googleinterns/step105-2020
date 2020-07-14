@@ -3,9 +3,9 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import com.pusher.rest.Pusher;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.Collections;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
 
-  private final static String APP_ID = "1024158";
-  private final static String CLIENT_KEY = "d15fbbe1c77552dc5097";
-  private final static String CLIENT_SECRET = "91fd789bf568ec43d2ee";
-  private final static String PUSHER_APPLICATION_NAME = "song-guessing-game";
-  private final static String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+  private static final String APP_ID = "1024158";
+  private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
+  private static final String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
   private Pusher pusher;
   private Gson gson;
 
@@ -44,10 +44,10 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
-  private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
+  private void sendResponseToClient(HttpServletResponse response, String message)
+      throws IOException {
     response.setContentType("application/json");
     String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
     response.getWriter().println(responseJsonString);
   }
-
 }
