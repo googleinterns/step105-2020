@@ -100,7 +100,7 @@ public final class GameServlet extends HttpServlet {
    * @param url
    * @return playlist ID
    */
-  public String getIDFromURL(String url) {
+  private String getIDFromURL(String url) {
     if (url.contains("youtube.com/playlist?list=")) {
       int start = url.indexOf("list=") + 5;
       int end = url.length();
@@ -111,7 +111,8 @@ public final class GameServlet extends HttpServlet {
     } else {
       System.err.println(url + " is not a valid YouTube Playlist URL");
       return "";
-      // TODO @hdee: do something more complicated to handle this error
+      // TODO @hdee: do something more complicated to handle this error.
+      // TODO @hdee: test this method.
     }
   }
 
