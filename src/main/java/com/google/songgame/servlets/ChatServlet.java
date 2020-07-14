@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -47,6 +48,8 @@ public final class ChatServlet extends HttpServlet {
   private Map readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map jsonData = gson.fromJson(requestJSONString, Map.class);
+    String userId = getUserId(request);
+    jsonData.put("userId", userId);
     return jsonData;
   }
 
@@ -55,7 +58,6 @@ public final class ChatServlet extends HttpServlet {
     String userId = (String) data.get("userId");
     String message = (String) data.get("message");
     String messageType = "guess";
-
     if (checkStatus(userId)) {
       messageType = "spectator";
     } else if (checkGuess(message)) {
@@ -67,6 +69,18 @@ public final class ChatServlet extends HttpServlet {
     response.put("message", message);
     response.put("messageType", messageType);
     return response;
+  }
+
+  private String getUserId(HttpServletRequest request) throws IOException {
+    Cookie[] cookies = request.getCookies();
+    String userId = "";
+    final int USER_ID_INDEX = 0;
+    try {
+      userId = cookies[USER_ID_INDEX].getValue();
+    } catch (Exception e) {
+      System.err.println("ERROR: UserID cookie could not be found.");
+    }
+    return userId;
   }
 
   // TODO: @salilnadkarni update checkStatus / updateStatus to use Datastore
