@@ -39,11 +39,6 @@
       <version>v3-rev222-1.25.0</version>
     </dependency>
     <dependency>
-    <groupId>com.google.oauth-client</groupId>
-      <artifactId>google-oauth-client-jetty</artifactId>
-      <version>1.31.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
       <version>1.8</version>

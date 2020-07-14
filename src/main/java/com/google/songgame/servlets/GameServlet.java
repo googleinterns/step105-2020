@@ -1,6 +1,5 @@
 package com.google.songgame.servlets;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -143,8 +142,7 @@ public final class GameServlet extends HttpServlet {
    */
   public static YouTube getService() throws GeneralSecurityException, IOException {
     final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    Credential credential = null;
-    return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
+    return new YouTube.Builder(httpTransport, JSON_FACTORY, null)
         .setApplicationName(APPLICATION_NAME)
         .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
         .build();
