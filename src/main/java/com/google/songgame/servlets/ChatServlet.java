@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -21,11 +23,12 @@ public final class ChatServlet extends HttpServlet {
   private final static String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private final static String PUSHER_APPLICATION_NAME = "song-guessing-game";
   private final static String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Pusher pusher;
   private Gson gson;
 
   // TODO: @salilnadkarni remove temp variables and integrate datastore
-  Map status  = new HashMap<Integer,Boolean>();
+  Map<String, Boolean> status  = new HashMap<String,Boolean>();
   String ANSWER = "Google";
 
   @Override
@@ -38,25 +41,25 @@ public final class ChatServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map dataFromChatClient = readJSONFromRequest(request);
-    Map responseForPusherChat = createPusherChatResponse(dataFromChatClient);
+    Map<String, String> dataFromChatClient = readJSONFromRequest(request);
+    Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
     pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, responseForPusherChat);
     sendResponseToClient(response, "complete");
     return;
   }
 
-  private Map readJSONFromRequest(HttpServletRequest request) throws IOException {
+  private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map jsonData = gson.fromJson(requestJSONString, Map.class);
+    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     String userId = getUserId(request);
     jsonData.put("userId", userId);
     return jsonData;
   }
 
-  private Map createPusherChatResponse(Map data) {
-    Map response = new HashMap<String, String>();
-    String userId = (String) data.get("userId");
-    String message = (String) data.get("message");
+  private Map<String, String> createPusherChatResponse(Map<String, String> data) {
+    Map<String, String> response = new HashMap<String, String>();
+    String userId = data.get("userId");
+    String message = data.get("message");
     String messageType = "guess";
     if (checkStatus(userId)) {
       messageType = "spectator";
@@ -88,7 +91,7 @@ public final class ChatServlet extends HttpServlet {
     if (!status.containsKey(userId)) {
       status.put(userId, false);
     }
-    return (Boolean) status.get(userId) == true;
+    return status.get(userId) == true;
   }
 
   private void updateStatus(String userId) {
