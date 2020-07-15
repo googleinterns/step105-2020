@@ -28,9 +28,6 @@ import com.google.api.client.json.gson.GsonFactory;
 public final class GameServlet extends HttpServlet {
 
   private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
-  private static final String CLIENT_SECRETS = "/client_secret.json";
-  private static final Collection<String> SCOPES =
-      Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
