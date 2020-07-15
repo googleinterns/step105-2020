@@ -7,6 +7,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Collection;
 import java.util.Random;
 import javax.servlet.annotation.WebServlet;
@@ -174,6 +177,26 @@ public final class GameServlet extends HttpServlet {
     Random randomGenerator = new Random();
     int index = randomGenerator.nextInt(playlistSize);
     String videoId = playlistVideos.get(index);
+    
+    try {
+      getVideoInformation(videoId);
+    } catch (Exception e) {
+
+    }
+
     return videoId;
+  }
+
+  private void getVideoInformation(String videoId) throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+    YouTube youtubeService = getService();
+    YouTube.Videos.List request = youtubeService.videos().list("snippet");
+    VideoListResponse response = request.setId(videoId).execute();
+    Video video = response.getItems().get(0);
+    String videoTitle = video.getSnippet().getTitle();
+
+    Entity videoEntity = new Entity("CurrentVideo");
+    videoEntity.setProperty("title", videoTitle);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(videoEntity);
   }
 }

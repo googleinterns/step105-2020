@@ -5,6 +5,7 @@ import com.pusher.rest.Pusher;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +23,10 @@ public final class ChatServlet extends HttpServlet {
   private Pusher pusher;
   private Gson gson;
 
+  // TODO: @salilnadkarni remove temp variables and integrate datastore
+  Map status  = new HashMap<Integer,Boolean>();
+  String ANSWER = "Google";
+
   @Override
   public void init() {
     pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
@@ -32,8 +37,9 @@ public final class ChatServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map dataForChatClients = readJSONFromRequest(request);
-    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, dataForChatClients);
+    Map dataFromChatClient = readJSONFromRequest(request);
+    Map responseForPusherChat = createPusherChatResponse(dataFromChatClient);
+    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, responseForPusherChat);
     sendResponseToClient(response, "complete");
     return;
   }
@@ -44,8 +50,43 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
-  private void sendResponseToClient(HttpServletResponse response, String message)
-      throws IOException {
+  private Map createPusherChatResponse(Map data) {
+    Map response = new HashMap<String, String>();
+    String userId = (String) data.get("userId");
+    String message = (String) data.get("message");
+    String messageType = "guess";
+
+    if (checkStatus(userId)) {
+      messageType = "spectator";
+    } else if (checkGuess(message)) {
+      updateStatus(userId);
+      messageType = "correct";
+      message = "guessed correctly!";
+    }
+    response.put("username", userId);
+    response.put("message", message);
+    response.put("messageType", messageType);
+    return response;
+  }
+
+  // TODO: @salilnadkarni update checkStatus / updateStatus to use Datastore
+  private boolean checkStatus(String userId) {
+    if (!status.containsKey(userId)) {
+      status.put(userId, false);
+    }
+    return (Boolean) status.get(userId) == true;
+  }
+
+  private void updateStatus(String userId) {
+    status.replace(userId, true);
+  }
+
+  // TODO: @salilnadkarni update checkGuess to use current video title
+  private boolean checkGuess(String message) {
+    return message.equals(ANSWER);
+  }
+
+  private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
     response.setContentType("application/json");
     String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
     response.getWriter().println(responseJsonString);
