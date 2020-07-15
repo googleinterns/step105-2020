@@ -34,7 +34,6 @@ public final class GameServlet extends HttpServlet {
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
-  private int playlistSize;
   private String videoId;
 
   @Override
@@ -85,8 +84,7 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
-    playlistSize = playlistVideos.size();
+    ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson)
     videoId = getRandomVideo(playlistVideos);
   }
 
@@ -164,6 +162,7 @@ public final class GameServlet extends HttpServlet {
    */
   private String getRandomVideo(ArrayList<String> playlistVideos) {
     Random randomGenerator = new Random();
+    int playlistSize = playlistVideos.size();
     int index = randomGenerator.nextInt(playlistSize);
     String videoId = playlistVideos.get(index);
     return videoId;
