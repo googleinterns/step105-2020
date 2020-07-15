@@ -15,7 +15,6 @@ async function addToChat() {
   let chatInput = document.getElementById("chat-input-box").value;
   let data = {
     message: chatInput,
-    userId: USER_ID,
   };
   await fetch("/chat", {
     method: "POST",

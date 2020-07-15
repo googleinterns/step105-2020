@@ -14,6 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -59,8 +67,10 @@ public final class ChatServlet extends HttpServlet {
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
     String userId = data.get("userId");
+    String username = getUsername(userId);
     String message = data.get("message");
     String messageType = "guess";
+
     if (checkStatus(userId)) {
       messageType = "spectator";
     } else if (checkGuess(message)) {
@@ -68,7 +78,7 @@ public final class ChatServlet extends HttpServlet {
       messageType = "correct";
       message = "guessed correctly!";
     }
-    response.put("username", userId);
+    response.put("username", username);
     response.put("message", message);
     response.put("messageType", messageType);
     return response;
@@ -77,13 +87,27 @@ public final class ChatServlet extends HttpServlet {
   private String getUserId(HttpServletRequest request) throws IOException {
     Cookie[] cookies = request.getCookies();
     String userId = "";
-    final int USER_ID_INDEX = 0;
     try {
-      userId = cookies[USER_ID_INDEX].getValue();
+      for (Cookie cookie : cookies) {
+        String name = cookie.getName();
+        if (name.equals("userId")) {
+          userId = cookie.getValue();
+        }
+      }
     } catch (Exception e) {
       System.err.println("ERROR: UserID cookie could not be found.");
     }
     return userId;
+  }
+
+  private String getUsername(String userId) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Filter userIdFilter =
+        new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query userQuery = new Query("User").setFilter(userIdFilter);
+    PreparedQuery result = datastore.prepare(userQuery);
+    Entity currentUser = result.asSingleEntity();
+    return (String) currentUser.getProperty("username");
   }
 
   // TODO: @salilnadkarni update checkStatus / updateStatus to use Datastore
