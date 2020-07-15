@@ -1,4 +1,4 @@
-const createUser = (ev) => {
+const createUser = async (ev) => {
     ev.preventDefault();  // To stop the form submitting.
     let user = {
         username: document.getElementById('new-player-id').value,
@@ -7,6 +7,10 @@ const createUser = (ev) => {
     }
     // Save userId to cookie.
     document.cookie = 'userId=' + user.userId + '; expires=' + new Date(2025, 0, 1).toUTCString();
+    await fetch('/room', {
+        method: 'POST',
+        body: JSON.stringify(user),
+    });
 }
 document.addEventListener('DOMContentLoaded', ()=>{
     document.getElementById('new-player-btn').addEventListener('click', createUser);

@@ -46,7 +46,7 @@ public final class RoomServlet extends HttpServlet {
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
-
+    System.out.println("USERNAME PUT IN BB");
     response.sendRedirect("/lobby.html");
   }
 
