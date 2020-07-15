@@ -27,8 +27,6 @@ async function addToChat() {
 }
 
 function updateChat(data) {
-  let message = data.message;
-
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
