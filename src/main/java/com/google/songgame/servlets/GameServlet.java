@@ -71,9 +71,8 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * Use playlist url to connect to YouTube API and set video ID.
+   * Use playlist url to connect to YouTube API and set video ID
    *
-   * @param playlistUrl
    */
   private void setvideoId(String playlistUrl) {
     String playlistId = getIdFromUrl(playlistUrl);
@@ -92,10 +91,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * Parse Youtube URL for playlist ID.
-   *
-   * @param playlistUrl
-   * @return playlist ID
+   * Returns playlist ID
    */
   private String getIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
@@ -135,7 +131,7 @@ public final class GameServlet extends HttpServlet {
   /**
    * Build and return an authorized API client service.
    *
-   * @return an authorized API client service
+   * Returns an authorized API client service
    * @throws GeneralSecurityException, IOException
    */
   public static YouTube getService() throws GeneralSecurityException, IOException {
@@ -147,8 +143,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @param playlistItemJson
-   * @return an ArrayList of video IDs
+   * Returns an ArrayList of video IDs
    */
   private ArrayList<String> parsePlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
@@ -165,8 +160,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @param playlistVideos
-   * @return video ID
+   * Returns video ID
    */
   private String getRandomVideo(ArrayList<String> playlistVideos) {
     Random randomGenerator = new Random();
