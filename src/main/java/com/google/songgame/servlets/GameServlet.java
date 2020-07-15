@@ -11,6 +11,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -89,6 +90,7 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
+    storePlaylist(playlistItemJson);
     ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
     playlistSize = playlistVideos.size();
     videoId = getRandomVideo(playlistVideos);
@@ -147,6 +149,17 @@ public final class GameServlet extends HttpServlet {
         .setApplicationName(APPLICATION_NAME)
         .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
         .build();
+  }
+
+  private void storePlaylist(String playlistItemJson){
+    // Create a round
+    Entity gameEntity = new Entity("Game");
+    Text playlistItem = new Text(playlistItemJson);
+
+    gameEntity.setProperty("playlist", playlistItem);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(gameEntity);
   }
 
   /**
