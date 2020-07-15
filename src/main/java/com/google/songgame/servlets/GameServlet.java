@@ -193,9 +193,12 @@ public final class GameServlet extends HttpServlet {
     VideoListResponse response = request.setId(videoId).execute();
     Video video = response.getItems().get(0);
     String videoTitle = video.getSnippet().getTitle();
-
-    Entity videoEntity = new Entity("CurrentVideo");
+    long timestamp = System.currentTimeMillis();
+    
+    Entity videoEntity = new Entity("Video");
     videoEntity.setProperty("title", videoTitle);
+    videoEntity.setProperty("timestamp", timestamp);
+    
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(videoEntity);
   }
