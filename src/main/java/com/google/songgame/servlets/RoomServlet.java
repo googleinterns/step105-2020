@@ -31,18 +31,12 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
     Map<String, String> userJson = readJSONFromRequest(request);
-    List<String> values =  new ArrayList<String>();
-
-    for (String key : userJson.keySet()) {
-      values.add(userJson.get(key));
-    }
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
-    userEntity.setProperty("username", values.get(0));
-    userEntity.setProperty("userId", values.get(1));
+    userEntity.setProperty("username", getValuesList(userJson).get(0));
+    userEntity.setProperty("userId", getValuesList(userJson).get(1));
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
@@ -54,6 +48,15 @@ public final class RoomServlet extends HttpServlet {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map jsonData = gson.fromJson(requestJSONString, Map.class);
     return jsonData;
+  }
+
+  private List<String> getValuesList(Map <String, String> userJson) throws IOException {
+    List<String> values =  new ArrayList<String>();
+
+    for (String key : userJson.keySet()) {
+      values.add(userJson.get(key));
+    }
+    return values;
   }
 
 }
