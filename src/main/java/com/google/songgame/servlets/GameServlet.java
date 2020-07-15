@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
-
+setvideo
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
 
@@ -54,7 +54,7 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
-    setvideoId(playlistUrl);
+    setVideoId(playlistUrl);
     response.sendRedirect("/game.html");
   }
 
@@ -74,7 +74,7 @@ public final class GameServlet extends HttpServlet {
    * Use playlist url to connect to YouTube API and set video ID
    *
    */
-  private void setvideoId(String playlistUrl) {
+  private void setVideoId(String playlistUrl) {
     String playlistId = getIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     // Retrieve Playlist item from Youtube API
