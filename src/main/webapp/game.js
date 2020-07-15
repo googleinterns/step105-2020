@@ -28,8 +28,6 @@ function updateChat(data) {
   elem.scrollTop = elem.scrollHeight;
 }
 
-Pusher.logToConsole = false;
-
 var pusher = new Pusher(CLIENT_KEY, {
   cluster: "us2",
 });
