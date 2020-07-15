@@ -22,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.api.client.json.gson.GsonFactory;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -32,7 +33,7 @@ public final class GameServlet extends HttpServlet {
       Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
   private static final String APPLICATION_NAME = "Song Guessing Game";
-  private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+  private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
@@ -61,7 +62,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @return the request parameter, or the default value if the parameter was not specified by the
+   * Returns the request parameter, or the default value if the parameter was not specified by the
    *     client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
@@ -142,7 +143,7 @@ public final class GameServlet extends HttpServlet {
    */
   public static YouTube getService() throws GeneralSecurityException, IOException {
     final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    return new YouTube.Builder(httpTransport, JSON_FACTORY, null)
+    return new YouTube.Builder(httpTransport, GSON_FACTORY, null)
         .setApplicationName(APPLICATION_NAME)
         .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
         .build();
