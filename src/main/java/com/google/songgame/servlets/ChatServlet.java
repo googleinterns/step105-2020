@@ -27,7 +27,7 @@ public final class ChatServlet extends HttpServlet {
   private Gson gson;
 
   // TODO: @salilnadkarni remove temp variables and integrate datastore
-  Map status  = new HashMap<Integer,Boolean>();
+  Map<String, Boolean> status  = new HashMap<String,Boolean>();
   String ANSWER = "Google";
 
   @Override
@@ -55,8 +55,8 @@ public final class ChatServlet extends HttpServlet {
 
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
-    String userId = (String) data.get("userId");
-    String message = (String) data.get("message");
+    String userId = data.get("userId");
+    String message = data.get("message");
     String messageType = "guess";
 
     if (checkStatus(userId)) {
@@ -77,7 +77,7 @@ public final class ChatServlet extends HttpServlet {
     if (!status.containsKey(userId)) {
       status.put(userId, false);
     }
-    return (Boolean) status.get(userId) == true;
+    return status.get(userId) == true;
   }
 
   private void updateStatus(String userId) {
