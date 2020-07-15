@@ -34,7 +34,7 @@ public final class ChatServlet extends HttpServlet {
   private Gson gson;
 
   // TODO: @salilnadkarni remove temp variables and integrate datastore
-  Map<String,String> status  = new HashMap<Integer,Boolean>();
+  Map<String,Boolean> status  = new HashMap<String,Boolean>();
 
   @Override
   public void init() {
