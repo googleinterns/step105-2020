@@ -74,7 +74,7 @@ public final class GameServlet extends HttpServlet {
    *
    */
   private void setVideoId(String playlistUrl) {
-    String playlistId = getIdFromUrl(playlistUrl);
+    String playlistId = getPlaylistIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     // Retrieve Playlist item from Youtube API
     try {
@@ -84,14 +84,14 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson)
+    ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson)
     videoId = getRandomVideo(playlistVideos);
   }
 
   /**
    * Returns playlist ID
    */
-  private String getIdFromUrl(String playlistUrl) {
+  private String getPlaylistIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
       int start = playlistUrl.indexOf("list=") + 5;
       int end = playlistUrl.length();
@@ -142,8 +142,9 @@ public final class GameServlet extends HttpServlet {
 
   /**
    * Returns an ArrayList of video IDs
+   * TODO @hdee: add tests for this method
    */
-  private ArrayList<String> parsePlaylistItem(String playlistItemJson) {
+  private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
     // extract video ID from sections
