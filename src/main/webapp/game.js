@@ -52,3 +52,12 @@ var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
 });
+
+function embedPlaylist(){
+  fetch ('/game').then(response => response.json()).then((videoID) => {
+    document.getElementById("player").src = "http://www.youtube.com/embed/" + videoID;
+  });
+  }
+  
+  // Add testing exports here
+  
