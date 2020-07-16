@@ -59,7 +59,7 @@ public final class GameServlet extends HttpServlet {
 
   /**
    * Returns the request parameter, or the default value if the parameter was not specified by the
-   *     client
+   * client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
