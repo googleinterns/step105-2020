@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
-setvideo
+
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
 
@@ -59,7 +59,7 @@ public final class GameServlet extends HttpServlet {
 
   /**
    * Returns the request parameter, or the default value if the parameter was not specified by the
-   *     client
+   * client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
@@ -84,7 +84,7 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson)
+    ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
     videoId = getRandomVideo(playlistVideos);
   }
 
