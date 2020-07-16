@@ -1,4 +1,4 @@
-const createUser = async (ev) => {
+var createUser = async (ev) => {
     ev.preventDefault();  // To stop the form submitting.
     let user = {
         username: document.getElementById('new-player-id').value,
@@ -7,11 +7,22 @@ const createUser = async (ev) => {
     }
     // Save userId to cookie.
     document.cookie = 'userId=' + user.userId + '; expires=' + new Date(2025, 0, 1).toUTCString();
-    await fetch('/room', {
-        method: 'POST',
+
+    // Post user object
+    await fetch("/room", {
+        method: "POST",
         body: JSON.stringify(user),
-    });
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(console.log);
+
+    // Sends user to lobby.html on button click.
+    window.location.href = 'lobby.html';
+
 }
-document.addEventListener('DOMContentLoaded', ()=>{
+
+window.addEventListener('DOMContentLoaded', ()=>{
+    // Creates user on button click.
     document.getElementById('new-player-btn').addEventListener('click', createUser);
-});
+})
