@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.stream.Collectors;
 import java.util.Collections;
-
 import org.apache.hc.core5.http.ParseException;
-import com.google.gson.Gson; 
 import java.util.*;
 
 @WebServlet("/room")
@@ -58,5 +56,4 @@ public final class RoomServlet extends HttpServlet {
     }
     return values;
   }
-
 }
