@@ -146,7 +146,6 @@ public final class GameServlet extends HttpServlet {
    * 
    * Call to add playlist information to datastore.
    */
-
   private void storePlaylist(String playlistItemJson){
     // Create a round
     Entity gameEntity = new Entity("Game");
