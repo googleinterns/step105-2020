@@ -7,6 +7,9 @@ import com.google.gson.JsonObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +26,7 @@ import java.util.*;
 public final class RoomServlet extends HttpServlet {
 
   private Gson gson;
+  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
   public void init() {
@@ -38,10 +42,24 @@ public final class RoomServlet extends HttpServlet {
     userEntity.setProperty("username", getValuesList(userJson).get(0));
     userEntity.setProperty("userId", getValuesList(userJson).get(1));
     
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
 
     response.sendRedirect("/lobby.html");
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> users = new ArrayList<String>();
+    for (Entity entity : results.asIterable()) {
+      String username = (String) entity.getProperty("username");
+      users.add(username);
+    }
+    
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(users));
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
