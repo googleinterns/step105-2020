@@ -1,5 +1,6 @@
 package com.google.songgame.servlets;
 
+<<<<<<< HEAD
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
@@ -7,6 +8,8 @@ import com.google.gson.JsonObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+=======
+>>>>>>> master
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,10 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.stream.Collectors;
 import java.util.Collections;
 
+<<<<<<< HEAD
 import org.apache.hc.core5.http.ParseException;
 import com.google.gson.Gson; 
 import java.util.*;
 
+=======
+>>>>>>> master
 @WebServlet("/room")
 public final class RoomServlet extends HttpServlet {
 
@@ -58,5 +64,4 @@ public final class RoomServlet extends HttpServlet {
     }
     return values;
   }
-
 }
