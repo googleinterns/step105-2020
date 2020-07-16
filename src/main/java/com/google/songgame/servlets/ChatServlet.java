@@ -12,6 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -36,8 +43,7 @@ public final class ChatServlet extends HttpServlet {
   private Gson gson;
 
   // TODO: @salilnadkarni remove temp variables and integrate datastore
-  Map<String, Boolean> status  = new HashMap<String,Boolean>();
-  String ANSWER = "Google";
+  Map<String,Boolean> status  = new HashMap<String,Boolean>();
 
   @Override
   public void init() {
@@ -124,7 +130,14 @@ public final class ChatServlet extends HttpServlet {
 
   // TODO: @salilnadkarni update checkGuess to use current video title
   private boolean checkGuess(String message) {
-    return message.equals(ANSWER);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query videoQuery = new Query("Video").addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(videoQuery);
+    
+    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(10)).get(0);
+    String videoTitle = (String) currentVideo.getProperty("title");
+    System.out.println(videoTitle);
+    return message.equals(videoTitle);
   }
 
   private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
