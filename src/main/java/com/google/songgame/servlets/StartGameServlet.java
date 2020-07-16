@@ -22,16 +22,17 @@ public final class StartGameServlet extends HttpServlet {
   private Pusher pusher;
 
   @Override
-public void init() {
-  pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
-  pusher.setCluster("us2");
-  pusher.setEncrypted(true);
-}
+  public void init() {
+    pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
+    pusher.setCluster("us2");
+    pusher.setEncrypted(true);
+  }
 
-@Override
-public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-  pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, Collections.singletonMap("message", "Start Game"));
-  return;
-}
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, 
+    Collections.singletonMap("message", "Start Game"));
+    return;
+  }
 }
 
