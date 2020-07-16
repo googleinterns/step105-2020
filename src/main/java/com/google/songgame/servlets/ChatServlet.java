@@ -3,10 +3,10 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import com.pusher.rest.Pusher;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import java.util.Collections;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -107,4 +107,5 @@ public final class ChatServlet extends HttpServlet {
     String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
     response.getWriter().println(responseJsonString);
   }
+
 }
