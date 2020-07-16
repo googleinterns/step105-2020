@@ -10,7 +10,7 @@ async function startGame() {
 }
 
 function redirectToGamePage() {
-  window.location.href = game.html;
+  window.location.href = 'game.html';
 }
 
 var pusher = new Pusher(CLIENT_KEY, {
