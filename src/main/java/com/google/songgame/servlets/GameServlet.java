@@ -28,16 +28,12 @@ import com.google.api.client.json.gson.GsonFactory;
 public final class GameServlet extends HttpServlet {
 
   private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
-  private static final String CLIENT_SECRETS = "/client_secret.json";
-  private static final Collection<String> SCOPES =
-      Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
-  private int playlistSize;
   private String videoId;
 
   @Override
@@ -57,13 +53,13 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
-    setvideoId(playlistUrl);
+    setVideoId(playlistUrl);
     response.sendRedirect("/game.html");
   }
 
   /**
    * Returns the request parameter, or the default value if the parameter was not specified by the
-   *     client
+   * client
    */
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
@@ -74,12 +70,11 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * Use playlist url to connect to YouTube API and set video ID.
+   * Use playlist url to connect to YouTube API and set video ID
    *
-   * @param playlistUrl
    */
-  private void setvideoId(String playlistUrl) {
-    String playlistId = getIdFromUrl(playlistUrl);
+  private void setVideoId(String playlistUrl) {
+    String playlistId = getPlaylistIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     // Retrieve Playlist item from Youtube API
     try {
@@ -89,18 +84,14 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideos = parsePlaylistItem(playlistItemJson);
-    playlistSize = playlistVideos.size();
+    ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
     videoId = getRandomVideo(playlistVideos);
   }
 
   /**
-   * Parse Youtube URL for playlist ID.
-   *
-   * @param playlistUrl
-   * @return playlist ID
+   * Returns playlist ID
    */
-  private String getIdFromUrl(String playlistUrl) {
+  private String getPlaylistIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
       int start = playlistUrl.indexOf("list=") + 5;
       int end = playlistUrl.length();
@@ -138,7 +129,7 @@ public final class GameServlet extends HttpServlet {
   /**
    * Build and return an authorized API client service.
    *
-   * @return an authorized API client service
+   * Returns an authorized API client service
    * @throws GeneralSecurityException, IOException
    */
   public static YouTube getService() throws GeneralSecurityException, IOException {
@@ -150,10 +141,10 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @param playlistItemJson
-   * @return an ArrayList of video IDs
+   * Returns an ArrayList of video IDs
+   * TODO @hdee: add tests for this method
    */
-  private ArrayList<String> parsePlaylistItem(String playlistItemJson) {
+  private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
     // extract video ID from sections
@@ -168,11 +159,11 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * @param playlistVideos
-   * @return video ID
+   * Returns video ID
    */
   private String getRandomVideo(ArrayList<String> playlistVideos) {
     Random randomGenerator = new Random();
+    int playlistSize = playlistVideos.size();
     int index = randomGenerator.nextInt(playlistSize);
     String videoId = playlistVideos.get(index);
     return videoId;
