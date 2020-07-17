@@ -1,4 +1,4 @@
-var createUser = async (ev) => {
+const createUser = async (ev) => {
     ev.preventDefault();  // To stop the form submitting.
     let user = {
         username: document.getElementById('new-player-id').value,
@@ -15,7 +15,7 @@ var createUser = async (ev) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then(console.log);
+      });
 
     // Sends user to lobby.html on button click.
     window.location.href = 'lobby.html';
@@ -25,4 +25,4 @@ var createUser = async (ev) => {
 window.addEventListener('DOMContentLoaded', ()=>{
     // Creates user on button click.
     document.getElementById('new-player-btn').addEventListener('click', createUser);
-})
+});
