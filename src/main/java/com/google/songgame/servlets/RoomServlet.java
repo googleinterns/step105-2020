@@ -44,8 +44,6 @@ public final class RoomServlet extends HttpServlet {
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
-
-    response.sendRedirect("/lobby.html");
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
