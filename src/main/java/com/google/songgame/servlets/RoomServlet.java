@@ -39,8 +39,8 @@ public final class RoomServlet extends HttpServlet {
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
-    userEntity.setProperty("username", getValuesList(userProperties).get(0));
-    userEntity.setProperty("userId", getValuesList(userProperties).get(1));
+    userEntity.setProperty("username", userProperties.get("username"));
+    userEntity.setProperty("userId", userProperties.get("userId"));
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
@@ -54,12 +54,4 @@ public final class RoomServlet extends HttpServlet {
     return jsonData;
   }
 
-  private List<String> getValuesList(Map <String, String> userJson) throws IOException {
-    List<String> values =  new ArrayList<String>();
-
-    for (String key : userJson.keySet()) {
-      values.add(userJson.get(key));
-    }
-    return values;
-  }
 }
