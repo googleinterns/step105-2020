@@ -35,12 +35,12 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map<String, String> userJson = readJSONFromRequest(request);
+    Map<String, String> userProperties = readJSONFromRequest(request);
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
-    userEntity.setProperty("username", getValuesList(userJson).get(0));
-    userEntity.setProperty("userId", getValuesList(userJson).get(1));
+    userEntity.setProperty("username", getValuesList(userProperties).get(0));
+    userEntity.setProperty("userId", getValuesList(userProperties).get(1));
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
@@ -50,7 +50,7 @@ public final class RoomServlet extends HttpServlet {
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map jsonData = gson.fromJson(requestJSONString, Map.class);
+    Map<String, String> jsonData = gson.fromJson(requestJSONString, Map.class);
     return jsonData;
   }
 
