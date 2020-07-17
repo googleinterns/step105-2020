@@ -87,16 +87,17 @@ public final class ChatServlet extends HttpServlet {
   private String getUserId(HttpServletRequest request) throws IOException {
     Cookie[] cookies = request.getCookies();
     String userId = "";
-    try {
-      for (Cookie cookie : cookies) {
-        String name = cookie.getName();
-        if (name.equals("userId")) {
-          userId = cookie.getValue();
-        }
+    for (Cookie cookie : cookies) {
+      String name = cookie.getName();
+      if (name.equals("userId")) {
+        userId = cookie.getValue();
       }
-    } catch (Exception e) {
+    }
+
+    if (userId.equals("")) {
       System.err.println("ERROR: UserID cookie could not be found.");
     }
+
     return userId;
   }
 
