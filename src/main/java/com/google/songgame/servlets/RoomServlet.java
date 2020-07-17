@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.hc.core5.http.ParseException;
-import com.google.gson.Gson; 
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/room")
 public final class RoomServlet extends HttpServlet {
 
+  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
 
   @Override
@@ -48,7 +50,7 @@ public final class RoomServlet extends HttpServlet {
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map<String, String> jsonData = gson.fromJson(requestJSONString, Map.class);
+    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     return jsonData;
   }
 
