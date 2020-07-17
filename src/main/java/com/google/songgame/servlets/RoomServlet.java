@@ -7,6 +7,9 @@ import com.google.gson.JsonObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,14 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.stream.Collectors;
 import java.util.Collections;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.hc.core5.http.ParseException;
-import com.google.gson.Gson; 
-import java.util.*;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/room")
 public final class RoomServlet extends HttpServlet {
 
+  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
 
   @Override
@@ -31,32 +37,21 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map<String, String> userJson = readJSONFromRequest(request);
+    Map<String, String> userProperties = readJSONFromRequest(request);
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
-    userEntity.setProperty("username", getValuesList(userJson).get(0));
-    userEntity.setProperty("userId", getValuesList(userJson).get(1));
+    userEntity.setProperty("username", userProperties.get("username"));
+    userEntity.setProperty("userId", userProperties.get("userId"));
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
-    System.out.println("USERNAME PUT IN BB");
-    response.sendRedirect("/lobby.html");
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map jsonData = gson.fromJson(requestJSONString, Map.class);
+    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     return jsonData;
-  }
-
-  private List<String> getValuesList(Map <String, String> userJson) throws IOException {
-    List<String> values =  new ArrayList<String>();
-
-    for (String key : userJson.keySet()) {
-      values.add(userJson.get(key));
-    }
-    return values;
   }
 
 }
