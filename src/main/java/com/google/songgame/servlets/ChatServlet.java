@@ -32,8 +32,9 @@ public final class ChatServlet extends HttpServlet {
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Pusher pusher;
   private Gson gson;
+  private DatastoreService datastore;
 
-  // TODO: @salilnadkarni remove temp variables and integrate datastore
+  // TODO: @salilnadkarni remove temp variables for status and integrate datastore
   Map<String,Boolean> status  = new HashMap<String,Boolean>();
 
   @Override
@@ -42,6 +43,7 @@ public final class ChatServlet extends HttpServlet {
     pusher.setCluster("us2");
     pusher.setEncrypted(true);
     gson = new Gson();
+    datastore = DatastoreServiceFactory.getDatastoreService();
   }
 
   @Override
@@ -90,15 +92,12 @@ public final class ChatServlet extends HttpServlet {
     status.replace(userId, true);
   }
 
-  // TODO: @salilnadkarni update checkGuess to use current video title
   private boolean checkGuess(String message) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query videoQuery = new Query("Video").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(videoQuery);
     
     Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(10)).get(0);
     String videoTitle = (String) currentVideo.getProperty("title");
-    System.out.println(videoTitle);
     return message.equals(videoTitle);
   }
 

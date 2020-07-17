@@ -38,6 +38,12 @@ public final class GameServlet extends HttpServlet {
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
   private String videoId;
+  private DatastoreService datastore;
+
+  @Override
+  public void init() {
+    datastore = DatastoreServiceFactory.getDatastoreService();
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -49,7 +55,6 @@ public final class GameServlet extends HttpServlet {
     roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(roundEntity);
   }
 
@@ -162,7 +167,7 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * Returns video ID
+   * Retrieve random video from array of videos and stores video in datastore
    */
   private String getRandomVideo(ArrayList<String> playlistVideos) {
     Random randomGenerator = new Random();
@@ -171,19 +176,30 @@ public final class GameServlet extends HttpServlet {
     String videoId = playlistVideos.get(index);
     
     try {
-      getVideoInformation(videoId);
+      Video currentVideo = getVideoInfo(videoId);
+      setVideoInfo(currentVideo);
     } catch (Exception e) {
-
+      System.err.println("ERROR: Could not read video");
     }
 
     return videoId;
   }
 
-  private void getVideoInformation(String videoId) throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+  /**
+   * Retrieves video information given a particular video ID
+   */
+  private Video getVideoInfo(String videoId) throws GeneralSecurityException, IOException, GoogleJsonResponseException {
     YouTube youtubeService = getService();
     YouTube.Videos.List request = youtubeService.videos().list("snippet");
     VideoListResponse response = request.setId(videoId).execute();
     Video video = response.getItems().get(0);
+    return video;    
+  }
+
+  /**
+   * Set video information in Datastore
+   */
+  private void setVideoInfo(Video video) {
     String videoTitle = video.getSnippet().getTitle();
     long timestamp = System.currentTimeMillis();
     
@@ -191,7 +207,7 @@ public final class GameServlet extends HttpServlet {
     videoEntity.setProperty("title", videoTitle);
     videoEntity.setProperty("timestamp", timestamp);
     
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(videoEntity);
   }
+
 }
