@@ -6,14 +6,16 @@
     <script src="room.js"></script>
   </head>
   <body>
+    <h1>MVP</h1>
     <form action="/game" method="POST">
-      <input id="playlist-id" name="playlist-link" type="text"></input>
-      <button type="submit">Enter</button>
+      <input id="playlist-id" name="playlist-link" type="text"
+        placeholder="Enter a Playlist Link"></input>
+      <button type="submit">Add Playlist</button>
     </form>
     <form action="/room" method="POST">
       <input id="new-player-id" name="user-name" type="text"
        placeholder="Enter your name"></input>
-      <button id="new-player-btn">Enter</button>
+      <button id="new-player-btn">Enter Lobby</button>
     </form>
   </body>
 </html>
