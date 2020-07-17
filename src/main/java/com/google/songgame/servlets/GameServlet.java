@@ -85,7 +85,7 @@ public final class GameServlet extends HttpServlet {
     }
     // Parse Playlist item Json string to retrieve video IDs
     String playlistItemJson = new Gson().toJson(playlistItem);
-    storePlaylist(playlistItemJson);
+    createGameAndStorePlaylist(playlistItemJson);
     ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
     videoId = getRandomVideo(playlistVideos);
   }
@@ -143,14 +143,14 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * 
-   * Call to add playlist information to datastore.
+   * Create a Game Entity in datastore and add playlist information to it.
    */
-  private void storePlaylist(String playlistItemJson){
+  private void createGameAndStorePlaylist(String playlistItemJson){
     // Create a game
     Entity gameEntity = new Entity("Game");
     Text playlistItem = new Text(playlistItemJson);
 
+    // Store playlist in game entity
     gameEntity.setProperty("playlist", playlistItem);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
