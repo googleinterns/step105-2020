@@ -53,14 +53,14 @@ public final class RoomServlet extends HttpServlet {
     Query query = new Query("User");
     PreparedQuery results = datastore.prepare(query);
 
-    List<String> users = new ArrayList<String>();
+    List<String> usernames = new ArrayList<String>();
     for (Entity entity : results.asIterable()) {
       String username = (String) entity.getProperty("username");
-      users.add(username);
+      usernames.add(username);
     }
     
     response.setContentType("application/json");
-    response.getWriter().println(gson.toJson(users));
+    response.getWriter().println(gson.toJson(usernames));
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
