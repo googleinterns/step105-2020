@@ -58,11 +58,18 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
 });
 
-function embedPlaylist(){
+function embedPlaylist() {
   fetch ('/game').then(response => response.json()).then((videoID) => {
     document.getElementById("player").src = "http://www.youtube.com/embed/" + videoID;
   });
+}
+
+document.onkeypress = function (e) {
+  if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
+    console.log("HELLO");  
+    addToChat();
   }
+};
   
   // Add testing exports here
   
