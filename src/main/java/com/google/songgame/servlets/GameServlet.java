@@ -13,6 +13,10 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -38,7 +42,6 @@ public final class GameServlet extends HttpServlet {
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
-  private String videoId;
   private DatastoreService datastore;
 
   @Override
@@ -48,7 +51,8 @@ public final class GameServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = new Gson().toJson(videoId);
+    String mostRecentVideoId = getMostRecentVideoId();
+    String json = new Gson().toJson(mostRecentVideoId);
     response.getWriter().println(json);
     // Create a round
     Entity roundEntity = new Entity("Round");
@@ -59,10 +63,19 @@ public final class GameServlet extends HttpServlet {
     datastore.put(roundEntity);
   }
 
+  private String getMostRecentVideoId() {
+    Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(videoQuery);
+    
+    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    String videoId = (String) currentVideo.getProperty("videoId");
+    return videoId;
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
-    setVideoId(playlistUrl);
+    setVideo(playlistUrl);
     response.sendRedirect("/game.html");
   }
 
@@ -82,7 +95,7 @@ public final class GameServlet extends HttpServlet {
    * Use playlist url to connect to YouTube API and set video ID
    *
    */
-  private void setVideoId(String playlistUrl) {
+  private void setVideo(String playlistUrl) {
     String playlistId = getPlaylistIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     // Retrieve Playlist item from Youtube API
@@ -95,9 +108,9 @@ public final class GameServlet extends HttpServlet {
     String playlistItemJson = new Gson().toJson(playlistItem);
     createGameAndStorePlaylist(playlistItemJson);
     ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
-    videoId = getRandomVideo(playlistVideos);
+    String videoId = getRandomVideo(playlistVideos);
 
-    // Store videoId in datastore
+    // Store information about Video in datastore
     try {
       Video currentVideo = getVideoInfo(videoId);
       setVideoInfo(currentVideo);
@@ -221,10 +234,12 @@ public final class GameServlet extends HttpServlet {
   private void setVideoInfo(Video video) {
     String videoTitle = video.getSnippet().getTitle();
     long fetchTime = System.currentTimeMillis();
+    String videoId = video.getId();
     
     Entity videoEntity = new Entity("Video");
     videoEntity.setProperty("title", videoTitle);
     videoEntity.setProperty("fetchTime", fetchTime);
+    videoEntity.setProperty("videoId", videoId);
     
     datastore.put(videoEntity);
   }
