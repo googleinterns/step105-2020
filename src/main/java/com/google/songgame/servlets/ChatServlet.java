@@ -93,10 +93,10 @@ public final class ChatServlet extends HttpServlet {
   }
 
   private boolean checkGuess(String message) {
-    Query videoQuery = new Query("Video").addSort("timestamp", SortDirection.DESCENDING);
+    Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(videoQuery);
     
-    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(10)).get(0);
+    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     String videoTitle = (String) currentVideo.getProperty("title");
     return message.equals(videoTitle);
   }

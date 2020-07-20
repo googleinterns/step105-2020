@@ -94,6 +94,15 @@ public final class GameServlet extends HttpServlet {
     String playlistItemJson = new Gson().toJson(playlistItem);
     ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
     videoId = getRandomVideo(playlistVideos);
+
+    // Store videoId in datastore
+    try {
+      Video currentVideo = getVideoInfo(videoId);
+      setVideoInfo(currentVideo);
+    } catch (Exception e) {
+      System.err.println("ERROR: Could not read video");
+    }
+
   }
 
   /**
@@ -174,13 +183,6 @@ public final class GameServlet extends HttpServlet {
     int playlistSize = playlistVideos.size();
     int index = randomGenerator.nextInt(playlistSize);
     String videoId = playlistVideos.get(index);
-    
-    try {
-      Video currentVideo = getVideoInfo(videoId);
-      setVideoInfo(currentVideo);
-    } catch (Exception e) {
-      System.err.println("ERROR: Could not read video");
-    }
 
     return videoId;
   }
@@ -201,11 +203,11 @@ public final class GameServlet extends HttpServlet {
    */
   private void setVideoInfo(Video video) {
     String videoTitle = video.getSnippet().getTitle();
-    long timestamp = System.currentTimeMillis();
+    long fetchTime = System.currentTimeMillis();
     
     Entity videoEntity = new Entity("Video");
     videoEntity.setProperty("title", videoTitle);
-    videoEntity.setProperty("timestamp", timestamp);
+    videoEntity.setProperty("fetchTime", fetchTime);
     
     datastore.put(videoEntity);
   }
