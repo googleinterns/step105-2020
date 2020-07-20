@@ -12,7 +12,11 @@ const CSS_MESSAGE_CLASS_DICT = {
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 
 async function addToChat() {
-  let chatInput = document.getElementById("chat-input-box").value;
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
+  
+  chatInputField.value = "";
+  
   let data = {
     message: chatInput,
     userId: USER_ID,
