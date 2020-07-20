@@ -29,11 +29,12 @@ public final class RoomServlet extends HttpServlet {
 
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
+  DatastoreService datastore;
 
   @Override
   public void init() {
     gson = new Gson();
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore = DatastoreServiceFactory.getDatastoreService();
   }
 
   @Override
