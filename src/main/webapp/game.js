@@ -54,13 +54,13 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
   updateChat(data);
 });
 
 function embedPlaylist() {
-  fetch ('/game').then(response => response.json()).then((videoID) => {
-    document.getElementById("player").src = "http://www.youtube.com/embed/" + videoID;
+  fetch('/game').then(response => response.json()).then((videoID) => {
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
   });
 }
 
@@ -71,5 +71,4 @@ document.onkeypress = function (e) {
   }
 };
   
-  // Add testing exports here
-  
+// Add testing exports here
