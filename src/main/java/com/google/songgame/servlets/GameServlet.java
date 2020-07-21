@@ -13,6 +13,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -64,10 +65,12 @@ public final class GameServlet extends HttpServlet {
 
 
     Entity roundEntity = new Entity("Round");
-
+    EmbeddedEntity userStatuses = createUserStatuses();
+    EmbeddedEntity userPoints = createUserPoints();
     roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
-
+    roundEntity.setProperty("userStatuses", userStatuses);
+    roundEntity.setProperty("userPoints", userPoints);
     datastore.put(roundEntity);
   }
 
@@ -98,6 +101,34 @@ public final class GameServlet extends HttpServlet {
     videoEntity.setProperty("title", videoTitle);
     
     return videoEntity;
+  }
+
+  private EmbeddedEntity createUserStatuses() {
+    EmbeddedEntity userStatuses = new EmbeddedEntity();
+    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity user : results.asIterable()) {
+      String userId = (String) user.getProperty("userId");
+      userStatuses.setProperty(userId, false);
+    }
+
+    return userStatuses;
+  }
+
+  private EmbeddedEntity createUserPoints() {
+    EmbeddedEntity userPoints = new EmbeddedEntity();
+    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity user : results.asIterable()) {
+      String userId = (String) user.getProperty("userId");
+      userPoints.setProperty(userId, 0);
+    }
+
+    return userPoints;
   }
 
   @Override
