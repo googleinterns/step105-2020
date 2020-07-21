@@ -59,4 +59,31 @@ function embedPlaylist() {
   });
 }
 
+
+function loadRound() {
+  fetch('/new-round').then(response => response.json()).then((round) => {
+    startTime = round.startTime;
+    seconds = 30;
+    Timer = setInterval("setTimer()", 1000);
+    if (seconds == 0) {
+      clearInterval(Timer);
+      document.getElementById("timer").innerHTML = "TIME'S UP";
+    }
+
+    ;})
+
+  }
+
+function setTimer(){ 
+  console.log("in set timer");
+  now = new Date().getTime();
+    document.getElementById("timer").innerHTML = seconds + "s ";
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(Timer);
+      document.getElementById("timer").innerHTML = "TIME'S UP";
+    }
+}
+
+
 // Add testing exports here
