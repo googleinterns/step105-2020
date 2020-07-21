@@ -16,7 +16,8 @@ async function addToChat() {
   let chatInput = chatInputField.value;
   
   chatInputField.value = "";
-  
+  chatInputField.focus();
+
   let data = {
     message: chatInput,
     userId: USER_ID,
