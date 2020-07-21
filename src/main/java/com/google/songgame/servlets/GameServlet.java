@@ -7,16 +7,23 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Collection;
 import java.util.Random;
 import javax.servlet.annotation.WebServlet;
@@ -35,11 +42,17 @@ public final class GameServlet extends HttpServlet {
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final long MAX_RESULTS = 25L;
-  private String videoId;
+  private DatastoreService datastore;
+
+  @Override
+  public void init() {
+    datastore = DatastoreServiceFactory.getDatastoreService();
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = new Gson().toJson(videoId);
+    String mostRecentVideoId = getMostRecentVideoId();
+    String json = new Gson().toJson(mostRecentVideoId);
     response.getWriter().println(json);
     // Create a round
     Entity roundEntity = new Entity("Round");
@@ -47,14 +60,22 @@ public final class GameServlet extends HttpServlet {
     roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(roundEntity);
+  }
+
+  private String getMostRecentVideoId() {
+    Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(videoQuery);
+    
+    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    String videoId = (String) currentVideo.getProperty("videoId");
+    return videoId;
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
-    setVideoId(playlistUrl);
+    setVideo(playlistUrl);
     response.sendRedirect("/game.html");
   }
 
@@ -74,7 +95,7 @@ public final class GameServlet extends HttpServlet {
    * Use playlist url to connect to YouTube API and set video ID
    *
    */
-  private void setVideoId(String playlistUrl) {
+  private void setVideo(String playlistUrl) {
     String playlistId = getPlaylistIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
     // Retrieve Playlist item from Youtube API
@@ -87,7 +108,16 @@ public final class GameServlet extends HttpServlet {
     String playlistItemJson = new Gson().toJson(playlistItem);
     createGameAndStorePlaylist(playlistItemJson);
     ArrayList<String> playlistVideos = parseVideoIdsFromPlaylistItem(playlistItemJson);
-    videoId = getRandomVideo(playlistVideos);
+    String videoId = getRandomVideo(playlistVideos);
+
+    // Store information about Video in datastore
+    try {
+      Video currentVideo = getVideoInfo(videoId);
+      setVideoInfo(currentVideo);
+    } catch (Exception e) {
+      System.err.println("ERROR: Could not read video");
+    }
+
   }
 
   /**
@@ -176,13 +206,42 @@ public final class GameServlet extends HttpServlet {
   }
 
   /**
-   * Returns video ID
+   * Retrieve random video from array of videos and stores video in datastore
    */
   private String getRandomVideo(ArrayList<String> playlistVideos) {
     Random randomGenerator = new Random();
     int playlistSize = playlistVideos.size();
     int index = randomGenerator.nextInt(playlistSize);
     String videoId = playlistVideos.get(index);
+
     return videoId;
   }
+
+  /**
+   * Retrieves video information given a particular video ID
+   */
+  private Video getVideoInfo(String videoId) throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+    YouTube youtubeService = getService();
+    YouTube.Videos.List request = youtubeService.videos().list("snippet");
+    VideoListResponse response = request.setId(videoId).execute();
+    Video video = response.getItems().get(0);
+    return video;    
+  }
+
+  /**
+   * Set video information in Datastore
+   */
+  private void setVideoInfo(Video video) {
+    String videoTitle = video.getSnippet().getTitle();
+    long fetchTime = System.currentTimeMillis();
+    String videoId = video.getId();
+    
+    Entity videoEntity = new Entity("Video");
+    videoEntity.setProperty("title", videoTitle);
+    videoEntity.setProperty("fetchTime", fetchTime);
+    videoEntity.setProperty("videoId", videoId);
+    
+    datastore.put(videoEntity);
+  }
+
 }
