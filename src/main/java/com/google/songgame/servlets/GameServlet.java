@@ -75,7 +75,7 @@ public final class GameServlet extends HttpServlet {
 
   private EmbeddedEntity createUserStatuses() {
     EmbeddedEntity userStatuses = new EmbeddedEntity();
-
+    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
     Query query = new Query("User");
     PreparedQuery results = datastore.prepare(query);
 
