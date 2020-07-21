@@ -24,6 +24,11 @@
   width: 300px;
 }
 
+#container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .message-anouncement {
   color: var(--anouncement-color);
 }
