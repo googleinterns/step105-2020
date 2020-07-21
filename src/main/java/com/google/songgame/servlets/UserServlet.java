@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/user")
-public final class RoomServlet extends HttpServlet {
+public final class UserServlet extends HttpServlet {
 
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
