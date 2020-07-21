@@ -56,7 +56,7 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 function embedPlaylist() {
   fetch('/game').then(response => response.json()).then((videoID) => {
-    document.getElementById("player").src = "http://www.youtube.com/embed/" + videoID;
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
   });
 }
 
