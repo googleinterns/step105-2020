@@ -70,6 +70,7 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
+  //TODO: @salilnadkarni modify when points stored in rooms
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
@@ -83,7 +84,7 @@ public final class ChatServlet extends HttpServlet {
     if (checkStatus(userId, currentRound)) {
       messageType = "spectator";
     } else if (checkGuess(message)) {
-      updateStatus(userId, currentRound);
+      updateStatusAndPoints(userId, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -134,9 +135,14 @@ public final class ChatServlet extends HttpServlet {
     return userStatus == true;
   }
 
-  private void updateStatus(String userId, Entity currentRound) {
+  private void updateStatusAndPoints(String userId, Entity currentRound) {
     EmbeddedEntity userStatuses = (EmbeddedEntity) currentRound.getProperty("userStatuses");
     userStatuses.setProperty(userId, true);
+
+    EmbeddedEntity userPoints = (EmbeddedEntity) currentRound.getProperty("userPoints");
+    long currentUserPoints = (Long) userPoints.getProperty(userId);
+    userPoints.setProperty(userId, currentUserPoints + 100);
+
     datastore.put(currentRound);
   }
 

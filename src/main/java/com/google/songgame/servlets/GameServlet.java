@@ -58,9 +58,11 @@ public final class GameServlet extends HttpServlet {
     // Create a round
     Entity roundEntity = new Entity("Round");
     EmbeddedEntity userStatuses = createUserStatuses();
+    EmbeddedEntity userPoints = createUserPoints();
     roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
     roundEntity.setProperty("userStatuses", userStatuses);
+    roundEntity.setProperty("userPoints", userPoints);
     datastore.put(roundEntity);
   }
 
@@ -85,6 +87,20 @@ public final class GameServlet extends HttpServlet {
     }
 
     return userStatuses;
+  }
+
+  private EmbeddedEntity createUserPoints() {
+    EmbeddedEntity userPoints = new EmbeddedEntity();
+    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity user : results.asIterable()) {
+      String userId = (String) user.getProperty("userId");
+      userPoints.setProperty(userId, 0);
+    }
+
+    return userPoints;
   }
 
   @Override
