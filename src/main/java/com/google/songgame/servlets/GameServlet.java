@@ -13,6 +13,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -56,10 +57,10 @@ public final class GameServlet extends HttpServlet {
     response.getWriter().println(json);
     // Create a round
     Entity roundEntity = new Entity("Round");
-
+    EmbeddedEntity userStatuses = createUserStatuses();
     roundEntity.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     roundEntity.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
-
+    roundEntity.setProperty("userStatuses", userStatuses);
     datastore.put(roundEntity);
   }
 
@@ -70,6 +71,20 @@ public final class GameServlet extends HttpServlet {
     Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     String videoId = (String) currentVideo.getProperty("videoId");
     return videoId;
+  }
+
+  private EmbeddedEntity createUserStatuses() {
+    EmbeddedEntity userStatuses = new EmbeddedEntity();
+
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity user : results.asIterable()) {
+      String userId = (String) user.getProperty("userId");
+      userStatuses.setProperty(userId, false);
+    }
+
+    return userStatuses;
   }
 
   @Override
