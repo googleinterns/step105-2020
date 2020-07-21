@@ -29,10 +29,12 @@ public final class RoomServlet extends HttpServlet {
 
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
+  DatastoreService datastore;
 
   @Override
   public void init() {
     gson = new Gson();
+    datastore = DatastoreServiceFactory.getDatastoreService();
   }
 
   @Override
@@ -44,8 +46,22 @@ public final class RoomServlet extends HttpServlet {
     userEntity.setProperty("username", userProperties.get("username"));
     userEntity.setProperty("userId", userProperties.get("userId"));
     
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(userEntity);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> usernames = new ArrayList<String>();
+    for (Entity entity : results.asIterable()) {
+      String username = (String) entity.getProperty("username");
+      usernames.add(username);
+    }
+    
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(usernames));
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
