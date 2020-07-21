@@ -8,5 +8,14 @@
   </head>
   <body>
     <button onClick="startGame()">Start Game</button>
+    <script src="lobby.js" defer></script>
+  </head>
+  <body onload="loadUsernames()">
+    <div>
+        <ul id="user-list"></ul>
+    </div>
+    <div>
+        <button>Start Game</button>
+    </div>
   </body>
 </html>
