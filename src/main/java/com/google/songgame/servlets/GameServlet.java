@@ -84,8 +84,6 @@ public final class GameServlet extends HttpServlet {
     Video video = parser.getRandomVideoFromPlaylist(playlist);
     String videoId = video.getId();
     String videoTitle = video.getSnippet().getTitle();
-    EmbeddedEntity videoEntity = new EmbeddedEntity();
-    videoEntity.setProperty("videoId", videoTitle);
 
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);
