@@ -22,12 +22,10 @@ const createUser = async (ev) => {
 
 }
 
-rooms = [];
 const createRoom = async () => {
   let room = {
     roomId: Math.random().toString(36).substr(2, 9)
   }
-  rooms.push(room);
 
   // Post room object
   await fetch("/room", {
