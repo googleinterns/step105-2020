@@ -22,7 +22,27 @@ const createUser = async (ev) => {
 
 }
 
+rooms = [];
+const createRoom = async () => {
+  let room = {
+    roomId: Math.random().toString(36).substr(2, 9)
+  }
+  rooms.push(room);
+
+  // Post room object
+  await fetch("/room", {
+    method: "POST",
+    body: JSON.stringify(room),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  
+}
+
 window.addEventListener('DOMContentLoaded', ()=>{
     // Creates user on button click.
     document.getElementById('new-player-btn').addEventListener('click', createUser);
+    // Creates room on button click.
+    document.getElementById('create-room-btn').addEventListener('click', createRoom);
 });
