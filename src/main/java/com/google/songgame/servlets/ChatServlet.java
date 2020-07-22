@@ -74,7 +74,8 @@ public final class ChatServlet extends HttpServlet {
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
-    Entity currentRound = getCurrentRound();
+    Entity currentGame = getCurrentGame();
+    EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
 
     String userId = data.get("userId");
     String username = getUsername(userId);
@@ -83,8 +84,9 @@ public final class ChatServlet extends HttpServlet {
 
     if (checkStatus(userId, currentRound)) {
       messageType = "spectator";
-    } else if (checkGuess(message)) {
       updateStatusAndPoints(userId, currentRound);
+    } else if (checkGuess(currentRound, message)) {
+      updateStatusAndPoints(userId, currentGame, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -94,13 +96,13 @@ public final class ChatServlet extends HttpServlet {
     return response;
   }
 
-  private Entity getCurrentRound() {
+  private Entity getCurrentGame() {
     // TODO: @salilnadkarni add more robust way of finding current round
-    Query roundQuery = new Query("Round").addSort("startTime", SortDirection.DESCENDING);
-    PreparedQuery result = datastore.prepare(roundQuery);
+    Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(gameQuery);
     
-    Entity currentRound = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
-    return currentRound;
+    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    return currentGame;
   }
 
   private String getUserId(HttpServletRequest request) throws IOException {
@@ -135,22 +137,20 @@ public final class ChatServlet extends HttpServlet {
     return userStatus == true;
   }
 
-  private void updateStatusAndPoints(String userId, Entity currentRound) {
+  private void updateStatusAndPoints(String userId, Entity currentGame, EmbeddedEntity currentRound) {
     EmbeddedEntity userStatuses = (EmbeddedEntity) currentRound.getProperty("userStatuses");
     userStatuses.setProperty(userId, true);
+    currentGame.setProperty("currentRound", currentRound);
 
-    EmbeddedEntity userPoints = (EmbeddedEntity) currentRound.getProperty("userPoints");
+    EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
     long currentUserPoints = (Long) userPoints.getProperty(userId);
     userPoints.setProperty(userId, currentUserPoints + 100);
 
-    datastore.put(currentRound);
+    datastore.put(currentGame);
   }
 
-  private boolean checkGuess(String message) {
-    Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
-    PreparedQuery result = datastore.prepare(videoQuery);
-    
-    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+  private boolean checkGuess(EmbeddedEntity currentRound, String message) {
+    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String videoTitle = (String) currentVideo.getProperty("title");
     return message.equals(videoTitle);
   }
