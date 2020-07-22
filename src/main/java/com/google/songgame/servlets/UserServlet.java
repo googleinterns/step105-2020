@@ -24,8 +24,8 @@ import org.apache.hc.core5.http.ParseException;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
-@WebServlet("/room")
-public final class RoomServlet extends HttpServlet {
+@WebServlet("/user")
+public final class UserServlet extends HttpServlet {
 
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
