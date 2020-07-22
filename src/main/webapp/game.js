@@ -69,7 +69,6 @@ function loadRound() {
       clearInterval(Timer);
       document.getElementById("timer").innerHTML = "TIME'S UP";
     }
-
     ;})
 
   }
@@ -84,6 +83,20 @@ function setTimer(){
       document.getElementById("timer").innerHTML = "TIME'S UP";
     }
 }
+
+function redirectToGamePage() {
+  window.location.href = 'game.html';
+ }
+  
+ var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+ });
+  
+ var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
+  redirectToGamePage();
+ });
+ 
 
 
 // Add testing exports here

@@ -7,7 +7,7 @@
     <script src="game.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
-  <body onload="embedPlaylist()">
+  <body onload="embedPlaylist(), loadRound()">
     <div id="container">
       <div id="mid-panel">
         <iframe id="player" type="text/html" width="640" height="390" src="" 
@@ -17,7 +17,7 @@
         <div id="chatbox"></div>
         <div id="chat-input">
           <input
-              type="text"
+              type="text"n
               id="chat-input-box"
               placeholder="Type message here..." />
           <button onclick="addToChat()">click</button>
