@@ -50,7 +50,7 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Entity game = getCurrentGame();
-    EmbeddedEntity currentRound = getNextRound(game);
+    EmbeddedEntity currentRound = getNewRound(game);
     game.setProperty("currentRound", currentRound);
     datastore.put(game);
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
@@ -67,7 +67,7 @@ public final class GameServlet extends HttpServlet {
     return currentGame;
   }
 
-  private EmbeddedEntity getNextRound(Entity game) {
+  private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
     EmbeddedEntity video = getVideoEntity(playlist);  
     EmbeddedEntity userStatuses = createUserStatuses();
