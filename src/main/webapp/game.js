@@ -61,16 +61,16 @@ function embedPlaylist() {
 
 
 function loadRound() {
-  fetch('/new-round').then(response => response.json()).then((round) => {
-    startTime = round.startTime;
+  fetch('/round').then(response => response.json()).then((round) => {
     seconds = 30;
     Timer = setInterval("setTimer()", 1000);
     if (seconds == 0) {
       clearInterval(Timer);
       document.getElementById("timer").innerHTML = "TIME'S UP";
+      document.getElementById("timer").innerHTML = "<button onClick='loadRound()'>Start Round</button>";
     }
     ;})
-
+    setTimer();
   }
 
 function setTimer(){ 
@@ -80,7 +80,7 @@ function setTimer(){
     seconds--;
     if (seconds <= 0) {
       clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "TIME'S UP";
+      document.getElementById("timer").innerHTML = "Round Over";
     }
 }
 
