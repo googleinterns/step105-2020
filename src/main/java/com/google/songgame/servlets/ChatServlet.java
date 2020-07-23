@@ -80,10 +80,10 @@ public final class ChatServlet extends HttpServlet {
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkGuessStatus(userId, currentRound)) {
+    if (checkIfUserGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
     } else if (checkGuess(message)) {
-      updateGuessStatus(userId, currentRound);
+      updateIfUserGuessedCorrect(userId, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -128,13 +128,13 @@ public final class ChatServlet extends HttpServlet {
     return (String) currentUser.getProperty("username");
   }
 
-  private boolean checkGuessStatus(String userId, Entity currentRound) {
+  private boolean checkIfUserGuessedCorrect(String userId, Entity currentRound) {
     EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
-    return userGuessStatus == true;
+    return userGuessStatus;
   }
 
-  private void updateGuessStatus(String userId, Entity currentRound) {
+  private void updateIfUserGuessedCorrect(String userId, Entity currentRound) {
     EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     userGuessStatuses.setProperty(userId, true);
     datastore.put(currentRound);
