@@ -85,7 +85,7 @@ public final class ChatServlet extends HttpServlet {
     if (checkStatus(userId, currentRound)) {
       messageType = "spectator";
     } else if (checkGuess(currentRound, message)) {
-      updateStatusAndPoints(userId, currentGame, currentRound);
+      updateStatus(userId, currentGame, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -136,15 +136,10 @@ public final class ChatServlet extends HttpServlet {
     return userStatus == true;
   }
 
-  private void updateStatusAndPoints(String userId, Entity currentGame, EmbeddedEntity currentRound) {
+  private void updateStatus(String userId, Entity currentGame, EmbeddedEntity currentRound) {
     EmbeddedEntity userStatuses = (EmbeddedEntity) currentRound.getProperty("userStatuses");
     userStatuses.setProperty(userId, true);
     currentGame.setProperty("currentRound", currentRound);
-
-    EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
-    long currentUserPoints = (Long) userPoints.getProperty(userId);
-    userPoints.setProperty(userId, currentUserPoints + 100);
-
     datastore.put(currentGame);
   }
 
