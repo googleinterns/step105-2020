@@ -70,11 +70,11 @@ public final class GameServlet extends HttpServlet {
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
     EmbeddedEntity video = getVideoEntity(playlist);  
-    EmbeddedEntity userStatuses = createUserStatuses();
+    EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
     currentRound.setProperty("video", video);
-    currentRound.setProperty("userStatuses", userStatuses);
+    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
 
     return currentRound;
   }
@@ -92,18 +92,18 @@ public final class GameServlet extends HttpServlet {
     return videoEntity;
   }
 
-  private EmbeddedEntity createUserStatuses() {
-    EmbeddedEntity userStatuses = new EmbeddedEntity();
+  private EmbeddedEntity createUserGuessStatuses() {
+    EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
     //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
     Query query = new Query("User");
     PreparedQuery results = datastore.prepare(query);
 
     for (Entity user : results.asIterable()) {
       String userId = (String) user.getProperty("userId");
-      userStatuses.setProperty(userId, false);
+      userGuessStatuses.setProperty(userId, false);
     }
 
-    return userStatuses;
+    return userGuessStatuses;
   }
 
   @Override
