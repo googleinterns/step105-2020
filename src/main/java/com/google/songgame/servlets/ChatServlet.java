@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -42,9 +43,6 @@ public final class ChatServlet extends HttpServlet {
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
-
-  // TODO: @salilnadkarni remove temp variables for status and integrate datastore
-  Map<String,Boolean> status  = new HashMap<String,Boolean>();
 
   @Override
   public void init() {
@@ -74,15 +72,18 @@ public final class ChatServlet extends HttpServlet {
 
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
+
+    Entity currentRound = getCurrentRound();
+
     String userId = data.get("userId");
     String username = getUsername(userId);
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkStatus(userId)) {
+    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
-    } else if (checkGuess(message)) {
-      updateStatus(userId);
+    } else if (checkIfCorrectGuess(message)) {
+      markUserGuessedCorrectly(userId, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -90,6 +91,15 @@ public final class ChatServlet extends HttpServlet {
     response.put("message", message);
     response.put("messageType", messageType);
     return response;
+  }
+
+  private Entity getCurrentRound() {
+    // TODO: @salilnadkarni add more robust way of finding current round
+    Query roundQuery = new Query("Round").addSort("startTime", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(roundQuery);
+    
+    Entity currentRound = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    return currentRound;
   }
 
   private String getUserId(HttpServletRequest request) throws IOException {
@@ -110,7 +120,6 @@ public final class ChatServlet extends HttpServlet {
   }
 
   private String getUsername(String userId) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Filter userIdFilter =
         new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query userQuery = new Query("User").setFilter(userIdFilter);
@@ -119,19 +128,19 @@ public final class ChatServlet extends HttpServlet {
     return (String) currentUser.getProperty("username");
   }
 
-  // TODO: @salilnadkarni update checkStatus / updateStatus to use Datastore
-  private boolean checkStatus(String userId) {
-    if (!status.containsKey(userId)) {
-      status.put(userId, false);
-    }
-    return status.get(userId) == true;
+  private boolean checkIfUserPreviouslyGuessedCorrect(String userId, Entity currentRound) {
+    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+    boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
+    return userGuessStatus;
   }
 
-  private void updateStatus(String userId) {
-    status.replace(userId, true);
+  private void markUserGuessedCorrectly(String userId, Entity currentRound) {
+    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+    userGuessStatuses.setProperty(userId, true);
+    datastore.put(currentRound);
   }
 
-  private boolean checkGuess(String message) {
+  private boolean checkIfCorrectGuess(String message) {
     Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(videoQuery);
     
