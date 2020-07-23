@@ -82,10 +82,10 @@ public final class ChatServlet extends HttpServlet {
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkIfUserGuessedCorrect(userId, currentRound)) {
+    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
-    } else if (checkGuess(currentRound, message)) {
-      updateIfUserGuessedCorrect(userId, currentRound, currentGame);
+    } else if (checkIfCorrectGuess(message)) {
+      markUserGuessedCorrectly(userId, currentRound);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -130,20 +130,20 @@ public final class ChatServlet extends HttpServlet {
     return (String) currentUser.getProperty("username");
   }
 
-  private boolean checkIfUserGuessedCorrect(String userId, EmbeddedEntity currentRound) {
+  private boolean checkIfUserPreviouslyGuessedCorrect(String userId, Entity currentRound) {
     EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
     return userGuessStatus;
   }
 
-  private void updateIfUserGuessedCorrect(String userId, EmbeddedEntity currentRound, Entity currentGame) {
+  private void markUserGuessedCorrectly(String userId, Entity currentRound) {
     EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     userGuessStatuses.setProperty(userId, true);
     currentGame.setProperty("currentRound", currentRound);
     datastore.put(currentGame);
   }
 
-  private boolean checkGuess(EmbeddedEntity currentRound, String message) {
+  private boolean checkIfCorrectGuess(EmbeddedEntity currentRound, String message) {
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String videoTitle = (String) currentVideo.getProperty("title");
     return message.equals(videoTitle);

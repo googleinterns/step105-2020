@@ -12,9 +12,15 @@ const CSS_MESSAGE_CLASS_DICT = {
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 
 async function addToChat() {
-  let chatInput = document.getElementById("chat-input-box").value;
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
+  
+  chatInputField.value = "";
+  chatInputField.focus();
+
   let data = {
     message: chatInput,
+    userId: USER_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -59,4 +65,10 @@ function embedPlaylist() {
   });
 }
 
+document.onkeypress = function (e) {
+  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
+    addToChat();
+  }
+};
+  
 // Add testing exports here
