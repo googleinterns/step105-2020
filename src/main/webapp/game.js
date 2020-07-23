@@ -66,8 +66,7 @@ function embedPlaylist() {
 }
 
 document.onkeypress = function (e) {
-  if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
-    console.log("HELLO");  
+  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
     addToChat();
   }
 };
