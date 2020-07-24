@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/start-game")
-public final class StartGameServlet extends HttpServlet {
+@WebServlet("/round")
+public final class RoundServlet extends HttpServlet {
 
   private static final String APP_ID = "1024158";
   private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
@@ -32,7 +32,6 @@ public final class StartGameServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, 
     Collections.singletonMap("message", "Start Game"));
-    return;
   }
 }
 
