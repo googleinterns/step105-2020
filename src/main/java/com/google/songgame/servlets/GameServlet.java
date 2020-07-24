@@ -55,7 +55,6 @@ public final class GameServlet extends HttpServlet {
     datastore.put(game);
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String currentVideoId = (String) currentVideo.getProperty("videoId");
-    System.out.println(currentVideoId);
     String json = new Gson().toJson(currentVideoId);
     response.getWriter().println(json);
   }
@@ -63,7 +62,7 @@ public final class GameServlet extends HttpServlet {
   private Entity getCurrentGame() {
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(gameQuery);
-        Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     return currentGame;
   }
 
