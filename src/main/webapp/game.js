@@ -2,6 +2,7 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+const PUSHER_ROUND_CHANNEL_NAME = "start-round";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
@@ -10,6 +11,10 @@ const CSS_MESSAGE_CLASS_DICT = {
 };
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('start-round').addEventListener('click', loadRound);
+});
 
 async function addToChat() {
   let chatInput = document.getElementById("chat-input-box").value;
@@ -53,26 +58,30 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
   updateChat(data);
 });
 
+
 function embedPlaylist() {
   fetch('/game').then(response => response.json()).then((videoID) => {
     document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
   });
 }
 
+async function loadRound() {
+  await fetch("/round", {
+    method: "GET"
+  });
+} 
 
-function loadRound() {
-  fetch('/round').then(response => response.json()).then((round) => {
-    seconds = 30;
-    Timer = setInterval("setTimer()", 1000);
-    if (seconds == 0) {
-      clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "TIME'S UP";
-      document.getElementById("timer").innerHTML = "<button onClick='loadRound()'>Start Round</button>";
-    }
-    ;})
-    setTimer();
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
+  console.log("in pusher function");
+  embedPlaylist();
+  seconds = 30;
+  Timer = setInterval("setTimer()", 1000);
+  if (seconds == 0) {
+    clearInterval(Timer);
+    document.getElementById("timer").innerHTML = "TIME'S UP";
   }
-
+});
+  
 function setTimer(){ 
   console.log("in set timer");
   now = new Date().getTime();
@@ -80,23 +89,8 @@ function setTimer(){
     seconds--;
     if (seconds <= 0) {
       clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "Round Over";
+      document.getElementById("timer").innerHTML = "Round Over";      
     }
 }
-
-function redirectToGamePage() {
-  window.location.href = 'game.html';
- }
-  
- var pusher = new Pusher(CLIENT_KEY, {
-  cluster: "us2",
- });
-  
- var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
- channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
-  redirectToGamePage();
- });
- 
-
 
 // Add testing exports here

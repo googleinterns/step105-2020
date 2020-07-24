@@ -1,3 +1,13 @@
+const APP_ID = "1024158";
+const CLIENT_KEY = "d15fbbe1c77552dc5097";
+const PUSHER_APPLICATION_NAME = "song-guessing-game";
+const PUSHER_GAME_CHANNEL_NAME = "start-game";
+
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('start-game').addEventListener('click', startGame);
+});
+
 // Fetches list of usernames, appends each username to html list
 function loadUsernames() {
     fetch('/room').then(response => response.json()).then((users) => {
@@ -15,3 +25,31 @@ function createUsernameElement(username) {
     node.appendChild(textnode);
     return node;
   }
+  // Connect Pusher
+  Pusher.logToConsole = false;
+
+  async function startGame(){
+    await fetch("/round", {
+      method: "GET"
+    });
+  }
+
+  var pusher = new Pusher(CLIENT_KEY, {
+    cluster: "us2",
+  });
+
+  function redirectToGamePage() {
+    window.location.href = 'game.html';
+  }
+  
+
+  var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+  channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
+    redirectToGamePage();
+  })
+
+  async function loadRound() {
+    await fetch("/round", {
+      method: "PUT"
+    });
+  } 

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Lobby</title>
+    <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
     <script src="lobby.js" defer></script>
   </head>
   <body onload="loadUsernames()">
@@ -10,7 +11,7 @@
         <ul id="user-list"></ul>
     </div>
     <div>
-        <button>Start Game</button>
+      <button id="start-game">Start Game</button>
     </div>
   </body>
 </html>
