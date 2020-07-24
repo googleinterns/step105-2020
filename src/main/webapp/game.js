@@ -68,7 +68,7 @@ function embedPlaylist() {
     tag.src = 'https://www.youtube.com/iframe_api';
     firstScript.parentNode.insertBefore(tag, firstScript);
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID + "?enablejsapi=1";
   window.onYouTubeIframeAPIReady = function() {
     window.player = new window.YT.Player('player', {
       events: {
