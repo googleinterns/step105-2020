@@ -40,6 +40,7 @@ public final class ChatServlet extends HttpServlet {
   private final static String PUSHER_APPLICATION_NAME = "song-guessing-game";
   private final static String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
   private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
+  private final static long POINTS_PER_ROUND = 100;
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
@@ -136,10 +137,16 @@ public final class ChatServlet extends HttpServlet {
     return userGuessStatus;
   }
 
-  private void markUserGuessedCorrectly(String userId, EmbeddedEntity currentRound, Entity currentGame) {
+  private void markUserGuessedCorrectlyAndAddPoints(String userId, EmbeddedEntity currentRound, Entity currentGame) {
     EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     userGuessStatuses.setProperty(userId, true);
+
+    EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
+    long currentUserPoints = (Long) userPoints.getProperty(userId);
+    userPoints.setProperty(userId, currentUserPoints + POINTS_PER_ROUND);
+
     currentGame.setProperty("currentRound", currentRound);
+    currentGame.setPropert("userPoints", userPoints);
     datastore.put(currentGame);
   }
 
