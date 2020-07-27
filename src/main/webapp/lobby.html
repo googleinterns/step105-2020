@@ -2,15 +2,16 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Lobby</title>
-    <script src="lobby.js" defer></script>
+    <title>Song Guessing Game</title>
+    <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
+    <script src="lobby.js"></script>
   </head>
   <body onload="loadUsernames()">
     <div>
         <ul id="user-list"></ul>
     </div>
     <div>
-        <button>Start Game</button>
+      <button onClick="startGame()">Start Game</button>
     </div>
   </body>
 </html>
