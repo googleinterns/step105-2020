@@ -20,6 +20,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import javax.servlet.http.Cookie;
 import java.lang.reflect.Type;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.MatchResult;
 import com.google.gson.reflect.TypeToken;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -30,6 +33,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import java.util.Function;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -146,7 +150,34 @@ public final class ChatServlet extends HttpServlet {
     
     Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     String videoTitle = (String) currentVideo.getProperty("title");
+    System.out.println(checkGuessWithRegex(message));
     return message.equals(videoTitle);
+  }
+
+  private String checkGuessWithRegex(String guess) {
+    Pattern pattern = Pattern.compile("\\(([^\\)]+)\\)");
+    Matcher matcher = pattern.matcher(guess);
+
+    Function<MatchResult,String> thingy = (MatchResult mr) -> {
+      String mrs = mr.group(1);
+      if (mrs.find("feat")) {
+        return "";
+      } else {
+        return mrs;
+      }
+    };
+    
+    String result = matcher.replaceAll(thingy);
+    return result;
+    // if (matcher.find()) {
+    //   String currentGroup = matcher.group();
+    //   if (currentGroup.find("feat")) {
+    //     guess.remove(currentGroup.start(), currentGroup.end());
+    //   } else if (currentGroup.find("ft")) {
+    //     guess.remove(currentGroup.start(), currentGroup.end());
+    //   }
+    // }
+    // return guess;
   }
 
   private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
