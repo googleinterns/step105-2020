@@ -39,6 +39,11 @@ public final class YoutubeParser {
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final long MAX_RESULTS = 25L;
 
+  /**
+   * Returns a list of YouTube Video IDs of the music videos in a given playlist url
+   * 
+   * <p>Utilizes YouTube Data v3 API to list the first MAX_RESULTS video's IDs in a given playlist
+   */
   public ArrayList<String> getPlaylistVideoIds(String playlistUrl) {
     String playlistId = getPlaylistIdFromUrl(playlistUrl);
     PlaylistItemListResponse playlistItem = new PlaylistItemListResponse();
@@ -109,7 +114,11 @@ public final class YoutubeParser {
       }
     return playlistVideos;
   }
-
+  /**
+   * Return a Video object chosen at random from a given list of videoIds
+   * 
+   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the YouTube Data API to return the Video Object with that particular videoId 
+   */
   public Video getRandomVideoFromPlaylist(ArrayList<String> playlistVideoIds) {
     String videoId = getRandomVideo(playlistVideoIds);
     Video currentVideo = null;
