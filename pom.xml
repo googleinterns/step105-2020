@@ -138,7 +138,7 @@
             <goals>
               <goal>format</goal>
             </goals>
-        </execution>
+          </execution>
         </executions>
       </plugin>
     </plugins>
