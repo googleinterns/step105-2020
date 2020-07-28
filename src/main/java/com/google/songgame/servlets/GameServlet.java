@@ -34,11 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.regex.MatchResult;
-import java.util.function.Function;
-
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -141,24 +136,5 @@ public final class GameServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
   }
-  
-  private String formatVideoTitle(String title) {
-    title = title.toLowerCase();
-    Pattern pattern = Pattern.compile("\\(([^\\)]+)\\)");
-    Matcher matcher = pattern.matcher(title);
 
-    // Function object, replaces all "groups" which contain "feat", "remix", or "ft"
-    Function<MatchResult,String> replaceTargetGroups = (MatchResult mr) -> {
-      String mrs = mr.group(1);
-      if (mrs.contains("feat") || mrs.contains("remix") || mrs.contains("ft") || mrs.contains("official video") || mrs.contains("official music video")) {
-        return "";
-      } else {
-        return "(" + mrs + ")";
-      }
-    };
-    
-    String result = matcher.replaceAll(replaceTargetGroups);
-    System.out.println(result);
-    return result;
-  }
 }
