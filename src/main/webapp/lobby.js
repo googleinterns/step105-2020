@@ -1,3 +1,6 @@
+const urlParams = new URLSearchParams(window.location.search);
+const lobbyId = urlParams.get('roomId');
+
 // Fetches list of usernames, appends each username to html list
 function loadUsernames() {
     fetch('/user').then(response => response.json()).then((users) => {
@@ -15,3 +18,5 @@ function createUsernameElement(username) {
     node.appendChild(textnode);
     return node;
   }
+
+document.getElementById("url").innerHTML = "Share the link!:<br>" + (window.location.href);
