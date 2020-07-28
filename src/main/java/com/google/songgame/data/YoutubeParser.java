@@ -112,8 +112,8 @@ public final class YoutubeParser {
   /**
    * Return a Video object chosen at random from a given list of videoIds
    *
-   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the YouTube Data API
-   * to return the Video Object with that particular videoId
+   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the
+   * YouTube Data API to return the Video Object with that particular videoId
    */
   public Video getRandomVideoFromPlaylist(ArrayList<String> playlistVideoIds) {
     String videoId = getRandomVideo(playlistVideoIds);
