@@ -85,7 +85,7 @@ public final class GameServlet extends HttpServlet {
     String videoId = video.getId();
     String unformattedVideoTitle = video.getSnippet().getTitle();
     TitleFormatter titleFormatter = new TitleFormatter();
-    String videoTitle = titleFormatter.formatTitle(unformattedVideoTitle);
+    String videoTitle = titleFormatter.formatVideoTitle(unformattedVideoTitle);
     System.out.println(videoTitle);
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);
