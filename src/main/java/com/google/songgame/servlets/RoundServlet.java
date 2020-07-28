@@ -30,8 +30,9 @@ public final class RoundServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, 
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME,
+        PUSHER_CHAT_CHANNEL_NAME,
         Collections.singletonMap("message", "Start Game"));
   }
 }
-

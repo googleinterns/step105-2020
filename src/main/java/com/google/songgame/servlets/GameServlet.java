@@ -68,7 +68,7 @@ public final class GameServlet extends HttpServlet {
 
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-    EmbeddedEntity video = getVideoEntity(playlist);  
+    EmbeddedEntity video = getVideoEntity(playlist);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
@@ -87,13 +87,13 @@ public final class GameServlet extends HttpServlet {
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);
     videoEntity.setProperty("title", videoTitle);
-    
+
     return videoEntity;
   }
 
   private EmbeddedEntity createUserGuessStatuses() {
     EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
-    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
     Query query = new Query("User");
     PreparedQuery results = datastore.prepare(query);
 
@@ -136,5 +136,4 @@ public final class GameServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
   }
-
 }

@@ -27,7 +27,7 @@ import com.google.gson.reflect.TypeToken;
 @WebServlet("/user")
 public final class UserServlet extends HttpServlet {
 
-  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Gson gson;
   DatastoreService datastore;
 
@@ -45,7 +45,7 @@ public final class UserServlet extends HttpServlet {
     Entity userEntity = new Entity("User");
     userEntity.setProperty("username", userProperties.get("username"));
     userEntity.setProperty("userId", userProperties.get("userId"));
-    
+
     datastore.put(userEntity);
   }
 
@@ -59,7 +59,7 @@ public final class UserServlet extends HttpServlet {
       String username = (String) entity.getProperty("username");
       usernames.add(username);
     }
-    
+
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(usernames));
   }
@@ -69,5 +69,4 @@ public final class UserServlet extends HttpServlet {
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     return jsonData;
   }
-
 }
