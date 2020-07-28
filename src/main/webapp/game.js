@@ -74,6 +74,7 @@ function embedPlaylist() {
     firstScript.parentNode.insertBefore(tag, firstScript);
 
     document.getElementById("player").src = EMBED_URL + videoId + LOOP_PARAMS + videoId + VIDEO_PARAMS;
+    
     window.onYouTubeIframeAPIReady = function() {
       window.player = new window.YT.Player('player', {
         events: {
@@ -87,7 +88,6 @@ function embedPlaylist() {
     }
   });
 }
-
 
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
