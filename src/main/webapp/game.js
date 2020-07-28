@@ -10,6 +10,10 @@ const CSS_MESSAGE_CLASS_DICT = {
 };
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
+const LOOP_PARAMS = "?version=3&end=10&loop=1&playlist=";
+const EMBED_URL = "https://www.youtube.com/embed/";
+const VIDEO_PARAMS = "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1&origin=http://localhost:8282";
+var videoId = "";
 
 async function addToChat() {
   let chatInputField = document.getElementById("chat-input-box");
@@ -60,8 +64,11 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 });
 
 function embedPlaylist() {
-  fetch('/game').then(response => response.json()).then((videoID) => {
-    videoId = videoID;
+  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
+    console.log("BEFORE" + videoId);
+    videoId = videoIdResponse;
+
+    console.log("AFTER" + videoId);
 
     var tag = document.createElement('script');
     var firstScript = document.getElementsByTagName('script')[0];
@@ -69,28 +76,32 @@ function embedPlaylist() {
     tag.src = 'https://www.youtube.com/iframe_api';
     firstScript.parentNode.insertBefore(tag, firstScript);
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID + 
-        "?version=3&end=10&loop=1&playlist=" + videoID + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
-  window.onYouTubeIframeAPIReady = function() {
-    window.player = new window.YT.Player('player', {
-      events: {
-        'onStateChange': onPlayerStateChange
-      }
-    });
-  }
-});
+    document.getElementById("player").src = EMBED_URL + videoId + LOOP_PARAMS + videoId + VIDEO_PARAMS;
+    window.onYouTubeIframeAPIReady = function() {
+      window.player = new window.YT.Player('player', {
+        events: {
+          'onStateChange': onPlayerStateChange
+        },
+        playerVars: {
+          'rel': 0,
+          'origin':'http://localhost:8282'
+        }
+      });
+    }
+  });
 }
 
 
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
+    console.log("IN FUNCYION" + videoId);
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
       endSeconds: 10
     });
-    }
   }
+}
 
 document.onkeypress = function (e) {
   if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
