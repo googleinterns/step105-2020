@@ -86,7 +86,7 @@ public final class ChatServlet extends HttpServlet {
     if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
     } else if (checkIfCorrectGuess(message, currentRound)) {
-      markUserGuessedCorrectly(userId, currentRound, currentGame);
+      markUserGuessedCorrectlyAndAddPoints(userId, currentRound, currentGame);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -146,7 +146,7 @@ public final class ChatServlet extends HttpServlet {
     userPoints.setProperty(userId, currentUserPoints + POINTS_PER_ROUND);
 
     currentGame.setProperty("currentRound", currentRound);
-    currentGame.setPropert("userPoints", userPoints);
+    currentGame.setProperty("userPoints", userPoints);
     datastore.put(currentGame);
   }
 
