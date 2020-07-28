@@ -143,7 +143,8 @@ public final class ChatServlet extends HttpServlet {
 
     EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
     long currentUserPoints = (Long) userPoints.getProperty(userId);
-    userPoints.setProperty(userId, currentUserPoints + POINTS_PER_ROUND);
+    long updatedUserPoints = currentUserPoints + POINTS_PER_ROUND;
+    userPoints.setProperty(userId, updatedUserPoints);
 
     currentGame.setProperty("currentRound", currentRound);
     currentGame.setProperty("userPoints", userPoints);
