@@ -50,27 +50,6 @@ public final class RoomServlet extends HttpServlet {
     datastore.put(roomEntity);
   }
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Room");
-    PreparedQuery results = datastore.prepare(query);
-    
-    Map<String, String[]> roomIdParamMap = request.getParameterMap();
-
-    for (String roomId : roomIdParamMap.keySet()) {
-    String[] idArray = (String[]) roomIdParamMap.get(roomId);
-      for (String val : idArray) {
-        for (Entity entity : results.asIterable()) {
-          String roomIdValue = (String) entity.getProperty("roomId");
-          val = roomIdValue;
-        }
-      }
-    }
-
-    response.setContentType("application/json");
-    response.getWriter().println(gson.toJson(roomIdParamMap));
-  }
-
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
