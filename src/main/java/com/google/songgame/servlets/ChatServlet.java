@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -42,9 +43,6 @@ public final class ChatServlet extends HttpServlet {
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
-
-  // TODO: @salilnadkarni remove temp variables for status and integrate datastore
-  Map<String,Boolean> status  = new HashMap<String,Boolean>();
 
   @Override
   public void init() {
@@ -72,17 +70,22 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
+  //TODO: @salilnadkarni modify when points stored in rooms
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
+
+    Entity currentGame = getCurrentGame();
+    EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
+
     String userId = data.get("userId");
     String username = getUsername(userId);
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkStatus(userId)) {
+    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
-    } else if (checkGuess(message)) {
-      updateStatus(userId);
+    } else if (checkIfCorrectGuess(message, currentRound)) {
+      markUserGuessedCorrectly(userId, currentRound, currentGame);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -90,6 +93,15 @@ public final class ChatServlet extends HttpServlet {
     response.put("message", message);
     response.put("messageType", messageType);
     return response;
+  }
+
+  private Entity getCurrentGame() {
+    // TODO: @salilnadkarni add more robust way of finding current round
+    Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
+    PreparedQuery result = datastore.prepare(gameQuery);
+    
+    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    return currentGame;
   }
 
   private String getUserId(HttpServletRequest request) throws IOException {
@@ -110,7 +122,6 @@ public final class ChatServlet extends HttpServlet {
   }
 
   private String getUsername(String userId) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Filter userIdFilter =
         new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query userQuery = new Query("User").setFilter(userIdFilter);
@@ -119,23 +130,21 @@ public final class ChatServlet extends HttpServlet {
     return (String) currentUser.getProperty("username");
   }
 
-  // TODO: @salilnadkarni update checkStatus / updateStatus to use Datastore
-  private boolean checkStatus(String userId) {
-    if (!status.containsKey(userId)) {
-      status.put(userId, false);
-    }
-    return status.get(userId) == true;
+  private boolean checkIfUserPreviouslyGuessedCorrect(String userId, EmbeddedEntity currentRound) {
+    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+    boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
+    return userGuessStatus;
   }
 
-  private void updateStatus(String userId) {
-    status.replace(userId, true);
+  private void markUserGuessedCorrectly(String userId, EmbeddedEntity currentRound, Entity currentGame) {
+    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+    userGuessStatuses.setProperty(userId, true);
+    currentGame.setProperty("currentRound", currentRound);
+    datastore.put(currentGame);
   }
 
-  private boolean checkGuess(String message) {
-    Query videoQuery = new Query("Video").addSort("fetchTime", SortDirection.DESCENDING);
-    PreparedQuery result = datastore.prepare(videoQuery);
-    
-    Entity currentVideo = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+  private boolean checkIfCorrectGuess(String message, EmbeddedEntity currentRound) {
+    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String videoTitle = (String) currentVideo.getProperty("title");
     return message.equals(videoTitle);
   }
