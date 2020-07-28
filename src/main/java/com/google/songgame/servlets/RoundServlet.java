@@ -72,7 +72,6 @@ public final class RoundServlet extends HttpServlet {
         PUSHER_ROUND_CHANNEL_NAME,
         Collections.singletonMap("message", "Start Round"));
   }
-}
 
   private Entity getCurrentGame() {
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
@@ -119,5 +118,4 @@ public final class RoundServlet extends HttpServlet {
 
     return userGuessStatuses;
   }
-
-
+}

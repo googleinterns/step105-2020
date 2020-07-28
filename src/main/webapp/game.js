@@ -13,6 +13,7 @@ const CSS_MESSAGE_CLASS_DICT = {
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 
 window.addEventListener('DOMContentLoaded', ()=>{
+  embedPlaylist();
   document.getElementById('start-round').addEventListener('click', loadRound);
 });
 
@@ -66,7 +67,7 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 
 function embedPlaylist() {
-  fetch('/game').then(response => response.json()).then((videoID) => {
+  fetch('/round').then(response => response.json()).then((videoID) => {
     document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
   });
 }
