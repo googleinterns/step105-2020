@@ -61,6 +61,7 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 function embedPlaylist() {
   fetch('/game').then(response => response.json()).then((videoID) => {
+    videoId = videoID;
 
     var tag = document.createElement('script');
     var firstScript = document.getElementsByTagName('script')[0];
@@ -68,38 +69,28 @@ function embedPlaylist() {
     tag.src = 'https://www.youtube.com/iframe_api';
     firstScript.parentNode.insertBefore(tag, firstScript);
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID + "?enablejsapi=1";
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID + 
+        "?version=3&end=10&loop=1&playlist=" + videoID + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
   window.onYouTubeIframeAPIReady = function() {
     window.player = new window.YT.Player('player', {
       events: {
-        'onReady': onPlayerReady,
         'onStateChange': onPlayerStateChange
-      },
-      playerVars: {
-        'autoplay': 1,
-        'modestbranding': 1,
-        'rel': 0,
-        'origin':'https://localhost:8282'
       }
     });
   }
 });
 }
 
-function onPlayerReady(event) {
-  event.target.playVideo();
-}
 
-var done = false;
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-          setTimeout(stopVideo, 6000);
-          done = true;
-        }
-      }
-      function stopVideo() {
-        player.stopVideo();
-      }
+function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.ENDED) {
+    player.loadVideoById({
+      videoId: videoId,
+      startSeconds: 0,
+      endSeconds: 10
+    });
+    }
+  }
 
 document.onkeypress = function (e) {
   if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
