@@ -17,7 +17,7 @@ const createUser = async (ev) => {
         },
       });
 
-    // Sends user to lobby.html on button click.
+    // Sends user to newuser.html on button click.
     window.location.href = 'newuser.html';
 }
 
