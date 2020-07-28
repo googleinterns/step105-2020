@@ -117,6 +117,13 @@ public final class TitleFormatterTest {
 
     testString = "Gucci Mane - Both Sides feat. Lil Baby";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "both sides");
+
+    testString = "ENEE - Supalonely (Audio) ft. Gus Dapperton";
+    Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "supalonely");
+
+    testString = "BLACKPINK - 'How You Like That' M/V";
+    Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "how you like that");    
+    
   }
   */
 }
