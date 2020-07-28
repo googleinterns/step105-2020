@@ -34,13 +34,13 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
 
-  private final static String APP_ID = "1024158";
-  private final static String CLIENT_KEY = "d15fbbe1c77552dc5097";
-  private final static String CLIENT_SECRET = "91fd789bf568ec43d2ee";
-  private final static String PUSHER_APPLICATION_NAME = "song-guessing-game";
-  private final static String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
-  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
-  private final static long POINTS_PER_ROUND = 100;
+  private static final String APP_ID = "1024158";
+  private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
+  private static final String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
+  private static final long POINTS_PER_ROUND = 100;
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
@@ -71,7 +71,7 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
-  //TODO: @salilnadkarni modify when points stored in rooms
+  // TODO: @salilnadkarni modify when points stored in rooms
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
@@ -100,7 +100,7 @@ public final class ChatServlet extends HttpServlet {
     // TODO: @salilnadkarni add more robust way of finding current round
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(gameQuery);
-    
+
     Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     return currentGame;
   }
@@ -123,8 +123,7 @@ public final class ChatServlet extends HttpServlet {
   }
 
   private String getUsername(String userId) {
-    Filter userIdFilter =
-        new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query userQuery = new Query("User").setFilter(userIdFilter);
     PreparedQuery result = datastore.prepare(userQuery);
     Entity currentUser = result.asSingleEntity();
@@ -132,13 +131,16 @@ public final class ChatServlet extends HttpServlet {
   }
 
   private boolean checkIfUserPreviouslyGuessedCorrect(String userId, EmbeddedEntity currentRound) {
-    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+    EmbeddedEntity userGuessStatuses =
+        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
     return userGuessStatus;
   }
 
-  private void markUserGuessedCorrectlyAndAddPoints(String userId, EmbeddedEntity currentRound, Entity currentGame) {
-    EmbeddedEntity userGuessStatuses = (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
+  private void markUserGuessedCorrectlyAndAddPoints(
+      String userId, EmbeddedEntity currentRound, Entity currentGame) {
+    EmbeddedEntity userGuessStatuses =
+        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     userGuessStatuses.setProperty(userId, true);
 
     EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
@@ -157,10 +159,10 @@ public final class ChatServlet extends HttpServlet {
     return message.equals(videoTitle);
   }
 
-  private void sendResponseToClient(HttpServletResponse response, String message) throws IOException {
+  private void sendResponseToClient(HttpServletResponse response, String message)
+      throws IOException {
     response.setContentType("application/json");
     String responseJsonString = gson.toJson(Collections.singletonMap("message", message));
     response.getWriter().println(responseJsonString);
   }
-
 }
