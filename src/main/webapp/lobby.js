@@ -24,30 +24,19 @@ var pusher = new Pusher(CLIENT_KEY, {
 
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 channel.bind(PUSHER_GAME_CHANNEL_NAME, function (data) {
+  let startTime = new Date().getTime();
+  storeTime(startTime);
   redirectToGamePage();
-  loadRound();
 });
 
-channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
-  console.log("in pusher function");
-  embedPlaylist();
-  seconds = 30;
-  Timer = setInterval("setTimer()", 1000);
-  if (seconds == 0) {
-    clearInterval(Timer);
-    document.getElementById("timer").innerHTML = "TIME'S UP";
-  }
+async function storeTime(startTime) {
+await fetch("/round", {
+  method: "POST",
+  body: JSON.stringify(startTime),
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
-  
-function setTimer(){ 
-  console.log("in set timer");
-  now = new Date().getTime();
-    document.getElementById("timer").innerHTML = seconds + "s ";
-    seconds--;
-    if (seconds <= 0) {
-      clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "Round Over";      
-    }
 }
 
 // Fetches list of usernames, appends each username to html list
