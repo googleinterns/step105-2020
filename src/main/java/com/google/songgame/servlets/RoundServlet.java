@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.songgame.data.YoutubeParser;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
+import java.util.HashMap;
 
 @WebServlet("/round")
 public final class RoundServlet extends HttpServlet {
@@ -31,6 +32,8 @@ public final class RoundServlet extends HttpServlet {
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
   private static final String PUSHER_ROUND_CHANNEL_NAME = "start-round";
   private static final String PUSHER_GAME_CHANNEL_NAME = "start-game";
+  private static final int TIME_OFFSET = 3000;
+  private static final int ROUND_LENGTH = 30000;
   private Pusher pusher;
   private Gson gson;
   DatastoreService datastore;
@@ -61,7 +64,15 @@ public final class RoundServlet extends HttpServlet {
     datastore.put(game);
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String currentVideoId = (String) currentVideo.getProperty("videoId");
-    String json = new Gson().toJson(currentVideoId);
+    long roundStartTime = (long) currentRound.getProperty("startTime");
+    long roundEndTime = (long) currentRound.getProperty("endTime");
+
+    Map<String, Object> roundMap = new HashMap<String, Object>();
+    roundMap.put("videoId", currentVideoId);
+    roundMap.put("startTime", roundStartTime);
+    roundMap.put("endTime", roundEndTime);
+
+    String json = new Gson().toJson(roundMap);
     response.getWriter().println(json);
   }
 
@@ -84,10 +95,12 @@ public final class RoundServlet extends HttpServlet {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
     EmbeddedEntity video = getVideoEntity(playlist);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
+    ;
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
     currentRound.setProperty("video", video);
-    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
+    currentRound.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
+    currentRound.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
 
     return currentRound;
   }

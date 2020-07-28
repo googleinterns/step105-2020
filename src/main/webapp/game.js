@@ -11,6 +11,9 @@ const CSS_MESSAGE_CLASS_DICT = {
 };
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
+var videoId = "";
+var startTime = 0;
+var endTime = 0;
 
 window.addEventListener('DOMContentLoaded', ()=>{
   embedPlaylist();
@@ -67,8 +70,11 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 
 function embedPlaylist() {
-  fetch('/round').then(response => response.json()).then((videoID) => {
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
+  fetch('/round').then(response => response.json()).then((roundMap) => {
+    videoId = roundMap.videoId;
+    startTime = roundMap.startTime;
+    endTime = roundMap.endTime;
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId;
   });
 }
 
