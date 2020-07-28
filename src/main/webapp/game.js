@@ -3,6 +3,7 @@ const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
+const PUSHER_GAME_CHANNEL_NAME = "start-game";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
@@ -16,7 +17,6 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener('DOMContentLoaded', ()=>{
-  embedPlaylist();
   document.getElementById('start-round').addEventListener('click', loadRound);
 });
 
@@ -69,7 +69,7 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 });
 
 
-function embedPlaylist() {
+function embedVideo() {
   fetch('/round').then(response => response.json()).then((roundMap) => {
     videoId = roundMap.videoId;
     startTime = roundMap.startTime;
@@ -87,13 +87,18 @@ async function loadRound() {
 
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
   console.log("in pusher function");
-  embedPlaylist();
+  embedVideo();
   seconds = 30;
   Timer = setInterval("setTimer()", 1000);
   if (seconds == 0) {
     clearInterval(Timer);
     document.getElementById("timer").innerHTML = "TIME'S UP";
   }
+});
+
+channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
+  console.log("in pusher function I LUV <3");
+  loadRound();
 });
   
 function setTimer(){ 
