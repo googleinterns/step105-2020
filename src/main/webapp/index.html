@@ -2,16 +2,15 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>SOng Guessing Game</title>
+    <title>Song Guessing Game</title>
     <script src="room.js"></script>
-    <script src="game.js"></script>
   </head>
   <body>
     <form action="/game" method="POST">
       <input id="playlist-id" name="playlist-link" type="text"></input>
       <button type="submit">Enter</button>
     </form>
-    <form action="/room" method="POST">
+    <form action="/user" method="POST">
       <input id="new-player-id" name="user-name" type="text"
        placeholder="Enter your name"></input>
       <button id="new-player-btn">Enter</button>

@@ -9,7 +9,7 @@ const createUser = async (ev) => {
     document.cookie = 'userId=' + user.userId + '; expires=' + new Date(2025, 0, 1).toUTCString();
 
     // Post user object
-    await fetch("/room", {
+    await fetch("/user", {
         method: "POST",
         body: JSON.stringify(user),
         headers: {

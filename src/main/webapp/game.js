@@ -17,9 +17,15 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 async function addToChat() {
-  let chatInput = document.getElementById("chat-input-box").value;
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
+  
+  chatInputField.value = "";
+  chatInputField.focus();
+
   let data = {
     message: chatInput,
+    userId: USER_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -65,9 +71,10 @@ function embedPlaylist() {
   });
 }
 
+// Start Round
 async function loadRound() {
   await fetch("/round", {
-    method: "GET"
+    method: "PUT"
   });
 } 
 
@@ -93,4 +100,10 @@ function setTimer(){
     }
 }
 
+document.onkeypress = function (e) {
+  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
+    addToChat();
+  }
+};
+  
 // Add testing exports here

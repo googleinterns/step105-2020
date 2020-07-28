@@ -24,10 +24,10 @@ import org.apache.hc.core5.http.ParseException;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
-@WebServlet("/room")
-public final class RoomServlet extends HttpServlet {
+@WebServlet("/user")
+public final class UserServlet extends HttpServlet {
 
-  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Gson gson;
   DatastoreService datastore;
 
@@ -45,7 +45,7 @@ public final class RoomServlet extends HttpServlet {
     Entity userEntity = new Entity("User");
     userEntity.setProperty("username", userProperties.get("username"));
     userEntity.setProperty("userId", userProperties.get("userId"));
-    
+
     datastore.put(userEntity);
   }
 
@@ -59,7 +59,7 @@ public final class RoomServlet extends HttpServlet {
       String username = (String) entity.getProperty("username");
       usernames.add(username);
     }
-    
+
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(usernames));
   }
@@ -69,5 +69,4 @@ public final class RoomServlet extends HttpServlet {
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     return jsonData;
   }
-
 }
