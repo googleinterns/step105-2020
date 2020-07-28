@@ -1,4 +1,4 @@
-package com.google.songgame;
+package com.google.songgame.data;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,7 +51,8 @@ public final class TitleFormatterTest {
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "ily (i love you baby)");
 
     testString = "death bed (coffee for your head)";
-    Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "death bed (coffee for your head)");
+    Assert.assertEquals(
+        titleFormatter.formatVideoTitle(testString), "death bed (coffee for your head)");
 
     testString = "Gucci Mane - Both Sides feat. Lil Baby";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "both sides");
@@ -61,10 +62,10 @@ public final class TitleFormatterTest {
 
     testString = "Chase B & Don Toliver - Cafeteria (feat. Gunna) (Official Video)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "cafeteria");
-    
+
     testString = "NBA YoungBoy - ALL IN";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "all in");
-    
+
     testString = "King Von - Why He Told (Official Video)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "why he told");
 
