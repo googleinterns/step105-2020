@@ -65,10 +65,7 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 function embedPlaylist() {
   fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    console.log("BEFORE" + videoId);
     videoId = videoIdResponse;
-
-    console.log("AFTER" + videoId);
 
     var tag = document.createElement('script');
     var firstScript = document.getElementsByTagName('script')[0];
@@ -94,7 +91,6 @@ function embedPlaylist() {
 
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
-    console.log("IN FUNCYION" + videoId);
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
