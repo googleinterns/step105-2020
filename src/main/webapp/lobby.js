@@ -40,4 +40,6 @@ function createUsernameElement(username) {
     return node;
   }
 
-document.getElementById("url").innerHTML = "Share the link!:<br>" + (window.location.href);
+  window.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById("url").innerHTML = "Share the link!:<br>" + (window.location.href);
+});
