@@ -1,4 +1,4 @@
-const script = require('./room');
+const script = require('./user');
 
 test('Placeholdertest', () => {
   expect(
