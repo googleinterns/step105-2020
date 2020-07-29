@@ -17,32 +17,27 @@ var videoId = "";
 var startTime = 0;
 var endTime = 0;
 
-window.addEventListener('DOMContentLoaded', ()=>{
-  console.log
+window.addEventListener('DOMContentLoaded', () => {
   embedVideo();
   createTimer();
   document.getElementById('start-round').addEventListener('click', loadRound);
 });
 
-async function addToChat() {
-  let chatInputField = document.getElementById("chat-input-box");
-  let chatInput = chatInputField.value;
-  
-  chatInputField.value = "";
-  chatInputField.focus();
+// Connect Pusher
+var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+});
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 
-  let data = {
-    message: chatInput,
-    userId: USER_ID,
-  };
-  await fetch("/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-}
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
+  updateChat(data);
+});
+
+// when the start round button is clicked
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
+  embedVideo();
+  createTimer();
+});
 
 function updateChat(data) {
   let newChatItem = createChatItem(data);
@@ -60,17 +55,31 @@ function createChatItem(data) {
   return `<p class="${messageType}"><span class="username">${username}: </span>${message}</p>`;
 }
 
-// Connect Pusher
-Pusher.logToConsole = false;
+async function addToChat() {
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
 
-var pusher = new Pusher(CLIENT_KEY, {
-  cluster: "us2",
-});
+  chatInputField.value = "";
+  chatInputField.focus();
 
-var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
-  updateChat(data);
-});
+  let data = {
+    message: chatInput,
+    userId: USER_ID,
+  };
+  await fetch("/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+document.onkeypress = function(e) {
+  if (e.key === "Enter") { //checks whether the pressed key is "Enter"
+    addToChat();
+  }
+};
 
 function embedVideo() {
   fetch('/round').then(response => response.json()).then((roundMap) => {
@@ -81,39 +90,26 @@ function embedVideo() {
   });
 }
 
+function createTimer() {
+  Timer = setInterval("setTimer()", ONE_SECOND);
+}
+
+function setTimer() {
+  let now = new Date().getTime();
+  if (startTime > 0 && now >= startTime) {
+    document.getElementById("timer").innerHTML = ((endTime - now) % ONE_SECOND) + "s ";
+    if (now >= endTime) {
+      clearInterval(Timer);
+      document.getElementById("timer").innerHTML = "Round Over";
+    }
+  }
+}
+
 // Start Round
 async function loadRound() {
   await fetch("/round", {
     method: "PUT"
   });
-} 
-
-// when the start round button is clicked
-channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
-  embedVideo();
-  createTimer();
-});
-
-
-function createTimer(){
-  Timer = setInterval("setTimer()", ONE_SECOND);
-}
-  
-function setTimer(){ 
-  let now = new Date().getTime();
-if (startTime > 0 && now >= startTime){
-    document.getElementById("timer").innerHTML = ((endTime - now) % ONE_SECOND ) + "s ";
-    if (now >= endTime) {
-      clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "Round Over";      
-    }
-}
 }
 
-document.onkeypress = function (e) {
-  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
-    addToChat();
-  }
-};
-  
 // Add testing exports here

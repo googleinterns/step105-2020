@@ -73,31 +73,6 @@ public final class RoundServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-  private Map<String, Object> createRoundMap(Entity game, EmbeddedEntity round) {
-
-    boolean isNewGame = isNewGame(game);
-    EmbeddedEntity currentVideo = (EmbeddedEntity) round.getProperty("video");
-    String currentVideoId = (String) currentVideo.getProperty("videoId");
-    long roundStartTime = (long) round.getProperty("startTime");
-    long roundEndTime = (long) round.getProperty("endTime");
-
-    Map<String, Object> roundMap = new HashMap<String, Object>();
-    roundMap.put("isNewGame", isNewGame);
-    roundMap.put("videoId", currentVideoId);
-    roundMap.put("startTime", roundStartTime);
-    roundMap.put("endTime", roundEndTime);
-
-    return roundMap;
-  }
-
-  private boolean isNewGame(Entity game) {
-    return game.getProperty("currentRound") == null;
-  }
-
-  private boolean roundOver(EmbeddedEntity round) {
-    return (long) round.getProperty("endTime") <= System.currentTimeMillis();
-  }
-
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     pusher.trigger(
@@ -111,6 +86,14 @@ public final class RoundServlet extends HttpServlet {
     PreparedQuery result = datastore.prepare(gameQuery);
     Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     return currentGame;
+  }
+
+  private boolean isNewGame(Entity game) {
+    return game.getProperty("currentRound") == null;
+  }
+
+  private boolean roundOver(EmbeddedEntity round) {
+    return (long) round.getProperty("endTime") <= System.currentTimeMillis();
   }
 
   private EmbeddedEntity getNewRound(Entity game) {
@@ -152,4 +135,22 @@ public final class RoundServlet extends HttpServlet {
 
     return userGuessStatuses;
   }
+
+  private Map<String, Object> createRoundMap(Entity game, EmbeddedEntity round) {
+
+    boolean isNewGame = isNewGame(game);
+    EmbeddedEntity currentVideo = (EmbeddedEntity) round.getProperty("video");
+    String currentVideoId = (String) currentVideo.getProperty("videoId");
+    long roundStartTime = (long) round.getProperty("startTime");
+    long roundEndTime = (long) round.getProperty("endTime");
+
+    Map<String, Object> roundMap = new HashMap<String, Object>();
+    roundMap.put("isNewGame", isNewGame);
+    roundMap.put("videoId", currentVideoId);
+    roundMap.put("startTime", roundStartTime);
+    roundMap.put("endTime", roundEndTime);
+
+    return roundMap;
+  }
 }
+  

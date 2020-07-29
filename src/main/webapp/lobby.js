@@ -7,6 +7,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('start-game').addEventListener('click', startGame);
 });
 
+// Connect to Pusher
+var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+});
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+
+channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
+  redirectToGamePage();
+});
+
 async function startGame() {
   await fetch("/round", {
     method: "POST"
@@ -16,15 +26,6 @@ async function startGame() {
 function redirectToGamePage() {
   window.location.href = 'game.html';
 }
-
-var pusher = new Pusher(CLIENT_KEY, {
-  cluster: "us2",
-});
-
-var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
-  redirectToGamePage();
-});
 
 // Fetches list of usernames, appends each username to html list
 function loadUsernames() {
@@ -43,9 +44,3 @@ function createUsernameElement(username) {
     node.appendChild(textnode);
     return node;
   }
-
-  async function loadRound() {
-    await fetch("/round", {
-      method: "PUT"
-    });
-  } 
