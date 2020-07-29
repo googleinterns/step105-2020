@@ -3,6 +3,7 @@ package com.google.songgame.servlets;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
+import com.google.songgame.data.JSONRequestReader;
 import com.google.gson.JsonObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -21,13 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.hc.core5.http.ParseException;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/user")
 public final class UserServlet extends HttpServlet {
 
-  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
   private Gson gson;
   DatastoreService datastore;
 
@@ -39,13 +37,14 @@ public final class UserServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map<String, String> userProperties = readJSONFromRequest(request);
+    JSONRequestReader jsonRequestReader = new JSONRequestReader();
+    Map<String, String> userProperties = jsonRequestReader.readJSONFromRequest(request);
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
     userEntity.setProperty("username", userProperties.get("username"));
     userEntity.setProperty("userId", userProperties.get("userId"));
-    
+
     datastore.put(userEntity);
   }
 
@@ -59,15 +58,8 @@ public final class UserServlet extends HttpServlet {
       String username = (String) entity.getProperty("username");
       usernames.add(username);
     }
-    
+
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(usernames));
   }
-
-  private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
-    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
-    return jsonData;
-  }
-
 }
