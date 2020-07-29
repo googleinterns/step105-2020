@@ -26,8 +26,6 @@ channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
   redirectToGamePage();
 });
 
-
-
 // Fetches list of usernames, appends each username to html list
 function loadUsernames() {
     fetch('/user').then(response => response.json()).then((users) => {

@@ -4,6 +4,7 @@ const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
 const PUSHER_GAME_CHANNEL_NAME = "start-game";
+const ONE_SECOND = 1000;
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
@@ -15,7 +16,6 @@ const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 var videoId = "";
 var startTime = 0;
 var endTime = 0;
-
 
 window.addEventListener('DOMContentLoaded', ()=>{
   console.log
@@ -72,7 +72,6 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
   updateChat(data);
 });
 
-
 function embedVideo() {
   fetch('/round').then(response => response.json()).then((roundMap) => {
     videoId = roundMap.videoId;
@@ -89,22 +88,21 @@ async function loadRound() {
   });
 } 
 
+// when the start round button is clicked
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
-  console.log("in pusher function");
   embedVideo();
   createTimer();
 });
 
 
 function createTimer(){
-  Timer = setInterval("setTimer()", 1000);
+  Timer = setInterval("setTimer()", ONE_SECOND);
 }
   
 function setTimer(){ 
-  console.log("in set timer");
   let now = new Date().getTime();
 if (startTime > 0 && now >= startTime){
-    document.getElementById("timer").innerHTML = ((endTime - now) / 1000) + "s ";
+    document.getElementById("timer").innerHTML = ((endTime - now) % ONE_SECOND ) + "s ";
     if (now >= endTime) {
       clearInterval(Timer);
       document.getElementById("timer").innerHTML = "Round Over";      
