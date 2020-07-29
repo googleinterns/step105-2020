@@ -10,9 +10,6 @@ const CSS_MESSAGE_CLASS_DICT = {
 };
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
-const LOOP_PARAMS = "?version=3&end=10&loop=1&playlist=";
-const EMBED_URL = "https://www.youtube.com/embed/";
-const VIDEO_PARAMS = "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1&origin=http://localhost:8282";
 var videoId = "";
 
 async function addToChat() {
@@ -73,7 +70,9 @@ function embedPlaylist() {
     tag.src = 'https://www.youtube.com/iframe_api';
     firstScript.parentNode.insertBefore(tag, firstScript);
 
-    document.getElementById("player").src = EMBED_URL + videoId + LOOP_PARAMS + videoId + VIDEO_PARAMS;
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
+        + "?version=3&end=10&loop=1&playlist=" + videoId 
+        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1&origin=http://localhost:8282";
     
     window.onYouTubeIframeAPIReady = function() {
       window.player = new window.YT.Player('player', {
