@@ -41,7 +41,7 @@ public final class YoutubeParser {
 
   /**
    * Returns a list of YouTube Video IDs of the music videos in a given playlist url
-   * 
+   *
    * <p>Utilizes YouTube Data v3 API to list the first MAX_RESULTS video's IDs in a given playlist
    */
   public ArrayList<String> getPlaylistVideoIds(String playlistUrl) {
@@ -59,9 +59,7 @@ public final class YoutubeParser {
     return playlistVideoIds;
   }
 
-  /**
-   * Returns playlist ID
-   */
+  /** Returns playlist ID */
   private String getPlaylistIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
       int start = playlistUrl.indexOf("list=") + 5;
@@ -78,7 +76,7 @@ public final class YoutubeParser {
     }
   }
 
-   /**
+  /**
    * Call function to create API service object.
    *
    * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
@@ -97,10 +95,7 @@ public final class YoutubeParser {
     return response;
   }
 
-  /**
-   * Returns an ArrayList of video IDs
-   * TODO @hdee: add tests for this method
-   */
+  /** Returns an ArrayList of video IDs TODO @hdee: add tests for this method */
   private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
@@ -116,9 +111,9 @@ public final class YoutubeParser {
   }
   /**
    * Return a Video object chosen at random from a given list of videoIds
-   * 
-   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the YouTube Data API 
-   * to return the Video Object with that particular videoId 
+   *
+   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the YouTube Data API
+   * to return the Video Object with that particular videoId
    */
   public Video getRandomVideoFromPlaylist(ArrayList<String> playlistVideoIds) {
     String videoId = getRandomVideo(playlistVideoIds);
@@ -131,9 +126,7 @@ public final class YoutubeParser {
     return currentVideo;
   }
 
-  /**
-   * Retrieve random video from array of videos and stores video in datastore
-   */
+  /** Retrieve random video from array of videos and stores video in datastore */
   private String getRandomVideo(ArrayList<String> playlistVideoIds) {
     Random randomGenerator = new Random();
     int playlistSize = playlistVideoIds.size();
@@ -143,23 +136,23 @@ public final class YoutubeParser {
     return videoId;
   }
 
-  /**
-  * Retrieves video information given a particular video ID
-  */
-  private Video getVideo(String videoId) throws GeneralSecurityException, IOException, GoogleJsonResponseException {
+  /** Retrieves video information given a particular video ID */
+  private Video getVideo(String videoId)
+      throws GeneralSecurityException, IOException, GoogleJsonResponseException {
     YouTube youtubeService = getService();
     YouTube.Videos.List request = youtubeService.videos().list("snippet");
     VideoListResponse response = request.setId(videoId).execute();
     Video video = response.getItems().get(0);
-    return video;    
+    return video;
   }
 
-    /**
-  * Build and return an authorized API client service.
-  *
-  * Returns an authorized API client service
-  * @throws GeneralSecurityException, IOException
-  */
+  /**
+   * Build and return an authorized API client service.
+   *
+   * <p>Returns an authorized API client service
+   *
+   * @throws GeneralSecurityException, IOException
+   */
   private static YouTube getService() throws GeneralSecurityException, IOException {
     final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     return new YouTube.Builder(httpTransport, GSON_FACTORY, null)
@@ -167,5 +160,4 @@ public final class YoutubeParser {
         .setYouTubeRequestInitializer(new YouTubeRequestInitializer(DEVELOPER_KEY))
         .build();
   }
-
 }
