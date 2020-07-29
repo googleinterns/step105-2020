@@ -66,7 +66,7 @@ public final class RoomServlet extends HttpServlet {
     List<String> userIdList = (ArrayList) roomEntity.getProperty("userIdList");
     userIdList.add(roomProperties.get("userId"));
 
-    entity.setProperty("userIdList", userIdList);
+    roomEntity.setProperty("userIdList", userIdList);
     datastore.put(roomEntity);
   }
 
