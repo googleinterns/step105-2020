@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>Song Guessing Game</title>
     <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="game.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body onload="embedPlaylist()">
     <div id="container">
       <iframe id="player" type="text/html" width="640" height="390" src="" 
-          frameborder="0"></iframe>
+          frameborder="0" enablejsapi="true" allow="autoplay"></iframe>
       <div id="chat">
         <div id="chatbox"></div>
         <div id="chat-input">
