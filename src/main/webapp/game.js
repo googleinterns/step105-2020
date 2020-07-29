@@ -64,12 +64,6 @@ function embedPlaylist() {
   fetch('/game').then(response => response.json()).then((videoIdResponse) => {
     videoId = videoIdResponse;
 
-    var tag = document.createElement('script');
-    var firstScript = document.getElementsByTagName('script')[0];
-
-    tag.src = 'https://www.youtube.com/iframe_api';
-    firstScript.parentNode.insertBefore(tag, firstScript);
-
     document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
         + "?version=3&end=10&loop=1&playlist=" + videoId 
         + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
@@ -102,7 +96,5 @@ document.onkeypress = function (e) {
     addToChat();
   }
 };
-
-
   
 // Add testing exports here
