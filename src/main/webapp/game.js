@@ -72,7 +72,7 @@ function embedPlaylist() {
 
     document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
         + "?version=3&end=10&loop=1&playlist=" + videoId 
-        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1&origin=http://localhost:8282";
+        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
     
     window.onYouTubeIframeAPIReady = function() {
       window.player = new window.YT.Player('player', {
@@ -81,7 +81,6 @@ function embedPlaylist() {
         },
         playerVars: {
           'rel': 0,
-          'origin':'http://localhost:8282'
         }
       });
     }
