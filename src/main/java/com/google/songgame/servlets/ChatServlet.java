@@ -85,7 +85,7 @@ public final class ChatServlet extends HttpServlet {
 
     if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
-    } else if (checkIfCorrectGuess(message, currentRound)) {
+    } else if (isCorrectGuess(message, currentRound)) {
       markUserGuessedCorrectlyAndAddPoints(userId, currentRound, currentGame);
       messageType = "correct";
       message = "guessed correctly!";
@@ -139,21 +139,24 @@ public final class ChatServlet extends HttpServlet {
 
   private void markUserGuessedCorrectlyAndAddPoints(
       String userId, EmbeddedEntity currentRound, Entity currentGame) {
+    // Changes the users "guess status" to show they've guessed correctly
     EmbeddedEntity userGuessStatuses =
         (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     userGuessStatuses.setProperty(userId, true);
-
+    
+    // Increases the users points by a fixed amount
     EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
     long currentUserPoints = (Long) userPoints.getProperty(userId);
     long updatedUserPoints = currentUserPoints + POINTS_PER_ROUND;
     userPoints.setProperty(userId, updatedUserPoints);
-
+    
+    // Update both changes in Datastore
     currentGame.setProperty("currentRound", currentRound);
     currentGame.setProperty("userPoints", userPoints);
     datastore.put(currentGame);
   }
 
-  private boolean checkIfCorrectGuess(String message, EmbeddedEntity currentRound) {
+  private boolean isCorrectGuess(String message, EmbeddedEntity currentRound) {
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String videoTitle = (String) currentVideo.getProperty("title");
     return message.equals(videoTitle);
