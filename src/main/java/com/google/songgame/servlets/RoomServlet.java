@@ -27,7 +27,7 @@ import com.google.gson.reflect.TypeToken;
 @WebServlet("/room")
 public final class RoomServlet extends HttpServlet {
 
-  private final static Type MESSAGE_TYPE = new TypeToken<Map<String, String>>(){}.getType();
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Gson gson;
   DatastoreService datastore;
 
@@ -36,7 +36,7 @@ public final class RoomServlet extends HttpServlet {
     gson = new Gson();
     datastore = DatastoreServiceFactory.getDatastoreService();
   }
-  
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
@@ -44,7 +44,7 @@ public final class RoomServlet extends HttpServlet {
     // Save player roomId to datastore.
     Entity roomEntity = new Entity("Room");
     roomEntity.setProperty("roomId", roomProperties.get("roomId"));
-    
+
     datastore.put(roomEntity);
   }
 
@@ -53,5 +53,4 @@ public final class RoomServlet extends HttpServlet {
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
     return jsonData;
   }
-
 }
