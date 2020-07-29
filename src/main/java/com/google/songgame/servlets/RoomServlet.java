@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,9 +42,13 @@ public final class RoomServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Save player roomId to datastore.
+    List<String> userIdList = new ArrayList<String>();
+    userIdList.add(roomProperties.get("userId"));
+
+    // Save roomId to datastore.
     Entity roomEntity = new Entity("Room");
     roomEntity.setProperty("roomId", roomProperties.get("roomId"));
+    roomEntity.setProperty("userIdList", userIdList);
 
     datastore.put(roomEntity);
   }
@@ -51,6 +56,25 @@ public final class RoomServlet extends HttpServlet {
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
+    String userId = getUserId(request);
+    jsonData.put("userId", userId);
     return jsonData;
+  }
+
+  private String getUserId(HttpServletRequest request) throws IOException {
+    Cookie[] cookies = request.getCookies();
+    String userId = "";
+    for (Cookie cookie : cookies) {
+      String name = cookie.getName();
+      if (name.equals("userId")) {
+        userId = cookie.getValue();
+      }
+    }
+
+    if (userId.equals("")) {
+      System.err.println("ERROR: UserID cookie could not be found.");
+    }
+
+    return userId;
   }
 }
