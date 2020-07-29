@@ -53,6 +53,23 @@ public final class RoomServlet extends HttpServlet {
     datastore.put(roomEntity);
   }
 
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Map<String, String> roomProperties = readJSONFromRequest(request);
+
+    // Get room entity.
+    Query query = new Query("Room");
+    PreparedQuery results = datastore.prepare(query);
+    Entity entity = results.asSingleEntity();
+
+    // Add current user to existing datastore list
+    List<String> userIdList = (ArrayList) entity.getProperty("userIdList");
+    userIdList.add(roomProperties.get("userId"));
+
+    entity.setProperty("userIdList", userIdList);
+    datastore.put(entity);
+  }
+
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
