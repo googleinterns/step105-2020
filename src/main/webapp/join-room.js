@@ -20,7 +20,7 @@ const createRoom = async (ev) => {
 const joinRoom = async (ev) => {
   ev.preventDefault();
 
-  // Get url from user input
+  // Get url from user input.
   let url = document.getElementById('room-url-id').value;
 
   // Split url at '?' and saves second half (url parameter).

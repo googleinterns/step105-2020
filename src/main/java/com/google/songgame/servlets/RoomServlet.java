@@ -60,14 +60,14 @@ public final class RoomServlet extends HttpServlet {
     // Get room entity.
     Query query = new Query("Room");
     PreparedQuery results = datastore.prepare(query);
-    Entity entity = results.asSingleEntity();
+    Entity roomEntity = results.asSingleEntity();
 
     // Add current user to existing datastore list
-    List<String> userIdList = (ArrayList) entity.getProperty("userIdList");
+    List<String> userIdList = (ArrayList) roomEntity.getProperty("userIdList");
     userIdList.add(roomProperties.get("userId"));
 
     entity.setProperty("userIdList", userIdList);
-    datastore.put(entity);
+    datastore.put(roomEntity);
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
