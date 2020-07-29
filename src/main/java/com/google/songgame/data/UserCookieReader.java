@@ -1,4 +1,8 @@
+package com.google.songgame.data;
+
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import javax.servlet.http.Cookie;
 
 public final class UserCookieReader {
   public String getUserId(HttpServletRequest request) throws IOException {
@@ -12,7 +16,7 @@ public final class UserCookieReader {
     }
 
     if (userId.equals("")) {
-      throw new Exception("ERROR: UserID cookie could not be found.");
+      System.err.println("ERROR: UserID cookie could not be found.");
     }
 
     return userId;
