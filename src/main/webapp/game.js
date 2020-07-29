@@ -88,7 +88,7 @@ function embedPlaylist() {
 }
 
 function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.ENDED) {
+  if (event.data === YT.PlayerState.ENDED) {
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
