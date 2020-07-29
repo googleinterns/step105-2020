@@ -17,8 +17,8 @@ const createUser = async (ev) => {
         },
       });
 
-    // Sends user to newuser.html on button click.
-    window.location.href = 'newuser.html';
+    // Sends user to join-room.html on button click.
+    window.location.href = 'join-room.html';
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
