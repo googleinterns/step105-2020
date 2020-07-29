@@ -51,7 +51,6 @@ public final class GameServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
     createGame(playlistUrl);
-    response.sendRedirect("/game.html");
   }
 
   /**

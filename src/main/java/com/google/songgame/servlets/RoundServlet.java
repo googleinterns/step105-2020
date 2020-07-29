@@ -22,6 +22,7 @@ import com.google.songgame.data.YoutubeParser;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import java.util.HashMap;
+import java.lang.Boolean;
 
 @WebServlet("/round")
 public final class RoundServlet extends HttpServlet {
@@ -59,21 +60,42 @@ public final class RoundServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Entity game = getCurrentGame();
-    EmbeddedEntity currentRound = getNewRound(game);
-    game.setProperty("currentRound", currentRound);
-    datastore.put(game);
-    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
+    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
+    if (isNewGame(game) || roundOver(currentRound)) {
+      currentRound = getNewRound(game);
+
+      game.setProperty("currentRound", currentRound);
+      datastore.put(game);
+    }
+    Map<String, Object> roundMap = createRoundMap(game, currentRound);
+
+    String json = new Gson().toJson(roundMap);
+    response.getWriter().println(json);
+  }
+
+  private Map<String, Object> createRoundMap(Entity game, EmbeddedEntity round) {
+
+    boolean isNewGame = isNewGame(game);
+    EmbeddedEntity currentVideo = (EmbeddedEntity) round.getProperty("video");
     String currentVideoId = (String) currentVideo.getProperty("videoId");
-    long roundStartTime = (long) currentRound.getProperty("startTime");
-    long roundEndTime = (long) currentRound.getProperty("endTime");
+    long roundStartTime = (long) round.getProperty("startTime");
+    long roundEndTime = (long) round.getProperty("endTime");
 
     Map<String, Object> roundMap = new HashMap<String, Object>();
+    roundMap.put("isNewGame", isNewGame);
     roundMap.put("videoId", currentVideoId);
     roundMap.put("startTime", roundStartTime);
     roundMap.put("endTime", roundEndTime);
 
-    String json = new Gson().toJson(roundMap);
-    response.getWriter().println(json);
+    return roundMap;
+  }
+
+  private boolean isNewGame(Entity game) {
+    return game.getProperty("currentRound") == null;
+  }
+
+  private boolean roundOver(EmbeddedEntity round) {
+    return (long) round.getProperty("endTime") <= System.currentTimeMillis();
   }
 
   @Override
@@ -95,12 +117,11 @@ public final class RoundServlet extends HttpServlet {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
     EmbeddedEntity video = getVideoEntity(playlist);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
-    ;
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
     currentRound.setProperty("video", video);
     currentRound.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
-    currentRound.setProperty("endTime", System.currentTimeMillis() + ROUND_LENGTH);
+    currentRound.setProperty("endTime", System.currentTimeMillis() + TIME_OFFSET + ROUND_LENGTH);
 
     return currentRound;
   }

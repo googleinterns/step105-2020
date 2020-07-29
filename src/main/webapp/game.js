@@ -16,7 +16,11 @@ var videoId = "";
 var startTime = 0;
 var endTime = 0;
 
+
 window.addEventListener('DOMContentLoaded', ()=>{
+  console.log
+  embedVideo();
+  createTimer();
   document.getElementById('start-round').addEventListener('click', loadRound);
 });
 
@@ -88,28 +92,24 @@ async function loadRound() {
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
   console.log("in pusher function");
   embedVideo();
-  seconds = 30;
-  Timer = setInterval("setTimer()", 1000);
-  if (seconds == 0) {
-    clearInterval(Timer);
-    document.getElementById("timer").innerHTML = "TIME'S UP";
-  }
+  createTimer();
 });
 
-channel.bind(PUSHER_GAME_CHANNEL_NAME, function() {
-  console.log("in pusher function I LUV <3");
-  loadRound();
-});
+
+function createTimer(){
+  Timer = setInterval("setTimer()", 1000);
+}
   
 function setTimer(){ 
   console.log("in set timer");
-  now = new Date().getTime();
-    document.getElementById("timer").innerHTML = seconds + "s ";
-    seconds--;
-    if (seconds <= 0) {
+  let now = new Date().getTime();
+if (startTime > 0 && now >= startTime){
+    document.getElementById("timer").innerHTML = ((endTime - now) / 1000) + "s ";
+    if (now >= endTime) {
       clearInterval(Timer);
       document.getElementById("timer").innerHTML = "Round Over";      
     }
+}
 }
 
 document.onkeypress = function (e) {
