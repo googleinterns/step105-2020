@@ -2,6 +2,7 @@ package com.google.songgame.data;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -108,7 +109,8 @@ public final class TitleFormatterTest {
 
   // TODO: @salilnadkarni add error checking for titles like this
   @Test
-  @Ignore("TitleFormatter unable to handle words not in brackets/parens") public void removeUnenclosedKeywords() {
+  @Ignore("TitleFormatter unable to handle words not in brackets/parens")
+  public void removeUnenclosedKeywords() {
     TitleFormatter titleFormatter = new TitleFormatter();
 
     String testString = "La Jeepeta Remix (Lyric Video)";
@@ -122,7 +124,5 @@ public final class TitleFormatterTest {
 
     testString = "BLACKPINK - 'How You Like That' M/V";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "how you like that");
-
   }
-  
 }
