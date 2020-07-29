@@ -106,10 +106,9 @@ public final class TitleFormatterTest {
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "why he told");
   }
 
-  /*
   // TODO: @salilnadkarni add error checking for titles like this
   @Test
-  public void removeUnenclosedKeywords() {
+  @Ignore("TitleFormatter unable to handle words not in brackets/parens") public void removeUnenclosedKeywords() {
     TitleFormatter titleFormatter = new TitleFormatter();
 
     String testString = "La Jeepeta Remix (Lyric Video)";
@@ -122,8 +121,8 @@ public final class TitleFormatterTest {
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "supalonely");
 
     testString = "BLACKPINK - 'How You Like That' M/V";
-    Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "how you like that");    
-    
+    Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "how you like that");
+
   }
-  */
+  
 }
