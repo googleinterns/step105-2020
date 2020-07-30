@@ -2,25 +2,23 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+const PUSHER_SCORE_CHANNEL_NAME = "score-update";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
   correct: "message-correct",
   announcement: "message-announcement",
 };
-// TODO: @salilnadkarni, replace with userid from cookie (in datastore)
-const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 
 async function addToChat() {
   let chatInputField = document.getElementById("chat-input-box");
   let chatInput = chatInputField.value;
-  
+
   chatInputField.value = "";
   chatInputField.focus();
 
   let data = {
     message: chatInput,
-    userId: USER_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -32,6 +30,34 @@ async function addToChat() {
 }
 
 function updateChat(data) {
+  let newChatItem = createChatItem(data);
+  let chatbox = document.getElementById("chatbox");
+  chatbox.insertAdjacentHTML("beforeend", newChatItem);
+  // Autoscroll to bottom on chat update
+  let elem = document.getElementById("chatbox");
+  elem.scrollTop = elem.scrollHeight;
+}
+
+function loadScore() {
+  // MAKE A GET REQUEST TO LOAD THE SCORE
+  data = {
+    userPoints: {
+      Salil: 100,
+      Dee: 200,
+      Isis: 500,
+    },
+  };
+  let userPoints = data.userPoints;
+  let users = Object.keys(userPoints);
+  let scoreBox = document.getElementById("score-box");
+  console.log(scoreBox);
+  for (let user of users) {
+    let newPointItem = `<p class="user-point"><span class="username">${user}: </span>${userPoints[user]}</p>`;
+    scoreBox.insertAdjacentHTML("beforeend", newPointItem);
+  }
+}
+
+function updateScore(data) {
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
@@ -55,20 +81,27 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
+});
+channel.bind(PUSHER_SCORE_CHANNEL_NAME, function (data) {
+  updateScore(data);
 });
 
 function embedPlaylist() {
-  fetch('/game').then(response => response.json()).then((videoID) => {
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoID;
-  });
+  fetch("/game")
+    .then((response) => response.json())
+    .then((videoID) => {
+      document.getElementById("player").src =
+        "https://www.youtube.com/embed/" + videoID;
+    });
 }
 
 document.onkeypress = function (e) {
-  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
+  if (e.key === "Enter") {
+    //checks whether the pressed key is "Enter"
     addToChat();
   }
 };
-  
+
 // Add testing exports here
