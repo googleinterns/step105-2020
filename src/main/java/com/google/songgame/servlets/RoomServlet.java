@@ -10,6 +10,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -57,17 +60,18 @@ public final class RoomServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Get room entity.
-    Query query = new Query("Room");
-    PreparedQuery results = datastore.prepare(query);
-    Entity roomEntity = results.asSingleEntity();
+    // Room query that looks for correct room.
+    Query roomQuery =
+        new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomProperties.get("roomId"));
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
 
-    // Add current user to existing datastore list
-    List<String> userIdList = (ArrayList) roomEntity.getProperty("userIdList");
+    // Add current user to existing datastore list.
+    List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
     userIdList.add(roomProperties.get("userId"));
 
-    roomEntity.setProperty("userIdList", userIdList);
-    datastore.put(roomEntity);
+    currentRoom.setProperty("userIdList", userIdList);
+    datastore.put(currentRoom);
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
