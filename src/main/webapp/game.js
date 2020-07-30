@@ -89,12 +89,34 @@ channel.bind(PUSHER_SCORE_CHANNEL_NAME, function (data) {
 });
 
 function embedPlaylist() {
-  fetch("/game")
-    .then((response) => response.json())
-    .then((videoID) => {
-      document.getElementById("player").src =
-        "https://www.youtube.com/embed/" + videoID;
+  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
+    videoId = videoIdResponse;
+
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
+        + "?version=3&end=10&loop=1&playlist=" + videoId 
+        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+    
+    window.onYouTubeIframeAPIReady = function() {
+      window.player = new window.YT.Player('player', {
+        events: {
+          'onStateChange': onPlayerStateChange
+        },
+        playerVars: {
+          'rel': 0,
+        }
+      });
+    }
+  });
+}
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    player.loadVideoById({
+      videoId: videoId,
+      startSeconds: 0,
+      endSeconds: 10
     });
+  }
 }
 
 document.onkeypress = function (e) {
