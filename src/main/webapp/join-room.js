@@ -22,20 +22,7 @@ const joinRoom = async (ev) => {
 
   // Get url from user input.
   let url = document.getElementById('room-url-id').value;
-
-  // Split url at '?' and saves second half (url parameter).
-  let paramString = url.split('?')[1]; 
-  let queryString = new URLSearchParams(paramString);
-
-  // Saves value into roomId (pair[0] would be key).
-  let roomId = "";
-  for (let pair of queryString.entries()) {
-	  roomId = pair[1]; 
-  } 
-
-  let room = {
-    roomId: roomId
-  }
+  let room = parseRoomId(url);
   
   // Put room object.
   fetch("/room", {
@@ -48,6 +35,24 @@ const joinRoom = async (ev) => {
 
   // Sends user to entered room.
   window.location.href = url;
+}
+
+function parseRoomId(url) {
+  // Split url at '?' and saves second half (url parameter).
+  let paramString = url.split('?')[1]; 
+  let queryString = new URLSearchParams(paramString);
+
+  // Saves value into roomId (pair[0] would be key).
+  let roomId = "";
+  for (let pair of queryString.entries()) {
+	  roomId = pair[1]; 
+  }
+
+  let room = {
+    roomId: roomId
+  }
+
+  return room;
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
