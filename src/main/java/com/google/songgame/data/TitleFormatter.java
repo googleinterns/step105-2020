@@ -6,8 +6,16 @@ import java.util.regex.MatchResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/** Helper class to standardize Youtube Music Video titles. */
 public final class TitleFormatter {
-
+  /**
+   * Takes in Youtube Music Video title and standardizes it.
+   *
+   * <p>Standarizes it to contain only the song title in lowercase with no excess white space.
+   * Removes artists, common tags (eg. official audio, music video, remix, etc).
+   *
+   * <p>Example: 'YG - Swag (Official Music Video)' converted to 'swag'
+   */
   public static String formatVideoTitle(String title) {
     String result = title.toLowerCase();
     result = removeInvalidParenthesesGroups(result);
