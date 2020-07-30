@@ -1,23 +1,29 @@
 package com.google.songgame.data;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /*
+  Tests taken from the following playlist
   https://music.youtube.com/playlist?list=RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs
-
 */
 
 @RunWith(JUnit4.class)
 public final class TitleFormatterTest {
 
+  private TitleFormatter titleFormatter;
+
+  @Before
+  public void initializeTitleFormatter() {
+    titleFormatter = new TitleFormatter();
+  }
+
   @Test
   public void simpleCapitalization() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "Marvins Room";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "marvins room");
 
@@ -27,8 +33,6 @@ public final class TitleFormatterTest {
 
   @Test
   public void removeOneGroup() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "Sativa (ft. Swae Lee)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "sativa");
 
@@ -44,8 +48,6 @@ public final class TitleFormatterTest {
 
   @Test
   public void removeMultipleGroups() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "Savage (Remix) (feat. Beyoncé)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "savage");
 
@@ -54,9 +56,7 @@ public final class TitleFormatterTest {
   }
 
   @Test
-  public void removeMultipleGroupsSquareAndParen() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
+  public void removeMultipleGroupsSquareAndParenthesis() {
     String testString = "WHATS POPPIN [Remix] (feat. DaBaby, Tory Lanez & Lil Wayne)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "whats poppin");
 
@@ -68,9 +68,7 @@ public final class TitleFormatterTest {
   }
 
   @Test
-  public void removeValidGroups() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
+  public void removeOnlyInvalidParenthesisGroups() {
     String testString = "ily (i love you baby) (feat. Emilee)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "ily (i love you baby)");
 
@@ -81,16 +79,12 @@ public final class TitleFormatterTest {
 
   @Test
   public void removeArtistPrefix() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "NBA YoungBoy - ALL IN";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "all in");
   }
 
   @Test
   public void removeArtistPrefixAndGroup() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "Juice WRLD ft. Marshmello - Come & Go (Official Audio)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "come & go");
 
@@ -111,8 +105,6 @@ public final class TitleFormatterTest {
   @Test
   @Ignore("TitleFormatter unable to handle words not in brackets/parens")
   public void removeUnenclosedKeywords() {
-    TitleFormatter titleFormatter = new TitleFormatter();
-
     String testString = "La Jeepeta Remix (Lyric Video)";
     Assert.assertEquals(titleFormatter.formatVideoTitle(testString), "la jeepeta");
 

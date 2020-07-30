@@ -46,12 +46,7 @@ public final class TitleFormatter {
                 "official video",
                 "lyric video",
                 "official audio"));
-    for (String invalidWord : invalidWords) {
-      if (s.contains(invalidWord)) {
-        return true;
-      }
-    }
-    return false;
+    return invalidWords.stream().anyMatch(word -> s.contains(word));
   }
 
   private static String removeAllSquareBracketGroups(String s) {
