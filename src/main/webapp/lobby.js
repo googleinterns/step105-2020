@@ -27,7 +27,20 @@ function redirectToGamePage() {
   window.location.href = 'game.html';
 }
 
+<<<<<<< HEAD
 // Fetches list of usernames, appends each username to html list
+=======
+var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+});
+
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
+  redirectToGamePage();
+});
+
+// Fetches list of usernames, appends each username to html list.
+>>>>>>> master
 function loadUsernames() {
     fetch('/user').then(response => response.json()).then((users) => {
       const userList = document.getElementById('user-list');
@@ -37,10 +50,14 @@ function loadUsernames() {
     });
   }
 
-// Appends text node to list node, returns list node
+// Appends text node to list node, returns list node.
 function createUsernameElement(username) {
     var node = document.createElement("li");
     var textnode = document.createTextNode(username);
     node.appendChild(textnode);
     return node;
   }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById("url").innerHTML = "Share the link!:<br>" + (window.location.href);
+});

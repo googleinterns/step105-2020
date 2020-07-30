@@ -18,6 +18,7 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
+  retrieveRound();
   embedVideo();
   createTimer();
   document.getElementById('start-round').addEventListener('click', loadRound);
@@ -35,9 +36,16 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 
 // when the start round button is clicked
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
+  retrieveRound();
   embedVideo();
   createTimer();
 });
+
+async function loadRound() {
+  await fetch("/round", {
+    method: "PUT"
+  });
+}
 
 function updateChat(data) {
   let newChatItem = createChatItem(data);
@@ -81,13 +89,43 @@ document.onkeypress = function(e) {
   }
 };
 
-function embedVideo() {
+function retrieveRound() {
   fetch('/round').then(response => response.json()).then((roundMap) => {
     videoId = roundMap.videoId;
     startTime = roundMap.startTime;
     endTime = roundMap.endTime;
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId;
   });
+}
+
+function embedVideo() {
+  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
+    videoId = videoIdResponse;
+
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
+        + "?version=3&end=10&loop=1&playlist=" + videoId 
+        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+    
+    window.onYouTubeIframeAPIReady = function() {
+      window.player = new window.YT.Player('player', {
+        events: {
+          'onStateChange': onPlayerStateChange
+        },
+        playerVars: {
+          'rel': 0,
+        }
+      });
+    }
+  });
+}
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    player.loadVideoById({
+      videoId: videoId,
+      startSeconds: 0,
+      endSeconds: 10
+    });
+  }
 }
 
 function createTimer() {
@@ -104,12 +142,5 @@ function setTimer() {
     }
   }
 }
-
-// Start Round
-async function loadRound() {
-  await fetch("/round", {
-    method: "PUT"
-  });
-}
-
+  
 // Add testing exports here
