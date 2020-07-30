@@ -98,10 +98,11 @@ public final class RoundServlet extends HttpServlet {
 
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
+
     EmbeddedEntity video = getVideoEntity(playlist);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
-
     EmbeddedEntity currentRound = new EmbeddedEntity();
+
     currentRound.setProperty("video", video);
     currentRound.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     currentRound.setProperty("endTime", System.currentTimeMillis() + TIME_OFFSET + ROUND_LENGTH);
@@ -137,7 +138,6 @@ public final class RoundServlet extends HttpServlet {
   }
 
   private Map<String, Object> createRoundMap(Entity game, EmbeddedEntity round) {
-
     boolean isNewGame = isNewGame(game);
     EmbeddedEntity currentVideo = (EmbeddedEntity) round.getProperty("video");
     String currentVideoId = (String) currentVideo.getProperty("videoId");
@@ -153,4 +153,3 @@ public final class RoundServlet extends HttpServlet {
     return roundMap;
   }
 }
-  

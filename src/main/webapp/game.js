@@ -91,13 +91,13 @@ function embedVideo() {
 }
 
 function createTimer() {
-  Timer = setInterval("setTimer()", ONE_SECOND);
+  Timer = setInterval("setTimer()",ONE_SECOND);
 }
 
 function setTimer() {
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
-    document.getElementById("timer").innerHTML = ((endTime - now) % ONE_SECOND) + "s ";
+    document.getElementById("timer").innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       document.getElementById("timer").innerHTML = "Round Over";
