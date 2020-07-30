@@ -22,7 +22,11 @@ const joinRoom = async (ev) => {
 
   // Get url from user input.
   let url = document.getElementById('room-url-id').value;
-  let room = parseRoomId(url);
+  let roomId = parseRoomId(url);
+
+  let room = {
+    roomId: roomId
+  }
   
   // Put room object.
   fetch("/room", {
@@ -48,11 +52,7 @@ function parseRoomId(url) {
 	  roomId = pair[1]; 
   }
 
-  let room = {
-    roomId: roomId
-  }
-
-  return room;
+  return roomId;
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -61,3 +61,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
     // Joins room on button click.
     document.getElementById('join-room-btn').addEventListener('click', joinRoom);
 });
+
+// Testing exports
+exports.parseRoomId = parseRoomId;
