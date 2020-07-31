@@ -81,6 +81,7 @@ public final class RoundServlet extends HttpServlet {
         Collections.singletonMap("message", "Start Round"));
   }
 
+  // TODO: change to use room ids when rooms are incorporated.
   private Entity getCurrentGame() {
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(gameQuery);
