@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
+import com.google.songgame.data.TitleFormatter;
 import com.google.songgame.data.YoutubeParser;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -82,8 +83,8 @@ public final class GameServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     Video video = parser.getRandomVideoFromPlaylist(playlist);
     String videoId = video.getId();
-    String videoTitle = video.getSnippet().getTitle();
-
+    String unformattedVideoTitle = video.getSnippet().getTitle();
+    String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);
     videoEntity.setProperty("title", videoTitle);
