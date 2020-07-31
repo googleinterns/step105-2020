@@ -74,6 +74,28 @@ public final class RoomServlet extends HttpServlet {
     datastore.put(currentRoom);
   }
 
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    String roomId = request.getParameter("roomId");
+
+    // Room query that looks for correct room.
+    Query roomQuery = new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomId);
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
+
+    // Get userId list from datastore and convert to list of usernames.
+    List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
+    List<String> usernameList = new ArrayList<String>();
+    for (String userId : userIdList) {
+      String username = getUsername(userId);
+      usernameList.add(username);
+    }
+
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(usernameList));
+  }
+
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
@@ -97,5 +119,13 @@ public final class RoomServlet extends HttpServlet {
     }
 
     return userId;
+  }
+
+  private String getUsername(String userId) {
+    Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query userQuery = new Query("User").setFilter(userIdFilter);
+    PreparedQuery result = datastore.prepare(userQuery);
+    Entity currentUser = result.asSingleEntity();
+    return (String) currentUser.getProperty("username");
   }
 }
