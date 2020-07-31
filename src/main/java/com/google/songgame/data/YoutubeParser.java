@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
+import java.lang.IllegalArgumentException;
 
 public final class YoutubeParser {
 
@@ -100,15 +101,25 @@ public final class YoutubeParser {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
     // extract video ID from sections
-    for (String data : playlistItemData)
-      if (data.startsWith("videoId\":\"")) {
-        int idStart = data.indexOf("\":\"") + 3;
-        int idEnd = data.indexOf("\"", idStart);
-        String videoId = data.substring(idStart, idEnd);
+    for (String data : playlistItemData){
+      String videoId = extractVideoIdFromJson(data);
+      if(videoId != ""){   
         playlistVideos.add(videoId);
+      }
       }
     return playlistVideos;
   }
+
+  private String extractVideoIdFromJson(String data){
+    String videoId = "";
+    if (data.startsWith("videoId\":\"")) {
+    int idStart = data.indexOf("\":\"") + 3;
+        int idEnd = data.indexOf("\"", idStart);
+        String videoId = data.substring(idStart, idEnd);
+    }
+    return videoId;
+  }
+
   /**
    * Return a Video object chosen at random from a given list of videoIds
    *
