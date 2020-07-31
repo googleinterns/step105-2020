@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
+import com.google.songgame.data.TitleFormatter;
 import com.google.songgame.data.YoutubeParser;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -68,7 +69,7 @@ public final class GameServlet extends HttpServlet {
 
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-    EmbeddedEntity video = getVideoEntity(playlist);  
+    EmbeddedEntity video = getVideoEntity(playlist);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
@@ -82,18 +83,18 @@ public final class GameServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     Video video = parser.getRandomVideoFromPlaylist(playlist);
     String videoId = video.getId();
-    String videoTitle = video.getSnippet().getTitle();
-
+    String unformattedVideoTitle = video.getSnippet().getTitle();
+    String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);
     videoEntity.setProperty("title", videoTitle);
-    
+
     return videoEntity;
   }
 
   private EmbeddedEntity createUserGuessStatuses() {
     EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
-    //TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
     Query query = new Query("User");
     PreparedQuery results = datastore.prepare(query);
 
@@ -136,5 +137,4 @@ public final class GameServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
   }
-
 }

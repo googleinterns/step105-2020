@@ -37,8 +37,7 @@ public final class UserServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    JSONRequestReader jsonRequestReader = new JSONRequestReader();
-    Map<String, String> userProperties = jsonRequestReader.readJSONFromRequest(request);
+    Map<String, String> userProperties = JSONRequestReader.readJSONFromRequest(request);
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");

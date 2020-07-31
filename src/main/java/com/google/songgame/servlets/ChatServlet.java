@@ -48,11 +48,9 @@ public final class ChatServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    JSONRequestReader jsonRequestReader = new JSONRequestReader();
-    Map<String, String> dataFromChatClient = jsonRequestReader.readJSONFromRequest(request);
+    Map<String, String> dataFromChatClient = JSONRequestReader.readJSONFromRequest(request);
 
-    UserCookieReader userCookieReader = new UserCookieReader();
-    String userId = userCookieReader.getUserId(request);
+    String userId = UserCookieReader.getUserId(request);
     dataFromChatClient.put("userId", userId);
 
     Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
@@ -122,7 +120,8 @@ public final class ChatServlet extends HttpServlet {
   private boolean checkIfCorrectGuess(String message, EmbeddedEntity currentRound) {
     EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
     String videoTitle = (String) currentVideo.getProperty("title");
-    return message.equals(videoTitle);
+    String guess = message.toLowerCase();
+    return guess.equals(videoTitle);
   }
 
   private void sendResponseToClient(HttpServletResponse response, String message)

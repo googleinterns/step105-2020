@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.Cookie;
 
 public final class UserCookieReader {
-  public String getUserId(HttpServletRequest request) throws IOException {
+  public static String getUserId(HttpServletRequest request) throws IOException {
     Cookie[] cookies = request.getCookies();
     String userId = "";
     for (Cookie cookie : cookies) {
