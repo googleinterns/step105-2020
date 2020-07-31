@@ -1,6 +1,7 @@
 package com.google.songgame.data;
 
 import org.junit.Assert;
+import org.junit.rules.ExpectedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -11,6 +12,9 @@ import org.junit.runners.JUnit4;
 public class YoutubeParserTest {
    
   private YoutubeParser youtubeParser;
+
+  @Rule
+  publiv ExpectedException thrwon = ExpectedException.none();
 
   @Before
   public void init(){
@@ -48,55 +52,57 @@ public class YoutubeParserTest {
   public  handleNonPlaylistLink{
     String testPlaylistUrl = 
        "https://www.youtube.com/watch?v=jxd42A3xFPs&list=PLbpi6ZahtOH784jF-_UIbH2cT9l1C_ecA&index=3&t=0s&app=desktop";
-    String playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
+       thrown.expect(IllegalArgumentException e);
+       thrown.expectMessage(testPlaylistUrl + " is not a valid YouTube Playlist URL.")
+      youtubeParser.getPlaylistIdFromUrl(testString);
 
     testPlaylistUrl = "https://youtu.be/jxd42A3xFPs";
-    playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
+    thrown.expect(IllegalArgumentException e);
+       thrown.expectMessage(testPlaylistUrl + " is not a valid YouTube Playlist URL.")
+      youtubeParser.getPlaylistIdFromUrl(testString);
   }
 
-  @Test
-  public  handleNonYoutubeLink{
-    String testPlaylistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd";
-    String playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
+  // @Test
+  // public  handleNonYoutubeLink{
+  //   String testPlaylistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd";
+  //   assertThrows(IllegalArgumentException.class, () -> {
+  //     youtubeParser.getPlaylistIdFromUrl(testString);
+  //   })
 
-    testPlaylistUrl = "https://music.apple.com/us/playlist/intro-to-alice-coltrane/pl.ea8a00ee10e94d7a9002583a337cbd3f";
-    playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
-  }
-  
-  @Test
-  public  handleScreenSpecificLink{
-    String testPlaylistUrl = "";
-    String playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
+  //   testPlaylistUrl = "https://music.apple.com/us/playlist/intro-to-alice-coltrane/pl.ea8a00ee10e94d7a9002583a337cbd3f";
+  //   assertThrows(IllegalArgumentException.class, () -> {
+  //     youtubeParser.getPlaylistIdFromUrl(testString);
+  //   })
+  // }
 
-    testPlaylistUrl = "";
-    playlistId = "";
-    Assert assertEquals(youtubeParser.getPlaylistIdFromUrl(testString), playlistId)
-  }
 
   // Test extractVideoIdFromJson
 
   @Test
-  public  handleYoutubeShareLink{
-    String testPlaylistUrl = ": [
-      {
-        \"kind\": \"youtube#playlistItem";
-    String playlistId = ",
-    \"channelId\": \"UCvceBgMIpKb4zK1ss-Sh90w";
-    Assert assertEquals(youtubeParser.extractVideoIdFromJson(testString), playlistId)
+  public  handleNonIdData{
+    String testData = ": [ {  \"kind\": \"youtube#playlistItem";
+    Assert assertEquals(youtubeParser.extractVideoIdFromJson(testData), "")
 
-    testPlaylistUrl = "videoId\": \"GvgqDSnpRQM\"
-  }
-},
-\"contentDetails\": {
-  \"videoId\": \"GvgqDSnpRQM";
-    playlistId = ,
-    "id\": \"UExCQ0YyREFDNkZGQjU3NERFLjU5NzE2QkNERURDRTE5NDc=\";
-    Assert assertEquals(youtubeParser.extractVideoIdFromJson(testString), playlistId)
-  }
+    testData= ", \"channelId\": \"UCvceBgMIpKb4zK1ss-Sh90w";
+    Assert assertEquals(youtubeParser.extractVideoIdFromJson(testData), "")
+
+      }
+
+      @Test
+      public  parseVideoIdFromData{
+        String testData =
+            "videoId\": \"GvgqDSnpRQM\"    }  }, \"contentDetails\": {  \"videoId\": \"GvgqDSnpRQM";
+        String videoId = "GvgqDSnpRQM";
+        Assert assertEquals(youtubeParser.extractVideoIdFromJson(testData), videoId)
     
+        testData= ", \"channelId\": \"UCvceBgMIpKb4zK1ss-Sh90w";
+        Assert assertEquals(youtubeParser.extractVideoIdFromJson(testData), "")
+    
+      }
+      
+      @Test
+      public  handleNonPlaylistId{
+        String testData ="id\": \"UExCQ0YyREFDNkZGQjU3NERFLjU5NzE2QkNERURDRTE5NDc=";
+        Assert assertEquals(youtubeParser.extractVideoIdFromJson(testData), "")
+          }
 }

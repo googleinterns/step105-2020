@@ -70,10 +70,8 @@ public final class YoutubeParser {
       }
       return playlistUrl.substring(start, end);
     } else {
-      System.err.println(playlistUrl + " is not a valid YouTube Playlist URL.");
+      throw new IllegalArgumentException(playlistUrl + " is not a valid YouTube Playlist URL.");
       return "";
-      // TODO @hdee: do something more complicated to handle this error.
-      // TODO @hdee: test this method.
     }
   }
 
