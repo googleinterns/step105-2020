@@ -33,7 +33,7 @@ public final class GuessChecker {
     return game;
   }
 
-  public static Entity assignUserPoint(Entity user, Entity game) {
+  public static Entity assignUserPoints(Entity user, Entity game) {
     String userId = (String) user.getProperty("userId");
     EmbeddedEntity userPoints = (EmbeddedEntity) game.getProperty("userPoints");
     long currentUserPoints = (Long) userPoints.getProperty(userId);
