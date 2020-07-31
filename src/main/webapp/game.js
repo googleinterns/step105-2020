@@ -126,6 +126,4 @@ document.onkeypress = function (e) {
   }
 };
 
-loadScore();
-
 // Add testing exports here

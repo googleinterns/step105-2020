@@ -8,8 +8,10 @@
     <script src="game.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
-  <body onload="embedPlaylist()">
+  <body onload="embedPlaylist(); loadScore();">
     <div id="container">
+      <div id="score-box">
+      </div>
       <iframe id="player" type="text/html" width="640" height="390" src="" 
           frameborder="0" enablejsapi="true" allow="autoplay"></iframe>
       <div id="chat">
