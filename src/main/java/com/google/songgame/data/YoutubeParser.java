@@ -61,7 +61,7 @@ public final class YoutubeParser {
   }
 
   /** Returns playlist ID */
-  private String getPlaylistIdFromUrl(String playlistUrl) {
+  public String getPlaylistIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
       int start = playlistUrl.indexOf("list=") + 5;
       int end = playlistUrl.length();
@@ -71,7 +71,6 @@ public final class YoutubeParser {
       return playlistUrl.substring(start, end);
     } else {
       throw new IllegalArgumentException(playlistUrl + " is not a valid YouTube Playlist URL.");
-      return "";
     }
   }
 
@@ -99,21 +98,25 @@ public final class YoutubeParser {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
     // extract video ID from sections
-    for (String data : playlistItemData){
+    for (String data : playlistItemData) {
       String videoId = extractVideoIdFromJson(data);
-      if(videoId != ""){   
+      if (videoId != "") {
         playlistVideos.add(videoId);
       }
-      }
+    }
     return playlistVideos;
   }
 
-  private String extractVideoIdFromJson(String data){
+  /**
+   * @param data
+   * @return
+   */
+  public String extractVideoIdFromJson(String data) {
     String videoId = "";
     if (data.startsWith("videoId\":\"")) {
-    int idStart = data.indexOf("\":\"") + 3;
-        int idEnd = data.indexOf("\"", idStart);
-        String videoId = data.substring(idStart, idEnd);
+      int idStart = data.indexOf("\":\"") + 3;
+      int idEnd = data.indexOf("\"", idStart);
+      videoId = data.substring(idStart, idEnd);
     }
     return videoId;
   }
