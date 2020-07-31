@@ -93,7 +93,7 @@ public final class YoutubeParser {
     return response;
   }
 
-  /** Returns an ArrayList of video IDs TODO @hdee: add tests for this method */
+  /** Returns an ArrayList of video IDs */
   private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
@@ -107,10 +107,7 @@ public final class YoutubeParser {
     return playlistVideos;
   }
 
-  /**
-   * @param data
-   * @return
-   */
+  /** Returns video ID if it is present in data string*/
   public String extractVideoIdFromJson(String data) {
     String videoId = "";
     if (data.startsWith("videoId\":\"")) {
