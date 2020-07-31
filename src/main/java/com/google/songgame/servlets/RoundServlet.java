@@ -119,6 +119,7 @@ public final class RoundServlet extends HttpServlet {
     EmbeddedEntity currentRound = new EmbeddedEntity();
 
     currentRound.setProperty("video", video);
+    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
     currentRound.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     currentRound.setProperty("endTime", System.currentTimeMillis() + TIME_OFFSET + ROUND_LENGTH);
 
