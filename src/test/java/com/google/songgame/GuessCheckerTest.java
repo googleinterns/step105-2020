@@ -65,27 +65,25 @@ public final class GuessCheckerTest {
     Entity willGuessUser = createBob();
     Entity currentGame = createGame();
 
-    int billPoint =
-        (Integer) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("123");
-    int bobPoint =
-        (Integer) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("789");
+    long billPoint =
+        (Long) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("123");
+    long bobPoint =
+        (Long) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("789");
 
     Assert.assertEquals(0, billPoint);
     Assert.assertEquals(0, bobPoint);
 
     currentGame = GuessChecker.assignUserPoints(willGuessUser, currentGame);
 
-    billPoint =
-        (Integer) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("123");
-    bobPoint =
-        (Integer) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("789");
+    billPoint = (Long) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("123");
+    bobPoint = (Long) ((EmbeddedEntity) currentGame.getProperty("userPoints")).getProperty("789");
 
-    Assert.assertEquals(0, billPoint);
-    Assert.assertEquals(100, bobPoint);
+    Assert.assertEquals(0L, billPoint);
+    Assert.assertEquals(100L, bobPoint);
   }
 
   @Test
-  public void checkIsCorrectGuessCapitalization() {
+  public void checkIsCorrectGuessCasing() {
     Entity currentGame = createGame();
     Assert.assertEquals(true, GuessChecker.isCorrectGuess("hey jude", currentGame));
     Assert.assertEquals(true, GuessChecker.isCorrectGuess("Hey Jude", currentGame));
@@ -118,9 +116,9 @@ public final class GuessCheckerTest {
     Entity currentGame = new Entity("Game");
 
     EmbeddedEntity userPoints = new EmbeddedEntity();
-    userPoints.setProperty("123", 0);
-    userPoints.setProperty("567", 100);
-    userPoints.setProperty("789", 0);
+    userPoints.setProperty("123", 0L);
+    userPoints.setProperty("567", 100L);
+    userPoints.setProperty("789", 0L);
     currentGame.setProperty("userPoints", userPoints);
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
@@ -130,11 +128,11 @@ public final class GuessCheckerTest {
     currentVideo.setProperty("videoId", "abc");
     currentRound.setProperty("video", currentVideo);
 
-    EmbeddedEntity userGuessStatus = new EmbeddedEntity();
-    userGuessStatus.setProperty("123", false);
-    userGuessStatus.setProperty("567", true);
-    userGuessStatus.setProperty("789", false);
-    currentRound.setProperty("userGuessStatus", userGuessStatus);
+    EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
+    userGuessStatuses.setProperty("123", false);
+    userGuessStatuses.setProperty("567", true);
+    userGuessStatuses.setProperty("789", false);
+    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
 
     currentGame.setProperty("currentRound", currentRound);
 

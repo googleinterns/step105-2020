@@ -148,7 +148,7 @@ public final class GameServlet extends HttpServlet {
 
     for (Entity user : results.asIterable()) {
       String userId = (String) user.getProperty("userId");
-      userPoints.setProperty(userId, 0);
+      userPoints.setProperty(userId, 0L);
     }
 
     return userPoints;
