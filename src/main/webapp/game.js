@@ -2,6 +2,9 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+const PUSHER_ROUND_CHANNEL_NAME = "start-round";
+const PUSHER_GAME_CHANNEL_NAME = "start-game";
+const ONE_SECOND = 1000;
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
@@ -11,24 +14,36 @@ const CSS_MESSAGE_CLASS_DICT = {
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 var videoId = "";
+var startTime = 0;
+var endTime = 0;
 
-async function addToChat() {
-  let chatInputField = document.getElementById("chat-input-box");
-  let chatInput = chatInputField.value;
-  
-  chatInputField.value = "";
-  chatInputField.focus();
+window.addEventListener('DOMContentLoaded', () => {
+  retrieveRound();
+  embedVideo();
+  createTimer();
+  document.getElementById('start-round').addEventListener('click', loadRound);
+});
 
-  let data = {
-    message: chatInput,
-    userId: USER_ID,
-  };
-  await fetch("/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
+// Connect Pusher
+var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+});
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
+
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
+  updateChat(data);
+});
+
+// when the start round button is clicked
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
+  retrieveRound();
+  embedVideo();
+  createTimer();
+});
+
+async function loadRound() {
+  await fetch("/round", {
+    method: "PUT"
   });
 }
 
@@ -48,19 +63,41 @@ function createChatItem(data) {
   return `<p class="${messageType}"><span class="username">${username}: </span>${message}</p>`;
 }
 
-// Connect Pusher
-Pusher.logToConsole = false;
+async function addToChat() {
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
 
-var pusher = new Pusher(CLIENT_KEY, {
-  cluster: "us2",
-});
+  chatInputField.value = "";
+  chatInputField.focus();
 
-var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
-  updateChat(data);
-});
+  let data = {
+    message: chatInput,
+    userId: USER_ID,
+  };
+  await fetch("/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+}
 
-function embedPlaylist() {
+document.onkeypress = function(e) {
+  if (e.key === "Enter") { //checks whether the pressed key is "Enter"
+    addToChat();
+  }
+};
+
+function retrieveRound() {
+  fetch('/round').then(response => response.json()).then((roundMap) => {
+    videoId = roundMap.videoId;
+    startTime = roundMap.startTime;
+    endTime = roundMap.endTime;
+  });
+}
+
+function embedVideo() {
   fetch('/game').then(response => response.json()).then((videoIdResponse) => {
     videoId = videoIdResponse;
 
@@ -91,10 +128,20 @@ function onPlayerStateChange(event) {
   }
 }
 
-document.onkeypress = function (e) {
-  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
-    addToChat();
+function createTimer() {
+  Timer = setInterval("setTimer()",ONE_SECOND);
+}
+
+function setTimer() {
+  let timer = document.getElementById("timer");
+  let now = new Date().getTime();
+  if (startTime > 0 && now >= startTime) {
+    timer.innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
+    if (now >= endTime) {
+      clearInterval(Timer);
+      timer.innerHTML = "Round Over";
+    }
   }
-};
+}
   
 // Add testing exports here
