@@ -37,7 +37,6 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 // when the start round button is clicked
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
   retrieveRound();
-  embedVideo();
   createTimer();
 });
 
@@ -85,7 +84,6 @@ async function addToChat() {
 
 document.onkeypress = function(e) {
   if (e.key === "Enter") { //checks whether the pressed key is "Enter"
-    addToChat();
   }
 };
 
@@ -94,28 +92,26 @@ function retrieveRound() {
     videoId = roundMap.videoId;
     startTime = roundMap.startTime;
     endTime = roundMap.endTime;
+    embedVideo();
   });
 }
 
 function embedVideo() {
-  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    videoId = videoIdResponse;
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
-        + "?version=3&end=10&loop=1&playlist=" + videoId 
-        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
-    
-    window.onYouTubeIframeAPIReady = function() {
-      window.player = new window.YT.Player('player', {
-        events: {
-          'onStateChange': onPlayerStateChange
-        },
-        playerVars: {
-          'rel': 0,
-        }
-      });
-    }
-  });
+  document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
+      + "?version=3&end=10&loop=1&playlist=" + videoId 
+      + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+  
+  window.onYouTubeIframeAPIReady = function() {
+    window.player = new window.YT.Player('player', {
+      events: {
+        'onStateChange': onPlayerStateChange
+      },
+      playerVars: {
+        'rel': 0,
+      }
+    });
+  }
 }
 
 function onPlayerStateChange(event) {
