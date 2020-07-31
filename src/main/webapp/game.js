@@ -11,8 +11,6 @@ const CSS_MESSAGE_CLASS_DICT = {
   correct: "message-correct",
   announcement: "message-announcement",
 };
-// TODO: @salilnadkarni, replace with userid from cookie (in datastore)
-const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 var videoId = "";
 var startTime = 0;
 var endTime = 0;
