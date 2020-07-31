@@ -30,6 +30,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.songgame.data.GuessChecker;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -70,22 +71,24 @@ public final class ChatServlet extends HttpServlet {
     return jsonData;
   }
 
-  // TODO: @salilnadkarni modify when points stored in rooms
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
-    Entity currentGame = getCurrentGame();
-    EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
-
     String userId = data.get("userId");
-    String username = getUsername(userId);
+
+    Entity currentGame = getCurrentGame();
+    Entity currentUser = getUser(userId);
+
+    String username = (String) currentUser.getProperty("username");
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
+    if (GuessChecker.hasUserPreviouslyGuessedCorrect(currentUser, currentGame)) {
       messageType = "spectator";
-    } else if (checkIfCorrectGuess(message, currentRound)) {
-      markUserGuessedCorrectly(userId, currentRound, currentGame);
+    } else if (GuessChecker.isCorrectGuess(message, currentGame)) {
+      currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
+      currentGame = GuessChecker.assignUserPoints(currentUser, currentGame);
+      datastore.put(currentGame);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -121,35 +124,12 @@ public final class ChatServlet extends HttpServlet {
     return userId;
   }
 
-  private String getUsername(String userId) {
+  private Entity getUser(String userId) {
     Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query userQuery = new Query("User").setFilter(userIdFilter);
     PreparedQuery result = datastore.prepare(userQuery);
     Entity currentUser = result.asSingleEntity();
-    return (String) currentUser.getProperty("username");
-  }
-
-  private boolean checkIfUserPreviouslyGuessedCorrect(String userId, EmbeddedEntity currentRound) {
-    EmbeddedEntity userGuessStatuses =
-        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
-    boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
-    return userGuessStatus;
-  }
-
-  private void markUserGuessedCorrectly(
-      String userId, EmbeddedEntity currentRound, Entity currentGame) {
-    EmbeddedEntity userGuessStatuses =
-        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
-    userGuessStatuses.setProperty(userId, true);
-    currentGame.setProperty("currentRound", currentRound);
-    datastore.put(currentGame);
-  }
-
-  private boolean checkIfCorrectGuess(String message, EmbeddedEntity currentRound) {
-    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
-    String videoTitle = (String) currentVideo.getProperty("title");
-    String guess = message.toLowerCase();
-    return guess.equals(videoTitle);
+    return currentUser;
   }
 
   private void sendResponseToClient(HttpServletResponse response, String message)
