@@ -133,12 +133,13 @@ function createTimer() {
 }
 
 function setTimer() {
+  let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
-    document.getElementById("timer").innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
+    timer.innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
-      document.getElementById("timer").innerHTML = "Round Over";
+      timer.innerHTML = "Round Over";
     }
   }
 }
