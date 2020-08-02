@@ -60,11 +60,8 @@ public final class RoomServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Room query that looks for correct room.
-    Query roomQuery =
-        new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomProperties.get("roomId"));
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
+    // Get correct room.
+    Entity currentRoom = loadRoom(roomProperties.get("roomId"));
 
     // Add current user to existing datastore list.
     List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
@@ -79,10 +76,8 @@ public final class RoomServlet extends HttpServlet {
 
     String roomId = request.getParameter("roomId");
 
-    // Room query that looks for correct room.
-    Query roomQuery = new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomId);
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
+    // Get correct room.
+    Entity currentRoom = loadRoom(roomId);
 
     // Get userId list from datastore and convert to list of usernames.
     List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
@@ -119,6 +114,14 @@ public final class RoomServlet extends HttpServlet {
     }
 
     return userId;
+  }
+
+  private Entity loadRoom(String roomId) {
+    // Room query that looks for correct room.
+    Query roomQuery = new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomId);
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
+    return currentRoom;
   }
 
   private String getUsername(String userId) {

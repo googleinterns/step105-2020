@@ -1,4 +1,4 @@
-const script = require('./join-room');
+const script = require('./common-functions');
 
 test('get roomId from given url', () => {
   expect(
