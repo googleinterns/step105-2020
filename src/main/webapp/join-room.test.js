@@ -6,7 +6,7 @@ test('get roomId from given url', () => {
   ).toBe("fhaskjdfhkaj")
 })
 
-test('gets roomId without protocol', () => {
+test('gets roomId without protocol in url', () => {
   expect(
     script.parseRoomId("localhost:8282/lobby.html?roomId=fhaskjdfhkaj")
   ).toBe("fhaskjdfhkaj")

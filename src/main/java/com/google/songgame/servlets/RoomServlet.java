@@ -60,7 +60,6 @@ public final class RoomServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Get correct room.
     Entity currentRoom = loadRoom(roomProperties.get("roomId"));
 
     // Add current user to existing datastore list.
@@ -73,10 +72,8 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
     String roomId = request.getParameter("roomId");
 
-    // Get correct room.
     Entity currentRoom = loadRoom(roomId);
 
     // Get userId list from datastore and convert to list of usernames.
