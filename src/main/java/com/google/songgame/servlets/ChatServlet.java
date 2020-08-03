@@ -82,7 +82,7 @@ public final class ChatServlet extends HttpServlet {
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
+    if (roundOver(currentRound) || checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
       messageType = "spectator";
     } else if (checkIfCorrectGuess(message, currentRound)) {
       markUserGuessedCorrectly(userId, currentRound, currentGame);
@@ -127,6 +127,10 @@ public final class ChatServlet extends HttpServlet {
     PreparedQuery result = datastore.prepare(userQuery);
     Entity currentUser = result.asSingleEntity();
     return (String) currentUser.getProperty("username");
+  }
+
+  private boolean roundOver(EmbeddedEntity round) {
+    return (long) round.getProperty("endTime") <= System.currentTimeMillis();
   }
 
   private boolean checkIfUserPreviouslyGuessedCorrect(String userId, EmbeddedEntity currentRound) {
