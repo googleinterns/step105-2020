@@ -15,6 +15,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -27,6 +28,8 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
@@ -59,8 +62,18 @@ public final class GameServlet extends HttpServlet {
     }
 
     EmbeddedEntity userPoints = (EmbeddedEntity) game.getProperty("userPoints");
+    ArrayList<String> userIds = new ArrayList<String>(userPoints.getProperties().keySet());
+    Map<String, Long> userPointsWithUsernames = new HashMap<String, Long>();
+    Query usersInRoomQuery = new Query("User").addFilter("userId", FilterOperator.IN, userIds);
+    PreparedQuery result = datastore.prepare(usersInRoomQuery);
+    for (Entity user : result.asIterable()) {
+      String username = (String) user.getProperty("username");
+      long points = (Long) userPoints.getProperty((String) user.getProperty("userId"));
+      userPointsWithUsernames.put(username, points);
+    }
+
     // TODO: once room updates are pushed, change so map of usernames to points is sent over JSON
-    String json = new Gson().toJson(userPoints);
+    String json = new Gson().toJson(userPointsWithUsernames);
     response.getWriter().println(json);
   }
 

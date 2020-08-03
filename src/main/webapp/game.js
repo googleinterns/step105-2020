@@ -40,9 +40,8 @@ function updateChat(data) {
 
 async function loadScore() {
   // MAKE A GET REQUEST TO LOAD THE SCORE
-  let pointsResponse = await fetch("/game?points=true");
-  let pointsJson = await pointsResponse.json();
-  let userPoints = pointsJson.propertyMap;
+  let userPointsResponse = await fetch("/game?points=true");
+  let userPoints = await userPointsResponse.json();
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
   scoreBox.innerHTML = "";
