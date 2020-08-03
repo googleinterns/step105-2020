@@ -76,7 +76,6 @@ public final class RoomServlet extends HttpServlet {
 
     Entity currentRoom = loadRoom(roomId);
 
-    // Get userId list from datastore and convert to list of usernames.
     List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
 
     // Get each userId in the userIdList.
