@@ -2,7 +2,6 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
-const PUSHER_SCORE_CHANNEL_NAME = "score-update";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
@@ -36,21 +35,17 @@ function updateChat(data) {
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
   elem.scrollTop = elem.scrollHeight;
+  loadScore();
 }
 
-function loadScore() {
+async function loadScore() {
   // MAKE A GET REQUEST TO LOAD THE SCORE
-  data = {
-    userPoints: {
-      Salil: 100,
-      Dee: 200,
-      Isis: 500,
-    },
-  };
-  let userPoints = data.userPoints;
+  let pointsResponse = await fetch("/game?points=true");
+  let pointsJson = await pointsResponse.json();
+  let userPoints = pointsJson.propertyMap;
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
-  console.log(scoreBox);
+  scoreBox.innerHTML = "";
   for (let user of users) {
     let newPointItem = `<p class="user-point"><span class="username">${user}: </span>${userPoints[user]}</p>`;
     scoreBox.insertAdjacentHTML("beforeend", newPointItem);
@@ -84,29 +79,31 @@ var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
 });
-channel.bind(PUSHER_SCORE_CHANNEL_NAME, function (data) {
-  updateScore(data);
-});
 
 function embedPlaylist() {
-  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    videoId = videoIdResponse;
+  fetch("/game")
+    .then((response) => response.json())
+    .then((videoIdResponse) => {
+      videoId = videoIdResponse;
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
-        + "?version=3&end=10&loop=1&playlist=" + videoId 
-        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
-    
-    window.onYouTubeIframeAPIReady = function() {
-      window.player = new window.YT.Player('player', {
-        events: {
-          'onStateChange': onPlayerStateChange
-        },
-        playerVars: {
-          'rel': 0,
-        }
-      });
-    }
-  });
+      document.getElementById("player").src =
+        "https://www.youtube.com/embed/" +
+        videoId +
+        "?version=3&end=10&loop=1&playlist=" +
+        videoId +
+        "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+
+      window.onYouTubeIframeAPIReady = function () {
+        window.player = new window.YT.Player("player", {
+          events: {
+            onStateChange: onPlayerStateChange,
+          },
+          playerVars: {
+            rel: 0,
+          },
+        });
+      };
+    });
 }
 
 function onPlayerStateChange(event) {
@@ -114,7 +111,7 @@ function onPlayerStateChange(event) {
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
-      endSeconds: 10
+      endSeconds: 10,
     });
   }
 }

@@ -51,12 +51,16 @@ public final class GameServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Entity game = getCurrentGame();
-    EmbeddedEntity currentRound = getNewRound(game);
-    game.setProperty("currentRound", currentRound);
-    datastore.put(game);
-    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
-    String currentVideoId = (String) currentVideo.getProperty("videoId");
-    String json = new Gson().toJson(currentVideoId);
+
+    if (request.getParameter("points").equals("false")) {
+      EmbeddedEntity newRound = getNewRound(game);
+      game.setProperty("currentRound", newRound);
+      datastore.put(game);
+    }
+
+    EmbeddedEntity userPoints = (EmbeddedEntity) game.getProperty("userPoints");
+    // TODO: once room updates are pushed, change so map of usernames to points is sent over JSON
+    String json = new Gson().toJson(userPoints);
     response.getWriter().println(json);
   }
 
@@ -64,6 +68,7 @@ public final class GameServlet extends HttpServlet {
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(gameQuery);
     Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+
     return currentGame;
   }
 
