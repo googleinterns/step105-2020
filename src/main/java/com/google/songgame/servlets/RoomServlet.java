@@ -81,9 +81,14 @@ public final class RoomServlet extends HttpServlet {
 
     // Get userId list from datastore and convert to list of usernames.
     List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
+
+    // Get each userId in the userIdList.
+    Query userQuery = new Query("User").addFilter("userId", FilterOperator.IN, userIdList);
+    PreparedQuery results = datastore.prepare(userQuery);
+
     List<String> usernameList = new ArrayList<String>();
-    for (String userId : userIdList) {
-      String username = getUsername(userId);
+    for (Entity currentUser : results.asIterable()) {
+      String username = (String) currentUser.getProperty("username");
       usernameList.add(username);
     }
 
@@ -122,13 +127,5 @@ public final class RoomServlet extends HttpServlet {
     PreparedQuery result = datastore.prepare(roomQuery);
     Entity currentRoom = result.asSingleEntity();
     return currentRoom;
-  }
-
-  private String getUsername(String userId) {
-    Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
-    Query userQuery = new Query("User").setFilter(userIdFilter);
-    PreparedQuery result = datastore.prepare(userQuery);
-    Entity currentUser = result.asSingleEntity();
-    return (String) currentUser.getProperty("username");
   }
 }
