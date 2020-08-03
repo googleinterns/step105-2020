@@ -57,13 +57,12 @@ public final class UserServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Room query that looks for correct room.
     Query userQuery =
         new Query("User").addFilter("userId", FilterOperator.EQUAL, roomProperties.get("userId"));
     PreparedQuery result = datastore.prepare(userQuery);
     Entity currentUser = result.asSingleEntity();
 
-    // Add current user to existing datastore list.
+    // Add current roomId to current user.
     currentUser.setProperty("roomId", roomProperties.get("roomId"));
 
     datastore.put(currentUser);
