@@ -61,12 +61,6 @@ public final class RoundServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Entity game = getCurrentGame();
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    if (isNewGame(game) || roundOver(currentRound)) {
-      currentRound = getNewRound(game);
-
-      game.setProperty("currentRound", currentRound);
-      datastore.put(game);
-    }
     Map<String, Object> roundMap = createRoundMap(game, currentRound);
 
     String json = new Gson().toJson(roundMap);
@@ -75,13 +69,19 @@ public final class RoundServlet extends HttpServlet {
 
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    if (isNewGame(game) || roundOver(currentRound)) {
+      currentRound = getNewRound(game);
+
+      game.setProperty("currentRound", currentRound);
+      datastore.put(game);
+    }
     pusher.trigger(
         PUSHER_APPLICATION_NAME,
         PUSHER_ROUND_CHANNEL_NAME,
         Collections.singletonMap("message", "Start Round"));
   }
 
-  // TODO: change to use room ids when rooms are incorporated.
+  // TODO @hdee: change to use room ids when rooms are incorporated.
   private Entity getCurrentGame() {
     Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
     PreparedQuery result = datastore.prepare(gameQuery);

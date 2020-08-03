@@ -16,8 +16,8 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
+  loadRound();
   retrieveRound();
-  embedVideo();
   createTimer();
   document.getElementById('start-round').addEventListener('click', loadRound);
 });
@@ -35,7 +35,6 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
 // when the start round button is clicked
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
   retrieveRound();
-  embedVideo();
   createTimer();
 });
 
@@ -92,14 +91,12 @@ function retrieveRound() {
     videoId = roundMap.videoId;
     startTime = roundMap.startTime;
     endTime = roundMap.endTime;
+    embedVideo();
   });
 }
 
-function embedVideo() {
-  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    videoId = videoIdResponse;
-
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
+function embedVideo(){
+    document.getElementById("player").src = "h{ttps://www.youtube.com/embed/" + videoId 
         + "?version=3&end=10&loop=1&playlist=" + videoId 
         + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
     
@@ -113,7 +110,6 @@ function embedVideo() {
         }
       });
     }
-  });
 }
 
 function onPlayerStateChange(event) {
