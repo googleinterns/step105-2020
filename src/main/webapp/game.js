@@ -1,27 +1,35 @@
 const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
-const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+const PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
   correct: "message-correct",
   announcement: "message-announcement",
 };
+const ROOM_ID = getRoomId();
 // TODO: @salilnadkarni, replace with userid from cookie (in datastore)
 const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 var videoId = "";
 
+function getRoomId() {
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+  return paramString;
+}
+
 async function addToChat() {
   let chatInputField = document.getElementById("chat-input-box");
   let chatInput = chatInputField.value;
-  
+
   chatInputField.value = "";
   chatInputField.focus();
 
   let data = {
     message: chatInput,
     userId: USER_ID,
+    roomId: ROOM_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -56,29 +64,34 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
+channel.bind(PUSHER_CHAT_CHANNEL_NAME_BASE + ROOM_ID, function (data) {
   updateChat(data);
 });
 
 function embedPlaylist() {
-  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    videoId = videoIdResponse;
+  fetch("/game")
+    .then((response) => response.json())
+    .then((videoIdResponse) => {
+      videoId = videoIdResponse;
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
-        + "?version=3&end=10&loop=1&playlist=" + videoId 
-        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
-    
-    window.onYouTubeIframeAPIReady = function() {
-      window.player = new window.YT.Player('player', {
-        events: {
-          'onStateChange': onPlayerStateChange
-        },
-        playerVars: {
-          'rel': 0,
-        }
-      });
-    }
-  });
+      document.getElementById("player").src =
+        "https://www.youtube.com/embed/" +
+        videoId +
+        "?version=3&end=10&loop=1&playlist=" +
+        videoId +
+        "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+
+      window.onYouTubeIframeAPIReady = function () {
+        window.player = new window.YT.Player("player", {
+          events: {
+            onStateChange: onPlayerStateChange,
+          },
+          playerVars: {
+            rel: 0,
+          },
+        });
+      };
+    });
 }
 
 function onPlayerStateChange(event) {
@@ -86,15 +99,16 @@ function onPlayerStateChange(event) {
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
-      endSeconds: 10
+      endSeconds: 10,
     });
   }
 }
 
 document.onkeypress = function (e) {
-  if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
+  if (e.key === "Enter") {
+    //checks whether the pressed key is "Enter"
     addToChat();
   }
 };
-  
+
 // Add testing exports here

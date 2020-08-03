@@ -10,7 +10,9 @@ async function startGame() {
 }
 
 function redirectToGamePage() {
-  window.location.href = 'game.html';
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+  window.location.href = `game.html?roomId=${paramString}`;
 }
 
 var pusher = new Pusher(CLIENT_KEY, {
