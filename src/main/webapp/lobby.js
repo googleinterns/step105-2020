@@ -34,6 +34,19 @@ function loadUsernames() {
       userList.appendChild(createUsernameElement(username));
     })
   });
+
+  let room = {
+    roomId: paramString
+  }
+
+  // Put room object.
+  fetch("/user", {
+    method: "PUT",
+    body: JSON.stringify(room),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 // Appends text node to list node, returns list node.
