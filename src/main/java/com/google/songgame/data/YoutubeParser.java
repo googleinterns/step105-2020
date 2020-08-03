@@ -107,7 +107,7 @@ public final class YoutubeParser {
     return playlistVideos;
   }
 
-  /** Returns video ID if it is present in data string*/
+  /** Returns video ID if it is present in data string */
   public String extractVideoIdFromJson(String data) {
     String videoId = "";
     if (data.startsWith("videoId\":\"")) {
