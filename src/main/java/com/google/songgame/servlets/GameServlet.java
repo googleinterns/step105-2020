@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.cloud.datastore.Datastore;
+import java.util.Collections;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -135,6 +136,7 @@ public final class GameServlet extends HttpServlet {
   private void createGame(String playlistUrl) {
     YoutubeParser parser = new YoutubeParser();
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
+    Collections.shuffle(playlistVideoIds);
     long creationTime = System.currentTimeMillis();
     long roundNumber = 0;
     EmbeddedEntity userPoints = createUserPoints();
