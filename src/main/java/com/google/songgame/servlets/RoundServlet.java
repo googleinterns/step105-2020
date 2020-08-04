@@ -65,17 +65,12 @@ public final class RoundServlet extends HttpServlet {
     Entity game = getCurrentGame(roomId);
 
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    if (isNewGame(game) || roundOver(currentRound)) {
-      currentRound = getNewRound(game);
+    if (!isNewGame(game)) {
+      Map<String, Object> roundMap = createRoundMap(game, currentRound);
 
-      game.setProperty("currentRound", currentRound);
-      datastore.put(game);
+      String json = new Gson().toJson(roundMap);
+      response.getWriter().println(json);
     }
-
-    pusher.trigger(
-        PUSHER_APPLICATION_NAME,
-        PUSHER_ROUND_CHANNEL_NAME,
-        Collections.singletonMap("message", "Start Round"));
   }
 
   @Override
@@ -88,14 +83,6 @@ public final class RoundServlet extends HttpServlet {
 
     String json = new Gson().toJson(roundMap);
     response.getWriter().println(json);
-  }
-
-  @Override
-  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // pusher.trigger(
-    //     PUSHER_APPLICATION_NAME,
-    //     PUSHER_ROUND_CHANNEL_NAME,
-    //     Collections.singletonMap("message", "Start Round"));
   }
 
   private Entity getCurrentGame(String roomId) {
