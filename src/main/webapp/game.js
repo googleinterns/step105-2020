@@ -11,17 +11,19 @@ const CSS_MESSAGE_CLASS_DICT = {
   correct: "message-correct",
   announcement: "message-announcement",
 };
-// TODO: @salilnadkarni, replace with userid from cookie (in datastore)
-const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
+
+let url = window.location.href;
+let roomId = parseRoomId(url);
+
 var videoId = "";
 var startTime = 0;
 var endTime = 0;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   retrieveRound();
   embedVideo();
   createTimer();
-  document.getElementById('start-round').addEventListener('click', loadRound);
+  document.getElementById("start-round").addEventListener("click", loadRound);
 });
 
 // Connect Pusher
@@ -30,20 +32,24 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function(data) {
+channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
   updateChat(data);
 });
 
 // when the start round button is clicked
-channel.bind(PUSHER_ROUND_CHANNEL_NAME, function() {
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
   retrieveRound();
   embedVideo();
   createTimer();
 });
 
 async function loadRound() {
+  data = {
+    roomId: roomId,
+  };
   await fetch("/round", {
-    method: "PUT"
+    method: "POST",
+    body: JSON.stringify(data),
   });
 }
 
@@ -83,39 +89,41 @@ async function addToChat() {
   });
 }
 
-document.onkeypress = function(e) {
-  if (e.key === "Enter") { //checks whether the pressed key is "Enter"
+document.onkeypress = function (e) {
+  if (e.key === "Enter") {
+    //checks whether the pressed key is "Enter"
     addToChat();
   }
 };
 
 function retrieveRound() {
-  fetch('/round').then(response => response.json()).then((roundMap) => {
-    videoId = roundMap.videoId;
-    startTime = roundMap.startTime;
-    endTime = roundMap.endTime;
-  });
+  fetch(`/round?roomId=${roomId}`)
+    .then((response) => response.json())
+    .then((roundMap) => {
+      videoId = roundMap.videoId;
+      startTime = roundMap.startTime;
+      endTime = roundMap.endTime;
+    });
 }
 
 function embedVideo() {
-  fetch('/game').then(response => response.json()).then((videoIdResponse) => {
-    videoId = videoIdResponse;
+  document.getElementById("player").src =
+    "https://www.youtube.com/embed/" +
+    videoId +
+    "?version=3&end=10&loop=1&playlist=" +
+    videoId +
+    "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
 
-    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
-        + "?version=3&end=10&loop=1&playlist=" + videoId 
-        + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
-    
-    window.onYouTubeIframeAPIReady = function() {
-      window.player = new window.YT.Player('player', {
-        events: {
-          'onStateChange': onPlayerStateChange
-        },
-        playerVars: {
-          'rel': 0,
-        }
-      });
-    }
-  });
+  window.onYouTubeIframeAPIReady = function () {
+    window.player = new window.YT.Player("player", {
+      events: {
+        onStateChange: onPlayerStateChange,
+      },
+      playerVars: {
+        rel: 0,
+      },
+    });
+  };
 }
 
 function onPlayerStateChange(event) {
@@ -123,25 +131,25 @@ function onPlayerStateChange(event) {
     player.loadVideoById({
       videoId: videoId,
       startSeconds: 0,
-      endSeconds: 10
+      endSeconds: 10,
     });
   }
 }
 
 function createTimer() {
-  Timer = setInterval("setTimer()",ONE_SECOND);
+  Timer = setInterval("setTimer()", ONE_SECOND);
 }
 
 function setTimer() {
   let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
-    timer.innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
+    timer.innerHTML = Math.floor((endTime - now) / ONE_SECOND) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       timer.innerHTML = "Round Over";
     }
   }
 }
-  
+
 // Add testing exports here
