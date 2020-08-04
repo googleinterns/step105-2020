@@ -21,6 +21,10 @@ const createUser = async (ev) => {
     window.location.href = 'join-room.html';
 }
 
+window.onload = function() {
+  fetch("/user");
+}
+
 window.addEventListener('DOMContentLoaded', ()=>{
     // Creates user on button click.
     document.getElementById('new-player-btn').addEventListener('click', createUser);

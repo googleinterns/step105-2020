@@ -68,6 +68,26 @@ public final class UserServlet extends HttpServlet {
     datastore.put(currentUser);
   }
 
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String userId = getUserId(request);
+
+    Cookie[] cookies = request.getCookies();
+
+    // Check if current cookie value exists
+    if (cookies != null) {
+      for (Cookie userCookie : cookies) {
+        if (userCookie.getValue().equals(userId)) {
+          response.sendRedirect("/join-room.html");
+          return;
+        }
+      }
+    } else {
+      response.sendRedirect("/index.html");
+      return;
+    }
+  }
+
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
