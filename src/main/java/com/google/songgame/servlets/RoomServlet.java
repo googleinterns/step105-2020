@@ -60,11 +60,7 @@ public final class RoomServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
-    // Room query that looks for correct room.
-    Query roomQuery =
-        new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomProperties.get("roomId"));
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
+    Entity currentRoom = loadRoom(roomProperties.get("roomId"));
 
     // Add current user to existing datastore list.
     List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
@@ -72,6 +68,28 @@ public final class RoomServlet extends HttpServlet {
 
     currentRoom.setProperty("userIdList", userIdList);
     datastore.put(currentRoom);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String roomId = request.getParameter("roomId");
+
+    Entity currentRoom = loadRoom(roomId);
+
+    List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
+
+    // Get each userId in the userIdList.
+    Query userQuery = new Query("User").addFilter("userId", FilterOperator.IN, userIdList);
+    PreparedQuery results = datastore.prepare(userQuery);
+
+    List<String> usernameList = new ArrayList<String>();
+    for (Entity currentUser : results.asIterable()) {
+      String username = (String) currentUser.getProperty("username");
+      usernameList.add(username);
+    }
+
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(usernameList));
   }
 
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
@@ -97,5 +115,13 @@ public final class RoomServlet extends HttpServlet {
     }
 
     return userId;
+  }
+
+  private Entity loadRoom(String roomId) {
+    // Room query that looks for correct room.
+    Query roomQuery = new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomId);
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
+    return currentRoom;
   }
 }
