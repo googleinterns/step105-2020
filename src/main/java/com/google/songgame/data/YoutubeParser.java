@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import java.lang.IllegalArgumentException;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.ResourceId;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 
 public final class YoutubeParser {
 
@@ -39,7 +42,7 @@ public final class YoutubeParser {
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final long MAX_RESULTS = 25L;
-
+  
   /**
    * Returns a list of YouTube Video IDs of the music videos in a given playlist url
    *
@@ -54,9 +57,7 @@ public final class YoutubeParser {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    // Parse Playlist item Json string to retrieve video IDs
-    String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideoIds = parseVideoIdsFromPlaylistItem(playlistItemJson);
+    ArrayList<String> playlistVideoIds = getVideoIdsFromPlaylistItem(playlistItem);
     return playlistVideoIds;
   }
 
@@ -94,28 +95,17 @@ public final class YoutubeParser {
   }
 
   /** Returns an ArrayList of video IDs */
-  private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
-    String[] playlistItemData = playlistItemJson.split("\",\"");
+  private ArrayList<String> getVideoIdsFromPlaylistItem(PlaylistItemListResponse playlistItem) {
+    List<PlaylistItem> videoItems = playlistItem.getItems();
     ArrayList<String> playlistVideos = new ArrayList<String>();
-    // extract video ID from sections
-    for (String data : playlistItemData) {
-      String videoId = extractVideoIdFromJson(data);
-      if (videoId != "") {
-        playlistVideos.add(videoId);
-      }
+
+    for (PlaylistItem item : videoItems) {
+      PlaylistItemSnippet snippet = item.getSnippet();
+      ResourceId resourceId = snippet.getResourceId();
+      String videoId = resourceId.getVideoId();
+      playlistVideos.add(videoId);
     }
     return playlistVideos;
-  }
-
-  /** Returns video ID if it is present in data string */
-  public String extractVideoIdFromJson(String data) {
-    String videoId = "";
-    if (data.startsWith("videoId\":\"")) {
-      int idStart = data.indexOf("\":\"") + 3;
-      int idEnd = data.indexOf("\"", idStart);
-      videoId = data.substring(idStart, idEnd);
-    }
-    return videoId;
   }
 
   /**
