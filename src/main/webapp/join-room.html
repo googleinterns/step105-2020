@@ -7,7 +7,9 @@
     <script src="join-room.js"></script>
   </head>
   <body>
-    <form>
+    <form action="/game" method="POST">
+      <input id="playlist-id" name="playlist-link" type="text"
+      placeholder="Enter YouTube playlist"></input>
       <button id="create-room-btn">Create Room</button>
     </form>
     <form>
