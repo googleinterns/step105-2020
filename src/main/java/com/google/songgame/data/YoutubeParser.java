@@ -42,7 +42,7 @@ public final class YoutubeParser {
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final long MAX_RESULTS = 25L;
-  
+
   /**
    * Returns a list of YouTube Video IDs of the music videos in a given playlist url
    *

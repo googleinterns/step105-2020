@@ -70,6 +70,7 @@ public final class GameServlet extends HttpServlet {
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
     EmbeddedEntity video = getVideoEntity(playlist);
+    game.setProperty("roundNumber", round + 1);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
@@ -79,13 +80,17 @@ public final class GameServlet extends HttpServlet {
     return currentRound;
   }
 
-  private EmbeddedEntity getVideoEntity(ArrayList<String> playlist) {
+  private EmbeddedEntity getVideoEntity(Entity game) {
     YoutubeParser parser = new YoutubeParser();
-    Video video = parser.getRandomVideoFromPlaylist(playlist);
+    ArrayList<String> playlist = game.getProperty("playlist");
+    Int round = game.getProperty("roundNumber");
+    Video video = playlist[round];
     String videoId = video.getId();
     String unformattedVideoTitle = video.getSnippet().getTitle();
     String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
+
     EmbeddedEntity videoEntity = new EmbeddedEntity();
+
     videoEntity.setProperty("videoId", videoId);
     videoEntity.setProperty("title", videoTitle);
 
@@ -135,6 +140,7 @@ public final class GameServlet extends HttpServlet {
     gameEntity.setProperty("playlist", playlistVideoIds);
     gameEntity.setProperty("creationTime", creationTime);
     gameEntity.setProperty("userPoints", userPoints);
+    gameEntity.setProperty("roundNumber", 0);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
