@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.Random;
+// TODO: @salilnadkarni, remove once helper class merged in
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import javax.servlet.annotation.WebServlet;
@@ -49,6 +50,7 @@ public final class GameServlet extends HttpServlet {
 
   private DatastoreService datastore;
   private Gson gson;
+  // TODO: @salilnadkarni, remove once helper class merged in
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private static final int MAX_USERS = 20;
 
@@ -63,18 +65,6 @@ public final class GameServlet extends HttpServlet {
     Map<String, String> gamePostParameters = readJSONFromRequest(request);
     String roomId = gamePostParameters.get("roomId");
     createGame(roomId);
-  }
-
-  /**
-   * Returns the request parameter, or the default value if the parameter was not specified by the
-   * client
-   */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
   }
 
   private void createGame(String roomId) {
@@ -97,14 +87,6 @@ public final class GameServlet extends HttpServlet {
     datastore.put(gameEntity);
   }
 
-  private Entity getRoom(String roomId) {
-    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
-    Query roomQuery = new Query("Room").setFilter(roomIdFilter);
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
-    return currentRoom;
-  }
-
   private EmbeddedEntity createUserPoints(Entity currentRoom) {
     EmbeddedEntity userPoints = new EmbeddedEntity();
     // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
@@ -125,6 +107,15 @@ public final class GameServlet extends HttpServlet {
     return result.asList(FetchOptions.Builder.withLimit(MAX_USERS));
   }
 
+  private Entity getRoom(String roomId) {
+    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
+    Query roomQuery = new Query("Room").setFilter(roomIdFilter);
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
+    return currentRoom;
+  }
+
+  // TODO: @salilnadkarni, remove for helper class once that's merged in
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);

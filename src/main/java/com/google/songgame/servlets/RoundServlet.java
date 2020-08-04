@@ -5,6 +5,7 @@ import com.pusher.rest.Pusher;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+// TODO: @salilnadkarni, remove once helper class is merged in
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public final class RoundServlet extends HttpServlet {
   private static final int MAX_USERS = 20;
   private Pusher pusher;
   private Gson gson;
+  // TODO: @salilnadkarni, remove once helper class merged in
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
   DatastoreService datastore;
@@ -174,6 +176,7 @@ public final class RoundServlet extends HttpServlet {
     return result.asList(FetchOptions.Builder.withLimit(MAX_USERS));
   }
 
+  // TODO: @salilnadkarni, replace with helper class once merged
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
