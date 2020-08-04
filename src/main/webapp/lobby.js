@@ -1,7 +1,7 @@
 const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
-const PUSHER_GAME_CHANNEL_NAME = "start-game";
+const PUSHER_ROUND_CHANNEL_NAME = "start-round";
 
 let url = window.location.href;
 let roomId = parseRoomId(url);
@@ -16,7 +16,7 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 
-channel.bind(PUSHER_GAME_CHANNEL_NAME, function () {
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
   redirectToGamePage();
 });
 
@@ -29,7 +29,7 @@ async function startGame() {
     method: "POST",
     body: JSON.stringify(data),
   });
-  
+
   await fetch("/round", {
     method: "POST",
     body: JSON.stringify(data),

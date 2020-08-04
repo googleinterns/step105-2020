@@ -3,7 +3,6 @@ const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
-const PUSHER_GAME_CHANNEL_NAME = "start-game";
 const ONE_SECOND = 1000;
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
@@ -20,7 +19,7 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener("DOMContentLoaded", () => {
-  retrieveRound();
+  // retrieveRound();
   embedVideo();
   createTimer();
   document.getElementById("start-round").addEventListener("click", loadRound);
@@ -107,6 +106,7 @@ function retrieveRound() {
 }
 
 function embedVideo() {
+  retrieveRound();
   document.getElementById("player").src =
     "https://www.youtube.com/embed/" +
     videoId +

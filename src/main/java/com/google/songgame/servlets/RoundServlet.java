@@ -39,7 +39,6 @@ public final class RoundServlet extends HttpServlet {
   private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
   private static final String PUSHER_ROUND_CHANNEL_NAME = "start-round";
-  private static final String PUSHER_GAME_CHANNEL_NAME = "start-game";
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
   private static final int MAX_USERS = 20;
@@ -75,7 +74,7 @@ public final class RoundServlet extends HttpServlet {
 
     pusher.trigger(
         PUSHER_APPLICATION_NAME,
-        PUSHER_GAME_CHANNEL_NAME,
+        PUSHER_ROUND_CHANNEL_NAME,
         Collections.singletonMap("message", "Start Round"));
   }
 
