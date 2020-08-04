@@ -77,6 +77,7 @@ async function addToChat() {
 
   let data = {
     message: chatInput,
+    roomId: roomId,
   };
   await fetch("/chat", {
     method: "POST",

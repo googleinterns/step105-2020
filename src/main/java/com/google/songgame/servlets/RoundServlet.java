@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.songgame.data.YoutubeParser;
+import com.google.songgame.data.TitleFormatter;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import java.util.HashMap;
@@ -122,6 +123,7 @@ public final class RoundServlet extends HttpServlet {
     EmbeddedEntity currentRound = new EmbeddedEntity();
 
     currentRound.setProperty("video", video);
+    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
     currentRound.setProperty("startTime", System.currentTimeMillis() + TIME_OFFSET);
     currentRound.setProperty("endTime", System.currentTimeMillis() + TIME_OFFSET + ROUND_LENGTH);
 
@@ -132,7 +134,8 @@ public final class RoundServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     Video video = parser.getRandomVideoFromPlaylist(playlist);
     String videoId = video.getId();
-    String videoTitle = video.getSnippet().getTitle();
+    String unformattedVideoTitle = video.getSnippet().getTitle();
+    String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
 
     EmbeddedEntity videoEntity = new EmbeddedEntity();
     videoEntity.setProperty("videoId", videoId);

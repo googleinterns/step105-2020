@@ -75,8 +75,8 @@ public final class ChatServlet extends HttpServlet {
     Map<String, String> response = new HashMap<String, String>();
 
     String userId = data.get("userId");
-
-    Entity currentGame = getCurrentGame();
+    String roomId = data.get("roomId");
+    Entity currentGame = getCurrentGame(roomId);
     Entity currentUser = getUser(userId);
 
     String username = (String) currentUser.getProperty("username");
@@ -98,12 +98,11 @@ public final class ChatServlet extends HttpServlet {
     return response;
   }
 
-  private Entity getCurrentGame() {
-    // TODO: @salilnadkarni add more robust way of finding current round
-    Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
+  private Entity getCurrentGame(String roomId) {
+    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
+    Query gameQuery = new Query("Game").setFilter(roomIdFilter);
     PreparedQuery result = datastore.prepare(gameQuery);
-
-    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
+    Entity currentGame = result.asSingleEntity();
     return currentGame;
   }
 
