@@ -9,15 +9,7 @@ const CSS_MESSAGE_CLASS_DICT = {
   announcement: "message-announcement",
 };
 const ROOM_ID = getRoomId();
-// TODO: @salilnadkarni, replace with userid from cookie (in datastore)
-const USER_ID = "_" + Math.random().toString(36).substr(2, 9);
 var videoId = "";
-
-function getRoomId() {
-  let url = window.location.href;
-  let paramString = parseRoomId(url);
-  return paramString;
-}
 
 async function addToChat() {
   let chatInputField = document.getElementById("chat-input-box");
@@ -28,7 +20,6 @@ async function addToChat() {
 
   let data = {
     message: chatInput,
-    userId: USER_ID,
     roomId: ROOM_ID,
   };
   await fetch("/chat", {
