@@ -40,6 +40,11 @@ public final class YoutubeParser {
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final long MAX_RESULTS = 25L;
 
+  @Override
+  public void init() {
+    gson = new Gson();
+  }
+
   /**
    * Returns a list of YouTube Video IDs of the music videos in a given playlist url
    *
