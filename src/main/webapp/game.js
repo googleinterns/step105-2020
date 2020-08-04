@@ -1,25 +1,21 @@
 const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
-const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
 const ONE_SECOND = 1000;
+const PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
   correct: "message-correct",
   announcement: "message-announcement",
 };
-
-let url = window.location.href;
-let roomId = parseRoomId(url);
-
+const ROOM_ID = getRoomId();
 var videoId = "";
 var startTime = 0;
 var endTime = 0;
 
 window.addEventListener("DOMContentLoaded", () => {
-  // retrieveRound();
   embedVideo();
   createTimer();
   document.getElementById("start-round").addEventListener("click", loadRound);
@@ -31,7 +27,7 @@ var pusher = new Pusher(CLIENT_KEY, {
 });
 var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
+channel.bind(PUSHER_CHAT_CHANNEL_NAME_BASE + ROOM_ID, function (data) {
   updateChat(data);
 });
 
@@ -44,7 +40,7 @@ channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
 
 async function loadRound() {
   data = {
-    roomId: roomId,
+    roomId: ROOM_ID,
   };
   await fetch("/round", {
     method: "POST",
@@ -95,7 +91,7 @@ document.onkeypress = function (e) {
 };
 
 async function retrieveRound() {
-  let response = await fetch(`/round?roomId=${roomId}`);
+  let response = await fetch(`/round?roomId=${ROOM_ID}`);
   let roundMap = await response.json();
   videoId = roundMap.videoId;
   startTime = roundMap.startTime;
