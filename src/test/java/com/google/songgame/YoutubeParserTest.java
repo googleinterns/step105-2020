@@ -75,29 +75,3 @@ public class YoutubeParserTest {
     youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl);
   }
 }
-
-//   // Test extractVideoIdFromJson
-
-//   @Test
-//   public void handleNonIdData() {
-//     String testData = ": [ {  \"kind\": \"youtube#playlistItem";
-//     Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-
-//     testData = ", \"channelId\": \"UCvceBgMIpKb4zK1ss-Sh90w";
-//     Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-//   }
-
-//   @Test
-//   public void parseVideoIdFromData() {
-//     String testData =
-//         "videoId\":\"GvgqDSnpRQM\"    }  }, \"contentDetails\": {  \"videoId\": \"GvgqDSnpRQM";
-//     String videoId = "GvgqDSnpRQM";
-//     Assert.assertEquals(videoId, youtubeParser.extractVideoIdFromJson(testData));
-//   }
-
-//   @Test
-//   public void handleNonPlaylistId() {
-//     String testData = "id\": \"UExCQ0YyREFDNkZGQjU3NERFLjU5NzE2QkNERURDRTE5NDc=";
-//     Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-//   }
-// }
