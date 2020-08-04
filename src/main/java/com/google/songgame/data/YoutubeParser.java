@@ -38,6 +38,7 @@ public final class YoutubeParser {
   private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private static final long MAX_RESULTS = 25L;
 
   @Override
@@ -100,15 +101,17 @@ public final class YoutubeParser {
 
   /** Returns an ArrayList of video IDs */
   private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
-    String[] playlistItemData = playlistItemJson.split("\",\"");
+    Map<String, String> playlistItem = gson.fromJson(playlistItemJson, MESSAGE_TYPE);
+    ArrayList videoItems = playlistItem.items;
+
+
     ArrayList<String> playlistVideos = new ArrayList<String>();
-    // extract video ID from sections
-    for (String data : playlistItemData) {
-      String videoId = extractVideoIdFromJson(data);
-      if (videoId != "") {
-        playlistVideos.add(videoId);
-      }
+     // extract video ID from sections
+     for (Map<String, String> item : videoItems) {
+      String videoId = item.resourceId.videoId;
+      playlistVideos.add(videoId);
     }
+    System.out.println(playlistVideos);
     return playlistVideos;
   }
 
