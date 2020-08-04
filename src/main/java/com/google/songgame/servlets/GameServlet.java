@@ -128,12 +128,28 @@ public final class GameServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
     long creationTime = System.currentTimeMillis();
+    EmbeddedEntity userPoints = createUserPoints();
 
     Entity gameEntity = new Entity("Game");
     gameEntity.setProperty("playlist", playlistVideoIds);
     gameEntity.setProperty("creationTime", creationTime);
+    gameEntity.setProperty("userPoints", userPoints);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
+  }
+
+  private EmbeddedEntity createUserPoints() {
+    EmbeddedEntity userPoints = new EmbeddedEntity();
+    // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity user : results.asIterable()) {
+      String userId = (String) user.getProperty("userId");
+      userPoints.setProperty(userId, 0L);
+    }
+
+    return userPoints;
   }
 }
