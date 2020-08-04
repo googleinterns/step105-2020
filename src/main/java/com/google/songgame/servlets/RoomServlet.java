@@ -27,9 +27,17 @@ import java.util.Map;
 import org.apache.hc.core5.http.ParseException;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
+import com.pusher.rest.Pusher;
 
 @WebServlet("/room")
 public final class RoomServlet extends HttpServlet {
+
+  private static final String APP_ID = "1024158";
+  private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
+  private static final String PUSHER_LOBBY_CHANNEL_NAME = "user-list";
+  private Pusher pusher;
 
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Gson gson;
@@ -39,6 +47,9 @@ public final class RoomServlet extends HttpServlet {
   public void init() {
     gson = new Gson();
     datastore = DatastoreServiceFactory.getDatastoreService();
+    pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
+    pusher.setCluster("us2");
+    pusher.setEncrypted(true);
   }
 
   @Override
@@ -58,6 +69,11 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME,
+        PUSHER_LOBBY_CHANNEL_NAME,
+        Collections.singletonMap("message", "User List"));
+
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
     Entity currentRoom = loadRoom(roomProperties.get("roomId"));
