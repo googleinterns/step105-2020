@@ -129,7 +129,7 @@ function setTimer() {
   let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
-    timer.innerHTML = "TIme left in round: " (Math.floor((endTime - now) / ONE_SECOND)) + "s";
+    timer.innerHTML = "Time left in round: " + (Math.floor((endTime - now) / ONE_SECOND)) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       timer.innerHTML = "Round Over";

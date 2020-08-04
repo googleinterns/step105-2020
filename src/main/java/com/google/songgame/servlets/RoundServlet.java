@@ -51,15 +51,7 @@ public final class RoundServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Entity game = getCurrentGame();
-    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    if (isNewGame(game) || roundOver(currentRound)) {
-      currentRound = getNewRound(game);
-
-      game.setProperty("currentRound", currentRound);
-      datastore.put(game);
-    }
-
+    loadRound();
     pusher.trigger(
         PUSHER_APPLICATION_NAME,
         PUSHER_GAME_CHANNEL_NAME,
@@ -78,8 +70,7 @@ public final class RoundServlet extends HttpServlet {
     }
   }
 
-  @Override
-  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  private void loadRound() {
     Entity game = getCurrentGame();
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
     if (isNewGame(game) || roundOver(currentRound)) {
@@ -88,6 +79,11 @@ public final class RoundServlet extends HttpServlet {
       game.setProperty("currentRound", currentRound);
       datastore.put(game);
     }
+  }
+
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    loadRound();
     pusher.trigger(
         PUSHER_APPLICATION_NAME,
         PUSHER_ROUND_CHANNEL_NAME,
