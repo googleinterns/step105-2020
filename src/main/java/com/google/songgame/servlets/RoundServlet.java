@@ -67,11 +67,11 @@ public final class RoundServlet extends HttpServlet {
     Entity game = getCurrentGame(roomId);
 
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    if (!isNewGame(game)) {
-      Map<String, Object> roundMap = createRoundMap(game, currentRound);
+    if (isNewGame(game) || roundOver(currentRound)) {
+      currentRound = getNewRound(game);
 
-      String json = new Gson().toJson(roundMap);
-      response.getWriter().println(json);
+      game.setProperty("currentRound", currentRound);
+      datastore.put(game);
     }
   }
 
@@ -80,11 +80,13 @@ public final class RoundServlet extends HttpServlet {
     String roomId = request.getParameter("roomId");
     Entity game = getCurrentGame(roomId);
 
-    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    Map<String, Object> roundMap = createRoundMap(game, currentRound);
+    if (!isNewGame(game)) {
+      EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
+      Map<String, Object> roundMap = createRoundMap(game, currentRound);
 
-    String json = new Gson().toJson(roundMap);
-    response.getWriter().println(json);
+      String json = new Gson().toJson(roundMap);
+      response.getWriter().println(json);
+    }
   }
 
   private Entity getCurrentGame(String roomId) {
