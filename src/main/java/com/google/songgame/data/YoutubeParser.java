@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
+import java.lang.IllegalArgumentException;
 
 public final class YoutubeParser {
 
@@ -60,7 +61,7 @@ public final class YoutubeParser {
   }
 
   /** Returns playlist ID */
-  private String getPlaylistIdFromUrl(String playlistUrl) {
+  public String getPlaylistIdFromUrl(String playlistUrl) {
     if (playlistUrl.contains("youtube.com/playlist?list=")) {
       int start = playlistUrl.indexOf("list=") + 5;
       int end = playlistUrl.length();
@@ -69,10 +70,7 @@ public final class YoutubeParser {
       }
       return playlistUrl.substring(start, end);
     } else {
-      System.err.println(playlistUrl + " is not a valid YouTube Playlist URL.");
-      return "";
-      // TODO @hdee: do something more complicated to handle this error.
-      // TODO @hdee: test this method.
+      throw new IllegalArgumentException(playlistUrl + " is not a valid YouTube Playlist URL.");
     }
   }
 
@@ -95,20 +93,31 @@ public final class YoutubeParser {
     return response;
   }
 
-  /** Returns an ArrayList of video IDs TODO @hdee: add tests for this method */
+  /** Returns an ArrayList of video IDs */
   private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
     String[] playlistItemData = playlistItemJson.split("\",\"");
     ArrayList<String> playlistVideos = new ArrayList<String>();
     // extract video ID from sections
-    for (String data : playlistItemData)
-      if (data.startsWith("videoId\":\"")) {
-        int idStart = data.indexOf("\":\"") + 3;
-        int idEnd = data.indexOf("\"", idStart);
-        String videoId = data.substring(idStart, idEnd);
+    for (String data : playlistItemData) {
+      String videoId = extractVideoIdFromJson(data);
+      if (videoId != "") {
         playlistVideos.add(videoId);
       }
+    }
     return playlistVideos;
   }
+
+  /** Returns video ID if it is present in data string */
+  public String extractVideoIdFromJson(String data) {
+    String videoId = "";
+    if (data.startsWith("videoId\":\"")) {
+      int idStart = data.indexOf("\":\"") + 3;
+      int idEnd = data.indexOf("\"", idStart);
+      videoId = data.substring(idStart, idEnd);
+    }
+    return videoId;
+  }
+
   /**
    * Return a Video object chosen at random from a given list of videoIds
    *
