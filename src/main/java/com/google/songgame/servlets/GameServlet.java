@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.cloud.datastore.Datastore;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -69,9 +70,10 @@ public final class GameServlet extends HttpServlet {
 
   private EmbeddedEntity getNewRound(Entity game) {
     ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-    EmbeddedEntity video = getVideoEntity(playlist);
-    game.setProperty("roundNumber", round + 1);
+    EmbeddedEntity video = getVideoEntity(game);
     EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
+    long round = (long) game.getProperty("roundNumber");
+    game.setProperty("roundNumber", round + 1);
 
     EmbeddedEntity currentRound = new EmbeddedEntity();
     currentRound.setProperty("video", video);
@@ -82,10 +84,10 @@ public final class GameServlet extends HttpServlet {
 
   private EmbeddedEntity getVideoEntity(Entity game) {
     YoutubeParser parser = new YoutubeParser();
-    ArrayList<String> playlist = game.getProperty("playlist");
-    Int round = game.getProperty("roundNumber");
-    Video video = playlist.get(round);
-    String videoId = video.getId();
+    ArrayList<String> playlist = (ArrayList) game.getProperty("playlist");
+    long round = (long) game.getProperty("roundNumber");
+    String videoId = playlist.get((int) round);
+    Video video = parser.getVideoFromVideoId(videoId);
     String unformattedVideoTitle = video.getSnippet().getTitle();
     String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
 
@@ -134,15 +136,15 @@ public final class GameServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
     long creationTime = System.currentTimeMillis();
+    long roundNumber = 0;
     EmbeddedEntity userPoints = createUserPoints();
 
     Entity gameEntity = new Entity("Game");
     gameEntity.setProperty("playlist", playlistVideoIds);
     gameEntity.setProperty("creationTime", creationTime);
     gameEntity.setProperty("userPoints", userPoints);
-    gameEntity.setProperty("roundNumber", 0);
+    gameEntity.setProperty("roundNumber", roundNumber);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
   }
 

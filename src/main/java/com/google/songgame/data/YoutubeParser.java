@@ -35,6 +35,7 @@ import java.lang.IllegalArgumentException;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
+import java.util.Collections;
 
 public final class YoutubeParser {
 
@@ -106,13 +107,11 @@ public final class YoutubeParser {
       playlistVideos.add(videoId);
     }
     // randomize the order of videos
-    Collections.shuffle(playlistVideos)
+    Collections.shuffle(playlistVideos);
     return playlistVideos;
   }
 
-  /**
-   * Returns a Video object from the Youtube Data API
-   */
+  /** Returns a Video object from the Youtube Data API */
   public Video getVideoFromVideoId(String videoId) {
     Video currentVideo = null;
     try {
@@ -122,7 +121,6 @@ public final class YoutubeParser {
     }
     return currentVideo;
   }
-
 
   /** Retrieves video information given a particular video ID */
   private Video getVideo(String videoId)
