@@ -32,9 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import java.lang.IllegalArgumentException;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
-import java.util.Map;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
@@ -45,6 +42,7 @@ public final class YoutubeParser {
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final long MAX_RESULTS = 25L;
+  
   /**
    * Returns a list of YouTube Video IDs of the music videos in a given playlist url
    *

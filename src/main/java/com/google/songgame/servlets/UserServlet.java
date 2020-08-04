@@ -49,21 +49,6 @@ public final class UserServlet extends HttpServlet {
     datastore.put(userEntity);
   }
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("User");
-    PreparedQuery results = datastore.prepare(query);
-
-    List<String> usernames = new ArrayList<String>();
-    for (Entity entity : results.asIterable()) {
-      String username = (String) entity.getProperty("username");
-      usernames.add(username);
-    }
-
-    response.setContentType("application/json");
-    response.getWriter().println(gson.toJson(usernames));
-  }
-
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);

@@ -10,6 +10,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -53,6 +56,42 @@ public final class RoomServlet extends HttpServlet {
     datastore.put(roomEntity);
   }
 
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Map<String, String> roomProperties = readJSONFromRequest(request);
+
+    Entity currentRoom = loadRoom(roomProperties.get("roomId"));
+
+    // Add current user to existing datastore list.
+    List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
+    userIdList.add(roomProperties.get("userId"));
+
+    currentRoom.setProperty("userIdList", userIdList);
+    datastore.put(currentRoom);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String roomId = request.getParameter("roomId");
+
+    Entity currentRoom = loadRoom(roomId);
+
+    List<String> userIdList = (ArrayList) currentRoom.getProperty("userIdList");
+
+    // Get each userId in the userIdList.
+    Query userQuery = new Query("User").addFilter("userId", FilterOperator.IN, userIdList);
+    PreparedQuery results = datastore.prepare(userQuery);
+
+    List<String> usernameList = new ArrayList<String>();
+    for (Entity currentUser : results.asIterable()) {
+      String username = (String) currentUser.getProperty("username");
+      usernameList.add(username);
+    }
+
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(usernameList));
+  }
+
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
@@ -76,5 +115,13 @@ public final class RoomServlet extends HttpServlet {
     }
 
     return userId;
+  }
+
+  private Entity loadRoom(String roomId) {
+    // Room query that looks for correct room.
+    Query roomQuery = new Query("Room").addFilter("roomId", FilterOperator.EQUAL, roomId);
+    PreparedQuery result = datastore.prepare(roomQuery);
+    Entity currentRoom = result.asSingleEntity();
+    return currentRoom;
   }
 }

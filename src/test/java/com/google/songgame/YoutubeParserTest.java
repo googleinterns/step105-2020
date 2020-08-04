@@ -21,34 +21,24 @@ public class YoutubeParserTest {
     youtubeParser = new YoutubeParser();
   }
 
-  // Test getPlaylistIdFromUrl
   @Test
-  public void parsePlaylistUrlWithParameters() {
+  public void getPlaylistIdFromUrl_playlistUrlWithParameters() {
     String testPlaylistUrl =
         "https://www.youtube.com/playlist?list=PLbpi6ZahtOH7CkYdkWCsAVMcX1hoYy3TP&app=desktop";
     String playlistId = "PLbpi6ZahtOH7CkYdkWCsAVMcX1hoYy3TP";
     Assert.assertEquals(playlistId, youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl));
-
-    testPlaylistUrl =
-        "https://www.youtube.com/playlist?list=PLbpi6ZahtOH4OiptAsB2BrGjIiITwrdqs&app=desktop";
-    playlistId = "PLbpi6ZahtOH4OiptAsB2BrGjIiITwrdqs";
-    Assert.assertEquals(playlistId, youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl));
   }
 
   @Test
-  public void parseYoutubeShareLink() {
+  public void getPlaylistIdFromUrl_youtubeShareLink() {
     String testPlaylistUrl =
         "https://www.youtube.com/playlist?list=PLbpi6ZahtOH5AZzzL-piQQ2ryL6zitgqZ";
     String playlistId = "PLbpi6ZahtOH5AZzzL-piQQ2ryL6zitgqZ";
     Assert.assertEquals(playlistId, youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl));
-
-    testPlaylistUrl = "https://www.youtube.com/playlist?list=PLbpi6ZahtOH784jF-_UIbH2cT9l1C_ecA";
-    playlistId = "PLbpi6ZahtOH784jF-_UIbH2cT9l1C_ecA";
-    Assert.assertEquals(playlistId, youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl));
   }
 
   @Test
-  public void handleNonPlaylistLink() {
+  public void getPlaylistIdFromUrl_nonPlaylistLink() {
     String testPlaylistUrl =
         "https://www.youtube.com/watch?v=jxd42A3xFPs&list=PLbpi6ZahtOH784jF-_UIbH2cT9l1C_ecA&index=3&t=0s&app=desktop";
     thrown.expect(IllegalArgumentException.class);
@@ -62,7 +52,7 @@ public class YoutubeParserTest {
   }
 
   @Test
-  public void handleNonYoutubeLink() {
+  public void getPlaylistIdFromUrl_nonYoutubeLink() {
     String testPlaylistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd";
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage(testPlaylistUrl + " is not a valid YouTube Playlist URL.");
