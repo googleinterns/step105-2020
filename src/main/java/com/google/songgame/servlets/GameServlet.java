@@ -49,67 +49,10 @@ public final class GameServlet extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Entity game = getCurrentGame();
-    EmbeddedEntity currentRound = getNewRound(game);
-    game.setProperty("currentRound", currentRound);
-    datastore.put(game);
-    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
-    String currentVideoId = (String) currentVideo.getProperty("videoId");
-    String json = new Gson().toJson(currentVideoId);
-    response.getWriter().println(json);
-  }
-
-  private Entity getCurrentGame() {
-    Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
-    PreparedQuery result = datastore.prepare(gameQuery);
-    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
-    return currentGame;
-  }
-
-  private EmbeddedEntity getNewRound(Entity game) {
-    ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-    EmbeddedEntity video = getVideoEntity(playlist);
-    EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
-
-    EmbeddedEntity currentRound = new EmbeddedEntity();
-    currentRound.setProperty("video", video);
-    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
-
-    return currentRound;
-  }
-
-  private EmbeddedEntity getVideoEntity(ArrayList<String> playlist) {
-    YoutubeParser parser = new YoutubeParser();
-    Video video = parser.getRandomVideoFromPlaylist(playlist);
-    String videoId = video.getId();
-    String unformattedVideoTitle = video.getSnippet().getTitle();
-    String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
-    EmbeddedEntity videoEntity = new EmbeddedEntity();
-    videoEntity.setProperty("videoId", videoId);
-    videoEntity.setProperty("title", videoTitle);
-
-    return videoEntity;
-  }
-
-  private EmbeddedEntity createUserGuessStatuses() {
-    EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
-    // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
-    Query query = new Query("User");
-    PreparedQuery results = datastore.prepare(query);
-
-    for (Entity user : results.asIterable()) {
-      String userId = (String) user.getProperty("userId");
-      userGuessStatuses.setProperty(userId, false);
-    }
-
-    return userGuessStatuses;
-  }
-
-  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String playlistUrl = getParameter(request, "playlist-link", "");
     createGame(playlistUrl);
+    response.sendRedirect("/index.html");
   }
 
   /**

@@ -51,6 +51,15 @@ public final class RoundServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Entity game = getCurrentGame();
+    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
+    if (isNewGame(game) || roundOver(currentRound)) {
+      currentRound = getNewRound(game);
+
+      game.setProperty("currentRound", currentRound);
+      datastore.put(game);
+    }
+
     pusher.trigger(
         PUSHER_APPLICATION_NAME,
         PUSHER_GAME_CHANNEL_NAME,
@@ -61,14 +70,18 @@ public final class RoundServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Entity game = getCurrentGame();
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    Map<String, Object> roundMap = createRoundMap(game, currentRound);
+    if (!isNewGame(game)) {
+      Map<String, Object> roundMap = createRoundMap(game, currentRound);
 
-    String json = new Gson().toJson(roundMap);
-    response.getWriter().println(json);
+      String json = new Gson().toJson(roundMap);
+      response.getWriter().println(json);
+    }
   }
 
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Entity game = getCurrentGame();
+    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
     if (isNewGame(game) || roundOver(currentRound)) {
       currentRound = getNewRound(game);
 

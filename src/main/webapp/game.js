@@ -16,7 +16,6 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
-  loadRound();
   retrieveRound();
   createTimer();
   document.getElementById('start-round').addEventListener('click', loadRound);
@@ -96,7 +95,7 @@ function retrieveRound() {
 }
 
 function embedVideo(){
-    document.getElementById("player").src = "h{ttps://www.youtube.com/embed/" + videoId 
+    document.getElementById("player").src = "https://www.youtube.com/embed/" + videoId 
         + "?version=3&end=10&loop=1&playlist=" + videoId 
         + "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
     
@@ -130,7 +129,7 @@ function setTimer() {
   let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
-    timer.innerHTML = (Math.floor((endTime - now) / ONE_SECOND)) + "s";
+    timer.innerHTML = "TIme left in round: " (Math.floor((endTime - now) / ONE_SECOND)) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       timer.innerHTML = "Round Over";
