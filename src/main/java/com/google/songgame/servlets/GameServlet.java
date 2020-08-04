@@ -14,17 +14,10 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EmbeddedEntity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import com.google.songgame.data.TitleFormatter;
+import com.google.songgame.data.RoomLoader;
 import com.google.songgame.data.YoutubeParser;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -52,7 +45,6 @@ public final class GameServlet extends HttpServlet {
   private Gson gson;
   // TODO: @salilnadkarni, remove once helper class merged in
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
-  private static final int MAX_USERS = 20;
 
   @Override
   public void init() {
@@ -70,7 +62,7 @@ public final class GameServlet extends HttpServlet {
   private void createGame(String roomId) {
     YoutubeParser parser = new YoutubeParser();
 
-    Entity currentRoom = getRoom(roomId);
+    Entity currentRoom = RoomLoader.getRoom(roomId);
     String playlistUrl = (String) currentRoom.getProperty("playlistUrl");
 
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
@@ -90,29 +82,13 @@ public final class GameServlet extends HttpServlet {
   private EmbeddedEntity createUserPoints(Entity currentRoom) {
     EmbeddedEntity userPoints = new EmbeddedEntity();
     // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
-    List<Entity> users = getUsersInRoom(currentRoom);
+    List<Entity> users = RoomLoader.getUsersInRoom(currentRoom);
     for (Entity user : users) {
       String userId = (String) user.getProperty("userId");
       userPoints.setProperty(userId, 0L);
     }
 
     return userPoints;
-  }
-
-  private List<Entity> getUsersInRoom(Entity room) {
-    List<String> userIds = (List<String>) room.getProperty("userIdList");
-    Filter usersInRoomFilter = new FilterPredicate("userId", FilterOperator.IN, userIds);
-    Query usersInRoomQuery = new Query("User").setFilter(usersInRoomFilter);
-    PreparedQuery result = datastore.prepare(usersInRoomQuery);
-    return result.asList(FetchOptions.Builder.withLimit(MAX_USERS));
-  }
-
-  private Entity getRoom(String roomId) {
-    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
-    Query roomQuery = new Query("Room").setFilter(roomIdFilter);
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
-    return currentRoom;
   }
 
   // TODO: @salilnadkarni, remove for helper class once that's merged in
