@@ -84,7 +84,7 @@ public final class GameServlet extends HttpServlet {
     YoutubeParser parser = new YoutubeParser();
     ArrayList<String> playlist = game.getProperty("playlist");
     Int round = game.getProperty("roundNumber");
-    Video video = playlist[round];
+    Video video = playlist.get(round);
     String videoId = video.getId();
     String unformattedVideoTitle = video.getSnippet().getTitle();
     String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
