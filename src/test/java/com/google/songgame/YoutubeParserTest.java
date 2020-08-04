@@ -74,6 +74,7 @@ public class YoutubeParserTest {
     thrown.expectMessage(testPlaylistUrl + " is not a valid YouTube Playlist URL.");
     youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl);
   }
+}
 
 //   // Test extractVideoIdFromJson
 

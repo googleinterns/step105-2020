@@ -32,16 +32,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import java.lang.IllegalArgumentException;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
+import java.util.Map;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.ResourceId;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 
 public final class YoutubeParser {
 
   private static final String DEVELOPER_KEY = "AIzaSyBZw4Z25Lect7ux9z960RCM7YORcYo6slc";
   private static final String APPLICATION_NAME = "Song Guessing Game";
   private static final JsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
-  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private static final long MAX_RESULTS = 25L;
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
+  private Gson gson;
 
-  @Override
   public void init() {
     gson = new Gson();
   }
@@ -60,9 +66,7 @@ public final class YoutubeParser {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    // Parse Playlist item Json string to retrieve video IDs
-    String playlistItemJson = new Gson().toJson(playlistItem);
-    ArrayList<String> playlistVideoIds = parseVideoIdsFromPlaylistItem(playlistItemJson);
+    ArrayList<String> playlistVideoIds = getVideoIdsFromPlaylistItem(playlistItem);
     return playlistVideoIds;
   }
 
@@ -100,30 +104,17 @@ public final class YoutubeParser {
   }
 
   /** Returns an ArrayList of video IDs */
-  private ArrayList<String> parseVideoIdsFromPlaylistItem(String playlistItemJson) {
-    Map<String, String> playlistItem = gson.fromJson(playlistItemJson, MESSAGE_TYPE);
-    ArrayList videoItems = playlistItem.items;
-
-
+  private ArrayList<String> getVideoIdsFromPlaylistItem(PlaylistItemListResponse playlistItem) {
+    List<PlaylistItem> videoItems = playlistItem.getItems();
     ArrayList<String> playlistVideos = new ArrayList<String>();
-     // extract video ID from sections
-     for (Map<String, String> item : videoItems) {
-      String videoId = item.resourceId.videoId;
+
+    for (PlaylistItem item : videoItems) {
+      PlaylistItemSnippet snippet = item.getSnippet();
+      ResourceId resourceId = snippet.getResourceId();
+      String videoId = resourceId.getVideoId();
       playlistVideos.add(videoId);
     }
-    System.out.println(playlistVideos);
     return playlistVideos;
-  }
-
-  /** Returns video ID if it is present in data string*/
-  public String extractVideoIdFromJson(String data) {
-    String videoId = "";
-    if (data.startsWith("videoId\":\"")) {
-      int idStart = data.indexOf("\":\"") + 3;
-      int idEnd = data.indexOf("\"", idStart);
-      videoId = data.substring(idStart, idEnd);
-    }
-    return videoId;
   }
 
   /**
