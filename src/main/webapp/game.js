@@ -77,7 +77,6 @@ async function addToChat() {
 
   let data = {
     message: chatInput,
-    userId: USER_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -95,18 +94,16 @@ document.onkeypress = function (e) {
   }
 };
 
-function retrieveRound() {
-  fetch(`/round?roomId=${roomId}`)
-    .then((response) => response.json())
-    .then((roundMap) => {
-      videoId = roundMap.videoId;
-      startTime = roundMap.startTime;
-      endTime = roundMap.endTime;
-    });
+async function retrieveRound() {
+  let response = await fetch(`/round?roomId=${roomId}`);
+  let roundMap = await response.json();
+  videoId = roundMap.videoId;
+  startTime = roundMap.startTime;
+  endTime = roundMap.endTime;
 }
 
-function embedVideo() {
-  retrieveRound();
+async function embedVideo() {
+  await retrieveRound();
   document.getElementById("player").src =
     "https://www.youtube.com/embed/" +
     videoId +
