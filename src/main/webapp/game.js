@@ -16,7 +16,7 @@ var startTime = 0;
 var endTime = 0;
 
 window.addEventListener("DOMContentLoaded", () => {
-  embedVideo();
+  retrieveRound();
   createTimer();
   document.getElementById("start-round").addEventListener("click", loadRound);
 });
@@ -32,8 +32,8 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME_BASE + ROOM_ID, function (data) {
 });
 
 // when the start round button is clicked
-channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
-  retrieveRound();
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, async function () {
+  await retrieveRound();
   createTimer();
 });
 
@@ -95,7 +95,7 @@ async function addToChat() {
 
   let data = {
     message: chatInput,
-    roomId: roomId,
+    roomId: ROOM_ID,
   };
   await fetch("/chat", {
     method: "POST",
@@ -119,10 +119,11 @@ async function retrieveRound() {
   videoId = roundMap.videoId;
   startTime = roundMap.startTime;
   endTime = roundMap.endTime;
+  await embedVideo();
 }
 
 async function embedVideo() {
-  await retrieveRound();
+  // await retrieveRound();
   document.getElementById("player").src =
     "https://www.youtube.com/embed/" +
     videoId +
@@ -171,7 +172,7 @@ function setTimer() {
 
 window.addEventListener("DOMContentLoaded", () => {
   loadScore();
-  embedVideo();
+  retrieveRound();
 });
 
 // Add testing exports here
