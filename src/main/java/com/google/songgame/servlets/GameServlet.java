@@ -40,10 +40,17 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.cloud.datastore.Datastore;
 import java.util.Collections;
+import com.pusher.rest.Pusher;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
 
+  private static final String APP_ID = "1024158";
+  private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
+  private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
+  private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
+  private static final String PUSHER_GAME_CHANNEL_NAME = "end-game";
+  private Pusher pusher;
   private DatastoreService datastore;
   private Gson gson;
   // TODO: @salilnadkarni, remove once helper class merged in
@@ -53,6 +60,9 @@ public final class GameServlet extends HttpServlet {
   public void init() {
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
+    pusher = new Pusher(APP_ID, CLIENT_KEY, CLIENT_SECRET);
+    pusher.setCluster("us2");
+    pusher.setEncrypted(true);
   }
 
   @Override
@@ -81,6 +91,15 @@ public final class GameServlet extends HttpServlet {
     if (currentGame == null) {
       createGame(roomId);
     }
+  }
+
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME,
+        PUSHER_GAME_CHANNEL_NAME,
+        Collections.singletonMap("message", "End Game"));
   }
 
   private void createGame(String roomId) {

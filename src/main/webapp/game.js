@@ -2,6 +2,7 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
+const PUSHER_GAME_CHANNEL_NAME = "end-game";
 const ONE_SECOND = 1000;
 const PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
 const CSS_MESSAGE_CLASS_DICT = {
@@ -21,6 +22,16 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("start-round").addEventListener("click", loadRound);
 });
 
+async function endGame() {
+  await fetch("/game", {
+    method: "DELETE"
+  });
+}
+
+function redirectToIndexPage() {
+  window.location.href = 'index.html';
+}
+
 // Connect Pusher
 var pusher = new Pusher(CLIENT_KEY, {
   cluster: "us2",
@@ -35,6 +46,10 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME_BASE + ROOM_ID, function (data) {
 channel.bind(PUSHER_ROUND_CHANNEL_NAME, async function () {
   await retrieveRound();
   createTimer();
+});
+
+channel.bind(PUSHER_GAME_CHANNEL_NAME, function (data) {
+  redirectToIndexPage();
 });
 
 async function loadRound() {
