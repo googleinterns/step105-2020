@@ -29,6 +29,14 @@
   justify-content: space-evenly;
 }
 
+#score-box {
+  background: var(--chat-bg);
+  height: 500px;
+  margin: 10px 0;
+  padding: 5px 10px;
+  width: 300px;
+}
+
 .message-anouncement {
   color: var(--anouncement-color);
 }

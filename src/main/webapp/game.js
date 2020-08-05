@@ -54,6 +54,29 @@ function updateChat(data) {
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
   elem.scrollTop = elem.scrollHeight;
+  loadScore();
+}
+
+async function loadScore() {
+  // MAKE A GET REQUEST TO LOAD THE SCORE
+  let userPointsResponse = await fetch(`/game?roomId=${ROOM_ID}`);
+  let userPoints = await userPointsResponse.json();
+  let users = Object.keys(userPoints);
+  let scoreBox = document.getElementById("score-box");
+  scoreBox.innerHTML = "";
+  for (let user of users) {
+    let newPointItem = `<p class="user-point"><span class="username">${user}: </span>${userPoints[user]}</p>`;
+    scoreBox.insertAdjacentHTML("beforeend", newPointItem);
+  }
+}
+
+function updateScore(data) {
+  let newChatItem = createChatItem(data);
+  let chatbox = document.getElementById("chatbox");
+  chatbox.insertAdjacentHTML("beforeend", newChatItem);
+  // Autoscroll to bottom on chat update
+  let elem = document.getElementById("chatbox");
+  elem.scrollTop = elem.scrollHeight;
 }
 
 function createChatItem(data) {
@@ -145,5 +168,10 @@ function setTimer() {
     }
   }
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadScore();
+  embedVideo();
+});
 
 // Add testing exports here
