@@ -54,6 +54,11 @@ public final class RoomServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME,
+        PUSHER_LOBBY_CHANNEL_NAME,
+        Collections.singletonMap("message", "User List"));
+
     Map<String, String> roomProperties = readJSONFromRequest(request);
 
     List<String> userIdList = new ArrayList<String>();

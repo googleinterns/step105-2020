@@ -38,6 +38,10 @@ function loadUsernames() {
 }
 
 channel.bind(PUSHER_LOBBY_CHANNEL_NAME, function (data) {
+  var list = document.getElementById("user-list");
+  while (list.hasChildNodes()) {
+    list.removeChild(list.firstChild);
+  }
   loadUsernames();
 });
 
