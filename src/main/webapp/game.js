@@ -24,12 +24,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
 async function endGame() {
   await fetch("/game", {
-    method: "DELETE"
+    method: "DELETE",
   });
 }
 
 function redirectToIndexPage() {
-  window.location.href = 'index.html';
+  window.location.href = "index.html";
 }
 
 // Connect Pusher
@@ -78,7 +78,7 @@ async function loadScore() {
   let userPoints = await userPointsResponse.json();
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
-  scoreBox.innerHTML = '<h3>Points</h3>';
+  scoreBox.innerHTML = "<h3>Points</h3>";
   for (let user of users) {
     let newPointItem = `<h2 class="user-point"><span class="username">${user}: </span>${userPoints[user]}</h2>`;
     scoreBox.insertAdjacentHTML("beforeend", newPointItem);
@@ -88,7 +88,7 @@ async function loadScore() {
 function updateScore(data) {
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
-  chatbox.innerHTML = '<h3>Chat</h3>';
+  chatbox.innerHTML = "<h3>Chat</h3>";
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
@@ -135,6 +135,7 @@ async function retrieveRound() {
   videoId = roundMap.videoId;
   startTime = roundMap.startTime;
   endTime = roundMap.endTime;
+  document.getElementById("square").style.display = "flex";
   await embedVideo();
 }
 
