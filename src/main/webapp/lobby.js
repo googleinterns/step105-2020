@@ -3,6 +3,7 @@ const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
 const ROOM_ID = getRoomId();
+const PUSHER_LOBBY_CHANNEL_NAME = "user-list";
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("start-game").addEventListener("click", startGame);
@@ -55,6 +56,13 @@ function loadUsernames() {
       });
     });
 }
+channel.bind(PUSHER_LOBBY_CHANNEL_NAME, function (data) {
+  var list = document.getElementById("user-list");
+  while (list.hasChildNodes()) {
+    list.removeChild(list.firstChild);
+  }
+  loadUsernames();
+});
 
 // Appends text node to list node, returns list node.
 function createUsernameElement(username) {
