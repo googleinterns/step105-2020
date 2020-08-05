@@ -75,17 +75,18 @@ public final class ChatServlet extends HttpServlet {
 
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
-
     String userId = data.get("userId");
     String roomId = data.get("roomId");
     Entity currentGame = getCurrentGame(roomId);
+    EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
     Entity currentUser = getUser(userId);
 
     String username = (String) currentUser.getProperty("username");
     String message = data.get("message");
     String messageType = "guess";
 
-    if (roundOver(currentRound) || GuessChecker.checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
+    if (roundOver(currentRound)) {
+    } else if (GuessChecker.hasUserPreviouslyGuessedCorrect(currentUser, currentGame)) {
       messageType = "spectator";
     } else if (GuessChecker.isCorrectGuess(message, currentGame)) {
       currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
