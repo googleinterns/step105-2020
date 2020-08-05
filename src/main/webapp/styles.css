@@ -5,10 +5,10 @@
   --spectator-color: #daa520;
 }
 
-#chat {
+#chat, #score {
   align-items: center;
-  border-width: 1px;
-  border-style: solid;
+  border: 2px solid #4301f9;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -27,30 +27,39 @@
 #container {
   display: flex;
   justify-content: space-evenly;
-  width: 1024px;
+}
+
+#room-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 1080px;
 }
 
 #score-box {
   background: var(--chat-bg);
-  height: 500px;
+  height: 450px;
   margin: 10px 0;
   padding: 5px 10px;
   width: 300px;
 }
 
 .message-anouncement {
+  font-family: 'Quicksand', sans-serif;
   color: var(--anouncement-color);
 }
 
 .message-correct {
+  font-family: 'Quicksand', sans-serif;
   color: var(--correct-color);
 }
 
 .message-spectator {
+  font-family: 'Quicksand', sans-serif;
   color: var(--spectator-color);
 }
 
 .username {
+  font-family: 'Quicksand', sans-serif;
   font-weight: bold;
 }
 
@@ -61,7 +70,7 @@ h1{
   text-align:center;
 }
 
-h3{
+h2{
   font-family: 'Quicksand', sans-serif;
   text-align: center;
   font-size: 16px;
@@ -77,6 +86,10 @@ h4{
   font-family: 'Quicksand', sans-serif;
   text-align: center;
   font-size: 12px;
+}
+
+p{
+  font-family: 'Quicksand', sans-serif;
 }
 
 button {
@@ -113,6 +126,23 @@ form, #chat-input{
 
 ul{
   list-style-type: none; 
-  text-align: center;
   font-family: 'Quicksand', sans-serif;
+}
+
+#square {
+  width: 640px;
+  height: 400px;
+  background: #678AFE;
+  position: absolute;
+  top: 120px;
+  border-radius: 3px;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#mid-panel{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

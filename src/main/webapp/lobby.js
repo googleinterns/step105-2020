@@ -66,7 +66,7 @@ channel.bind(PUSHER_LOBBY_CHANNEL_NAME, function (data) {
 
 // Appends text node to list node, returns list node.
 function createUsernameElement(username) {
-  var node = document.createElement("li");
+  var node = document.createElement("h4");
   var textnode = document.createTextNode(username);
   node.appendChild(textnode);
   return node;

@@ -78,9 +78,9 @@ async function loadScore() {
   let userPoints = await userPointsResponse.json();
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
-  scoreBox.innerHTML = "";
+  scoreBox.innerHTML = '<h3>Points</h3>';
   for (let user of users) {
-    let newPointItem = `<p class="user-point"><span class="username">${user}: </span>${userPoints[user]}</p>`;
+    let newPointItem = `<h2 class="user-point"><span class="username">${user}: </span>${userPoints[user]}</h2>`;
     scoreBox.insertAdjacentHTML("beforeend", newPointItem);
   }
 }
@@ -88,6 +88,7 @@ async function loadScore() {
 function updateScore(data) {
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML = '<h3>Chat</h3>';
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
@@ -176,11 +177,13 @@ function setTimer() {
   let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
+    document.getElementById("square").style.display = "flex";
     timer.innerHTML =
-      "Time left in round: " + Math.floor((endTime - now) / ONE_SECOND) + "s";
+      "Time left to guess: " + Math.floor((endTime - now) / ONE_SECOND) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       timer.innerHTML = "Round Over";
+      document.getElementById("square").style.display = "none";
     }
   }
 }
