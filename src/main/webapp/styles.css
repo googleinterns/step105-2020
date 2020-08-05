@@ -17,7 +17,7 @@
 
 #chatbox {
   background: var(--chat-bg);
-  height: 500px;
+  height: 450px;
   margin: 10px 0;
   overflow-y: scroll;
   padding: 5px 10px;
@@ -27,6 +27,7 @@
 #container {
   display: flex;
   justify-content: space-evenly;
+  width: 1024px;
 }
 
 #score-box {
@@ -51,4 +52,67 @@
 
 .username {
   font-weight: bold;
+}
+
+h1{
+  font-family: 'Bungee Shade', cursive;
+  color: #f9bf01;
+  font-size: 48px;
+  text-align:center;
+}
+
+h3{
+  font-family: 'Quicksand', sans-serif;
+  text-align: center;
+  font-size: 16px;
+}
+
+h3{
+  font-family: 'Quicksand', sans-serif;
+  color: #4301f9;
+  text-align: center;
+}
+
+h4{
+  font-family: 'Quicksand', sans-serif;
+  text-align: center;
+  font-size: 12px;
+}
+
+button {
+  background-color: #01b7f9;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
+  border-radius: 8px;
+}
+
+button:hover {
+  background-color: white;
+  border: 2px solid #01b7f9;
+  color: #01b7f9;
+}
+
+#body{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  height: 700px;
+}
+
+form, #chat-input{
+  display:flex;
+  flex-direction:column;
+  align-items: center;
+}
+
+ul{
+  list-style-type: none; 
+  text-align: center;
+  font-family: 'Quicksand', sans-serif;
 }

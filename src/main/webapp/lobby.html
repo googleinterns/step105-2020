@@ -2,20 +2,30 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Song Guessing Game</title>
+    <title>Guess That Song!</title>
     <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
     <script src="common-functions.js"></script>
     <script src="lobby.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body onload="loadUsernames()">
     <div>
+      <h1>Guess That Song!</h1>
+      </div>
+    <div id="body">
+     <div>
+    <h3 id ="url"></h3>
+    </div>
+    <div>
+      <h2>Players:</h2>
         <ul id="user-list"></ul>
     </div>
     <div>
+      <br>
       <button id="start-game">Start Game</button>
     </div>
-    <div>
-      <p id="url"></p>
     </div>
   </body>
 </html>

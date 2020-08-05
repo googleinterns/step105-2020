@@ -75,5 +75,5 @@ function createUsernameElement(username) {
 window.addEventListener("DOMContentLoaded", () => {
   // Displays url on lobby page.
   document.getElementById("url").innerHTML =
-    "Share the link!:<br>" + window.location.href;
+    "Invite other players to join your room with this link:<br>" + window.location.href;
 });
