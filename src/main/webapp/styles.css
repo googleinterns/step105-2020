@@ -55,10 +55,13 @@ h1{
 h3{
   font-family: 'Quicksand', sans-serif;
   color: #4301f9;
+  text-align: center;
 }
 
 h4{
   font-family: 'Quicksand', sans-serif;
+  text-align: center;
+  font-size: 12px;
 }
 
 button {
