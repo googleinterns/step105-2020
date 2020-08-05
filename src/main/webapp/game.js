@@ -88,7 +88,6 @@ async function loadScore() {
 function updateScore(data) {
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
-  chatbox.innerHTML = "<h3>Chat</h3>";
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
