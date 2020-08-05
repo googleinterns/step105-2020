@@ -65,7 +65,7 @@ async function loadScore() {
   let scoreBox = document.getElementById("score-box");
   scoreBox.innerHTML = '<h3>Points</h3>';
   for (let user of users) {
-    let newPointItem = `<h4 class="user-point"><span class="username">${user}: </span>${userPoints[user]}</h4>`;
+    let newPointItem = `<h2 class="user-point"><span class="username">${user}: </span>${userPoints[user]}</h2>`;
     scoreBox.insertAdjacentHTML("beforeend", newPointItem);
   }
 }
@@ -84,7 +84,7 @@ function createChatItem(data) {
   let message = data.message;
   let username = data.username;
   let messageType = CSS_MESSAGE_CLASS_DICT[data.messageType];
-  return `<h4 class="${messageType}"><span class="username">${username}: </span>${message}</h4>`;
+  return `<p class="${messageType}"><span class="username">${username}: </span>${message}</p>`;
 }
 
 async function addToChat() {
@@ -162,11 +162,13 @@ function setTimer() {
   let timer = document.getElementById("timer");
   let now = new Date().getTime();
   if (startTime > 0 && now >= startTime) {
+    document.getElementById("square").style.display = "flex";
     timer.innerHTML =
-      "Time left in round: " + Math.floor((endTime - now) / ONE_SECOND) + "s";
+      "Time left to guess: " + Math.floor((endTime - now) / ONE_SECOND) + "s";
     if (now >= endTime) {
       clearInterval(Timer);
       timer.innerHTML = "Round Over";
+      document.getElementById("square").style.display = "none";
     }
   }
 }
