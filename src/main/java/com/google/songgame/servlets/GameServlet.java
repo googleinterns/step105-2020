@@ -56,7 +56,10 @@ public final class GameServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> gamePostParameters = readJSONFromRequest(request);
     String roomId = gamePostParameters.get("roomId");
-    createGame(roomId);
+    Entity currentGame = RoomLoader.getCurrentGameFromRoom(roomId);
+    if (currentGame == null) {
+      createGame(roomId);
+    }
   }
 
   private void createGame(String roomId) {
