@@ -31,6 +31,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.songgame.data.GuessChecker;
+import com.google.songgame.data.RoomLoader;
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -77,7 +78,8 @@ public final class ChatServlet extends HttpServlet {
     Map<String, String> response = new HashMap<String, String>();
     String userId = data.get("userId");
     String roomId = data.get("roomId");
-    Entity currentGame = getCurrentGame(roomId);
+    Entity currentRoom = RoomLoader.getRoom(roomId);
+    Entity currentGame = RoomLoader.getCurrentGameFromRoom(roomId);
     EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
     Entity currentUser = getUser(userId);
 
@@ -89,8 +91,8 @@ public final class ChatServlet extends HttpServlet {
     } else if (GuessChecker.hasUserPreviouslyGuessedCorrect(currentUser, currentGame)) {
       messageType = "spectator";
     } else if (GuessChecker.isCorrectGuess(message, currentGame)) {
+      currentGame = GuessChecker.assignUserPoints(currentUser, currentGame, currentRoom);
       currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
-      currentGame = GuessChecker.assignUserPoints(currentUser, currentGame);
       datastore.put(currentGame);
       messageType = "correct";
       message = "guessed correctly!";
@@ -99,14 +101,6 @@ public final class ChatServlet extends HttpServlet {
     response.put("message", message);
     response.put("messageType", messageType);
     return response;
-  }
-
-  private Entity getCurrentGame(String roomId) {
-    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
-    Query gameQuery = new Query("Game").setFilter(roomIdFilter);
-    PreparedQuery result = datastore.prepare(gameQuery);
-    Entity currentGame = result.asSingleEntity();
-    return currentGame;
   }
 
   private String getUserId(HttpServletRequest request) throws IOException {
