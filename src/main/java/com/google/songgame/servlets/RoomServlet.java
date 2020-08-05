@@ -51,6 +51,7 @@ public final class RoomServlet extends HttpServlet {
     // Save roomId to datastore.
     Entity roomEntity = new Entity("Room");
     roomEntity.setProperty("roomId", roomProperties.get("roomId"));
+    roomEntity.setProperty("playlistUrl", roomProperties.get("playlistUrl"));
     roomEntity.setProperty("userIdList", userIdList);
 
     datastore.put(roomEntity);

@@ -1,7 +1,9 @@
 const createRoom = async (ev) => {
     ev.preventDefault();
+    let playlistUrl = document.getElementById("playlist-id").value;
     let room = {
-      roomId: Math.random().toString(36).substr(2, 9)
+      roomId: Math.random().toString(36).substr(2, 9),
+      playlistUrl: playlistUrl,
     }
   
     // Post room object.
