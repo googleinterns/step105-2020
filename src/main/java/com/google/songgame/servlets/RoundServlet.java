@@ -127,37 +127,6 @@ public final class RoundServlet extends HttpServlet {
     return videoEntity;
   }
 
-  // private EmbeddedEntity getNewRound(Entity game) {
-  //   ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-  //   EmbeddedEntity video = getVideoEntity(game);
-  //   EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
-  //   long round = (long) game.getProperty("roundNumber");
-  //   game.setProperty("roundNumber", round + 1);
-
-  //   EmbeddedEntity currentRound = new EmbeddedEntity();
-  //   currentRound.setProperty("video", video);
-  //   currentRound.setProperty("userGuessStatuses", userGuessStatuses);
-
-  //   return currentRound;
-  // }
-
-  // private EmbeddedEntity getVideoEntity(Entity game) {
-  //   YoutubeParser parser = new YoutubeParser();
-  //   ArrayList<String> playlist = (ArrayList) game.getProperty("playlist");
-  //   long round = (long) game.getProperty("roundNumber");
-  //   String videoId = playlist.get((int) round);
-  //   Video video = parser.getVideoFromVideoId(videoId);
-  //   String unformattedVideoTitle = video.getSnippet().getTitle();
-  //   String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
-
-  //   EmbeddedEntity videoEntity = new EmbeddedEntity();
-
-  //   videoEntity.setProperty("videoId", videoId);
-  //   videoEntity.setProperty("title", videoTitle);
-
-  //   return videoEntity;
-  // }
-
   private EmbeddedEntity createUserGuessStatuses(String roomId) {
     EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
 
