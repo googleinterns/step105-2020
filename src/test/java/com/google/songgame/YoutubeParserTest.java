@@ -64,27 +64,4 @@ public class YoutubeParserTest {
     thrown.expectMessage(testPlaylistUrl + " is not a valid YouTube Playlist URL.");
     youtubeParser.getPlaylistIdFromUrl(testPlaylistUrl);
   }
-
-  @Test
-  public void extractVideoIdFromJson_nonIdData() {
-    String testData = ": [ {  \"kind\": \"youtube#playlistItem";
-    Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-
-    testData = ", \"channelId\": \"UCvceBgMIpKb4zK1ss-Sh90w";
-    Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-  }
-
-  @Test
-  public void extractVideoIdFromJson() {
-    String testData =
-        "videoId\":\"GvgqDSnpRQM\"    }  }, \"contentDetails\": {  \"videoId\": \"GvgqDSnpRQM";
-    String videoId = "GvgqDSnpRQM";
-    Assert.assertEquals(videoId, youtubeParser.extractVideoIdFromJson(testData));
-  }
-
-  @Test
-  public void extractVideoIdFromJson_nonPlaylistId() {
-    String testData = "id\": \"UExCQ0YyREFDNkZGQjU3NERFLjU5NzE2QkNERURDRTE5NDc=";
-    Assert.assertEquals("", youtubeParser.extractVideoIdFromJson(testData));
-  }
 }

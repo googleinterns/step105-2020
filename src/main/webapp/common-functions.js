@@ -12,5 +12,11 @@ function parseRoomId(url) {
     return roomId;
   }
 
+function getRoomId() {
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+  return paramString;
+}
+
 // Testing exports
 exports.parseRoomId = parseRoomId;

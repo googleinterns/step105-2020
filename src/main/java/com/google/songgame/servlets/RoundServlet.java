@@ -5,6 +5,7 @@ import com.pusher.rest.Pusher;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+// TODO: @salilnadkarni, remove once helper class is merged in
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import java.util.stream.Collectors;
@@ -16,19 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.api.services.youtube.model.Video;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EmbeddedEntity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.songgame.data.YoutubeParser;
 import com.google.songgame.data.TitleFormatter;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.FetchOptions;
+import com.google.songgame.data.RoomLoader;
 import java.util.HashMap;
 import java.lang.Boolean;
 
@@ -42,9 +36,9 @@ public final class RoundServlet extends HttpServlet {
   private static final String PUSHER_ROUND_CHANNEL_NAME = "start-round";
   private static final int TIME_OFFSET = 3000;
   private static final int ROUND_LENGTH = 30000;
-  private static final int MAX_USERS = 20;
   private Pusher pusher;
   private Gson gson;
+  // TODO: @salilnadkarni, remove once helper class merged in
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
   DatastoreService datastore;
@@ -63,48 +57,33 @@ public final class RoundServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> roundPostParameters = readJSONFromRequest(request);
     String roomId = roundPostParameters.get("roomId");
-    Entity game = getCurrentGame(roomId);
-
+    Entity game = RoomLoader.getCurrentGameFromRoom(roomId);
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
     if (isNewGame(game) || roundOver(currentRound)) {
       currentRound = getNewRound(game);
 
       game.setProperty("currentRound", currentRound);
       datastore.put(game);
-    }
 
-    pusher.trigger(
-        PUSHER_APPLICATION_NAME,
-        PUSHER_ROUND_CHANNEL_NAME,
-        Collections.singletonMap("message", "Start Round"));
+      pusher.trigger(
+          PUSHER_APPLICATION_NAME,
+          PUSHER_ROUND_CHANNEL_NAME,
+          Collections.singletonMap("message", "Start Game"));
+    }
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String roomId = request.getParameter("roomId");
-    Entity game = getCurrentGame(roomId);
+    Entity game = RoomLoader.getCurrentGameFromRoom(roomId);
 
-    EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
-    Map<String, Object> roundMap = createRoundMap(game, currentRound);
+    if (!isNewGame(game)) {
+      EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
+      Map<String, Object> roundMap = createRoundMap(game, currentRound);
 
-    String json = new Gson().toJson(roundMap);
-    response.getWriter().println(json);
-  }
-
-  @Override
-  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // pusher.trigger(
-    //     PUSHER_APPLICATION_NAME,
-    //     PUSHER_ROUND_CHANNEL_NAME,
-    //     Collections.singletonMap("message", "Start Round"));
-  }
-
-  private Entity getCurrentGame(String roomId) {
-    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
-    Query gameQuery = new Query("Game").setFilter(roomIdFilter);
-    PreparedQuery result = datastore.prepare(gameQuery);
-    Entity currentGame = result.asSingleEntity();
-    return currentGame;
+      String json = new Gson().toJson(roundMap);
+      response.getWriter().println(json);
+    }
   }
 
   private boolean isNewGame(Entity game) {
@@ -147,8 +126,8 @@ public final class RoundServlet extends HttpServlet {
   private EmbeddedEntity createUserGuessStatuses(String roomId) {
     EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
 
-    Entity room = getRoom(roomId);
-    List<Entity> users = getUsersInRoom(room);
+    Entity room = RoomLoader.getRoom(roomId);
+    List<Entity> users = RoomLoader.getUsersInRoom(room);
 
     for (Entity user : users) {
       String userId = (String) user.getProperty("userId");
@@ -174,22 +153,7 @@ public final class RoundServlet extends HttpServlet {
     return roundMap;
   }
 
-  private Entity getRoom(String roomId) {
-    Filter roomIdFilter = new FilterPredicate("roomId", FilterOperator.EQUAL, roomId);
-    Query roomQuery = new Query("Room").setFilter(roomIdFilter);
-    PreparedQuery result = datastore.prepare(roomQuery);
-    Entity currentRoom = result.asSingleEntity();
-    return currentRoom;
-  }
-
-  private List<Entity> getUsersInRoom(Entity room) {
-    List<String> userIds = (List<String>) room.getProperty("userIdList");
-    Filter usersInRoomFilter = new FilterPredicate("userId", FilterOperator.IN, userIds);
-    Query usersInRoomQuery = new Query("User").setFilter(usersInRoomFilter);
-    PreparedQuery result = datastore.prepare(usersInRoomQuery);
-    return result.asList(FetchOptions.Builder.withLimit(MAX_USERS));
-  }
-
+  // TODO: @salilnadkarni, replace with helper class once merged
   private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
     String requestJSONString = request.getReader().lines().collect(Collectors.joining());
     Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);

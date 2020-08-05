@@ -2,13 +2,17 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_ROUND_CHANNEL_NAME = "start-round";
-
-let url = window.location.href;
-let roomId = parseRoomId(url);
+const ROOM_ID = getRoomId();
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("start-game").addEventListener("click", startGame);
 });
+
+function redirectToGamePage() {
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+  window.location.href = `game.html?roomId=${paramString}`;
+}
 
 // Connect to Pusher
 var pusher = new Pusher(CLIENT_KEY, {
@@ -22,7 +26,7 @@ channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
 
 async function startGame() {
   data = {
-    roomId: roomId,
+    roomId: ROOM_ID,
   };
 
   await fetch("/game", {
@@ -37,12 +41,12 @@ async function startGame() {
 }
 
 function redirectToGamePage() {
-  window.location.href = `game.html?roomId=${roomId}`;
+  window.location.href = `game.html?roomId=${ROOM_ID}`;
 }
 
 // Fetches list of usernames, appends each username to html list.
 function loadUsernames() {
-  fetch(`/room?roomId=${roomId}`)
+  fetch(`/room?roomId=${ROOM_ID}`)
     .then((response) => response.json())
     .then((users) => {
       const userList = document.getElementById("user-list");
