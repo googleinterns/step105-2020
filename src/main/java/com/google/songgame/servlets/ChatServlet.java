@@ -91,8 +91,8 @@ public final class ChatServlet extends HttpServlet {
     } else if (GuessChecker.hasUserPreviouslyGuessedCorrect(currentUser, currentGame)) {
       messageType = "spectator";
     } else if (GuessChecker.isCorrectGuess(message, currentGame)) {
-      currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
       currentGame = GuessChecker.assignUserPoints(currentUser, currentGame, currentRoom);
+      currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
       datastore.put(currentGame);
       messageType = "correct";
       message = "guessed correctly!";

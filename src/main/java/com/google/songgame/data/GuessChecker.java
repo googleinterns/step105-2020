@@ -67,11 +67,8 @@ public final class GuessChecker {
     String userId = (String) user.getProperty("userId");
     EmbeddedEntity userPoints = (EmbeddedEntity) game.getProperty("userPoints");
 
-    double numUsersGuessedCorrectRatio = getNumUsersGuessedCorrectRatio(game, room);
-
     long currentUserPoints = (Long) userPoints.getProperty(userId);
-    long addedPoints =
-        (long) Math.ceil((double) (POINTS_PER_ROUND) * (1.0 - numUsersGuessedCorrectRatio));
+    long addedPoints = getPointsForCorrectGuess(game, room);
 
     // TODO: @salilnadkarni update to change points given depending on time answered
     long updatedUserPoints = currentUserPoints + addedPoints;
@@ -80,17 +77,32 @@ public final class GuessChecker {
     return game;
   }
 
-  private static double getNumUsersGuessedCorrectRatio(Entity game, Entity room) {
-    long numUsersGuessed = 0L;
+  private static long getPointsForCorrectGuess(Entity game, Entity room) {
     EmbeddedEntity currentRound = (EmbeddedEntity) game.getProperty("currentRound");
     EmbeddedEntity userGuessStatuses =
         (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
     List<String> userIdList = (List<String>) room.getProperty("userIdList");
+
     long totalUsers = (long) userIdList.size();
+    long previousCorrectGuesses = getNumberPreviousCorrectGuesses(userGuessStatuses, userIdList);
+    double ratio = 0;
+
+    if (previousCorrectGuesses == 0) {
+      ratio = 1.5;
+    } else {
+      ratio = 1.0 - ((double) previousCorrectGuesses / (double) totalUsers);
+    }
+
+    return (long) Math.ceil((double) POINTS_PER_ROUND * ratio);
+  }
+
+  private static long getNumberPreviousCorrectGuesses(
+      EmbeddedEntity userGuessStatuses, List<String> userIdList) {
+    long numUsersGuessed = 0L;
     for (String userId : userIdList) {
       boolean userHasGuessed = (Boolean) userGuessStatuses.getProperty(userId);
       if (userHasGuessed) numUsersGuessed++;
     }
-    return (double) (numUsersGuessed - 1) / (double) numUsersGuessed;
+    return numUsersGuessed;
   }
 }
