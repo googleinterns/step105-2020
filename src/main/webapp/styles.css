@@ -124,10 +124,6 @@ form, #chat-input{
   align-items: center;
 }
 
-ul{
-  list-style-type: none; 
-  font-family: 'Quicksand', sans-serif;
-}
 
 #square {
   width: 640px;
@@ -145,4 +141,14 @@ ul{
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#end{
+  background-color: red;
+}
+
+#end:hover{
+  background-color: white;
+  border: 2px solid red;
+  color: red;
 }
