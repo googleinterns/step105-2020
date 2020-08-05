@@ -59,7 +59,7 @@ function updateChat(data) {
 
 async function loadScore() {
   // MAKE A GET REQUEST TO LOAD THE SCORE
-  let userPointsResponse = await fetch("/game?points=true");
+  let userPointsResponse = await fetch(`/game?roomId=${ROOM_ID}`);
   let userPoints = await userPointsResponse.json();
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
@@ -167,5 +167,10 @@ function setTimer() {
     }
   }
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadScore();
+  embedVideo();
+});
 
 // Add testing exports here

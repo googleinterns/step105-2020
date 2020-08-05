@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -50,6 +51,24 @@ public final class GameServlet extends HttpServlet {
   public void init() {
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String roomId = request.getParameter("roomId");
+    Entity currentGame = RoomLoader.getCurrentGameFromRoom(roomId);
+    Entity currentRoom = RoomLoader.getRoom(roomId);
+    List<Entity> users = RoomLoader.getUsersInRoom(currentRoom);
+    EmbeddedEntity userPoints = (EmbeddedEntity) currentGame.getProperty("userPoints");
+    Map<String, Long> userPointsWithUsernames = new HashMap<String, Long>();
+    for (Entity user : users) {
+      String userId = (String) user.getProperty("userId");
+      String username = (String) user.getProperty("username");
+      long points = (Long) userPoints.getProperty(userId);
+      userPointsWithUsernames.put(username, points);
+    }
+    String json = new Gson().toJson(userPointsWithUsernames);
+    response.getWriter().println(json);
   }
 
   @Override
