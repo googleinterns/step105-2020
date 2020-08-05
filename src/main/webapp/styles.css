@@ -17,7 +17,7 @@
 
 #chatbox {
   background: var(--chat-bg);
-  height: 500px;
+  height: 450px;
   margin: 10px 0;
   overflow-y: scroll;
   padding: 5px 10px;
@@ -27,6 +27,7 @@
 #container {
   display: flex;
   justify-content: space-evenly;
+  width: 1024px;
 }
 
 .message-anouncement {
@@ -48,11 +49,16 @@
 h1{
   font-family: 'Bungee Shade', cursive;
   color: #f9bf01;
+  font-size: 48px;
 }
 
 h3{
   font-family: 'Quicksand', sans-serif;
   color: #4301f9;
+}
+
+h4{
+  font-family: 'Quicksand', sans-serif;
 }
 
 button {
@@ -78,6 +84,8 @@ button:hover {
   display:flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-evenly;
+  height: 768px;
 }
 
 form, #chat-input{
