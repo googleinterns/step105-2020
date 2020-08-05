@@ -5,6 +5,7 @@
     <title>Song Guessing Game</title>
     <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="common-functions.js"></script>      
     <script src="game.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
@@ -12,8 +13,13 @@
     <div id="container">
       <div id="score-box">
       </div>
-      <iframe id="player" type="text/html" width="640" height="390" src="" 
-          frameborder="0" enablejsapi="true" allow="autoplay"></iframe>
+      <div id="mid-panel">
+         <iframe id="player" type="text/html" width="640" height="390"
+            src="https://www.youtube.com/embed/" frameborder="0"
+            enablejsapi="true" allow="autoplay"></iframe>
+         <div id="timer"></div>
+         <button id="start-round">New Round</button>
+      </div>
       <div id="chat">
         <div id="chatbox"></div>
         <div id="chat-input">
@@ -25,6 +31,5 @@
           <button onclick="addToChat()">click</button>
         </div>
       </div>
-    </div>
-  </body>
+   </body>
 </html>

@@ -14,14 +14,10 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EmbeddedEntity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import com.google.songgame.data.TitleFormatter;
+import com.google.songgame.data.RoomLoader;
 import com.google.songgame.data.YoutubeParser;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -29,10 +25,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.Random;
+// TODO: @salilnadkarni, remove once helper class merged in
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +43,8 @@ public final class GameServlet extends HttpServlet {
 
   private DatastoreService datastore;
   private Gson gson;
+  // TODO: @salilnadkarni, remove once helper class merged in
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
   @Override
   public void init() {
@@ -52,104 +53,27 @@ public final class GameServlet extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Entity game = getCurrentGame();
-
-    if (request.getParameter("points").equals("false")) {
-      EmbeddedEntity newRound = getNewRound(game);
-      game.setProperty("currentRound", newRound);
-      datastore.put(game);
-    }
-
-    EmbeddedEntity userPoints = (EmbeddedEntity) game.getProperty("userPoints");
-    ArrayList<String> userIds = new ArrayList<String>(userPoints.getProperties().keySet());
-    Map<String, Long> userPointsWithUsernames = new HashMap<String, Long>();
-    Query usersInRoomQuery = new Query("User").addFilter("userId", FilterOperator.IN, userIds);
-    PreparedQuery result = datastore.prepare(usersInRoomQuery);
-    for (Entity user : result.asIterable()) {
-      String username = (String) user.getProperty("username");
-      long points = (Long) userPoints.getProperty((String) user.getProperty("userId"));
-      userPointsWithUsernames.put(username, points);
-    }
-
-    // TODO: once room updates are pushed, change so map of usernames to points is sent over JSON
-    String json = new Gson().toJson(userPointsWithUsernames);
-    response.getWriter().println(json);
-  }
-
-  private Entity getCurrentGame() {
-    Query gameQuery = new Query("Game").addSort("creationTime", SortDirection.DESCENDING);
-    PreparedQuery result = datastore.prepare(gameQuery);
-    Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
-
-    return currentGame;
-  }
-
-  private EmbeddedEntity getNewRound(Entity game) {
-    ArrayList<String> playlist = (ArrayList<String>) game.getProperty("playlist");
-    EmbeddedEntity video = getVideoEntity(playlist);
-    EmbeddedEntity userGuessStatuses = createUserGuessStatuses();
-
-    EmbeddedEntity currentRound = new EmbeddedEntity();
-    currentRound.setProperty("video", video);
-    currentRound.setProperty("userGuessStatuses", userGuessStatuses);
-
-    return currentRound;
-  }
-
-  private EmbeddedEntity getVideoEntity(ArrayList<String> playlist) {
-    YoutubeParser parser = new YoutubeParser();
-    Video video = parser.getRandomVideoFromPlaylist(playlist);
-    String videoId = video.getId();
-    String unformattedVideoTitle = video.getSnippet().getTitle();
-    String videoTitle = TitleFormatter.formatVideoTitle(unformattedVideoTitle);
-    EmbeddedEntity videoEntity = new EmbeddedEntity();
-    videoEntity.setProperty("videoId", videoId);
-    videoEntity.setProperty("title", videoTitle);
-
-    return videoEntity;
-  }
-
-  private EmbeddedEntity createUserGuessStatuses() {
-    EmbeddedEntity userGuessStatuses = new EmbeddedEntity();
-    // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
-    Query query = new Query("User");
-    PreparedQuery results = datastore.prepare(query);
-
-    for (Entity user : results.asIterable()) {
-      String userId = (String) user.getProperty("userId");
-      userGuessStatuses.setProperty(userId, false);
-    }
-
-    return userGuessStatuses;
-  }
-
-  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String playlistUrl = getParameter(request, "playlist-link", "");
-    createGame(playlistUrl);
-    response.sendRedirect("/game.html");
-  }
-
-  /**
-   * Returns the request parameter, or the default value if the parameter was not specified by the
-   * client
-   */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
+    Map<String, String> gamePostParameters = readJSONFromRequest(request);
+    String roomId = gamePostParameters.get("roomId");
+    Entity currentGame = RoomLoader.getCurrentGameFromRoom(roomId);
+    if (currentGame == null) {
+      createGame(roomId);
     }
-    return value;
   }
 
-  private void createGame(String playlistUrl) {
+  private void createGame(String roomId) {
     YoutubeParser parser = new YoutubeParser();
+
+    Entity currentRoom = RoomLoader.getRoom(roomId);
+    String playlistUrl = (String) currentRoom.getProperty("playlistUrl");
+
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
     long creationTime = System.currentTimeMillis();
-    EmbeddedEntity userPoints = createUserPoints();
+    EmbeddedEntity userPoints = createUserPoints(currentRoom);
 
     Entity gameEntity = new Entity("Game");
+    gameEntity.setProperty("roomId", roomId);
     gameEntity.setProperty("playlist", playlistVideoIds);
     gameEntity.setProperty("creationTime", creationTime);
     gameEntity.setProperty("userPoints", userPoints);
@@ -158,17 +82,22 @@ public final class GameServlet extends HttpServlet {
     datastore.put(gameEntity);
   }
 
-  private EmbeddedEntity createUserPoints() {
+  private EmbeddedEntity createUserPoints(Entity currentRoom) {
     EmbeddedEntity userPoints = new EmbeddedEntity();
     // TODO: @salilnadkarni, add more specific query to only get users with correct roomId
-    Query query = new Query("User");
-    PreparedQuery results = datastore.prepare(query);
-
-    for (Entity user : results.asIterable()) {
+    List<Entity> users = RoomLoader.getUsersInRoom(currentRoom);
+    for (Entity user : users) {
       String userId = (String) user.getProperty("userId");
       userPoints.setProperty(userId, 0L);
     }
 
     return userPoints;
+  }
+
+  // TODO: @salilnadkarni, remove for helper class once that's merged in
+  private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
+    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
+    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
+    return jsonData;
   }
 }

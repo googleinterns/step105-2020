@@ -1,29 +1,48 @@
 const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
-const PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+const PUSHER_ROUND_CHANNEL_NAME = "start-round";
+const ONE_SECOND = 1000;
+const PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
 const CSS_MESSAGE_CLASS_DICT = {
   guess: "",
   spectator: "message-spectator",
   correct: "message-correct",
   announcement: "message-announcement",
 };
+const ROOM_ID = getRoomId();
+var videoId = "";
+var startTime = 0;
+var endTime = 0;
 
-async function addToChat() {
-  let chatInputField = document.getElementById("chat-input-box");
-  let chatInput = chatInputField.value;
+window.addEventListener("DOMContentLoaded", () => {
+  embedVideo();
+  createTimer();
+  document.getElementById("start-round").addEventListener("click", loadRound);
+});
 
-  chatInputField.value = "";
-  chatInputField.focus();
+// Connect Pusher
+var pusher = new Pusher(CLIENT_KEY, {
+  cluster: "us2",
+});
+var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
 
-  let data = {
-    message: chatInput,
+channel.bind(PUSHER_CHAT_CHANNEL_NAME_BASE + ROOM_ID, function (data) {
+  updateChat(data);
+});
+
+// when the start round button is clicked
+channel.bind(PUSHER_ROUND_CHANNEL_NAME, function () {
+  retrieveRound();
+  createTimer();
+});
+
+async function loadRound() {
+  data = {
+    roomId: ROOM_ID,
   };
-  await fetch("/chat", {
+  await fetch("/round", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
   });
 }
@@ -67,42 +86,59 @@ function createChatItem(data) {
   return `<p class="${messageType}"><span class="username">${username}: </span>${message}</p>`;
 }
 
-// Connect Pusher
-Pusher.logToConsole = false;
+async function addToChat() {
+  let chatInputField = document.getElementById("chat-input-box");
+  let chatInput = chatInputField.value;
 
-var pusher = new Pusher(CLIENT_KEY, {
-  cluster: "us2",
-});
+  chatInputField.value = "";
+  chatInputField.focus();
 
-var channel = pusher.subscribe(PUSHER_APPLICATION_NAME);
-channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
-  updateChat(data);
-});
+  let data = {
+    message: chatInput,
+  };
+  await fetch("/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+}
 
-function embedPlaylist() {
-  fetch("/game")
-    .then((response) => response.json())
-    .then((videoIdResponse) => {
-      videoId = videoIdResponse;
+document.onkeypress = function (e) {
+  if (e.key === "Enter") {
+    //checks whether the pressed key is "Enter"
+    addToChat();
+  }
+};
 
-      document.getElementById("player").src =
-        "https://www.youtube.com/embed/" +
-        videoId +
-        "?version=3&end=10&loop=1&playlist=" +
-        videoId +
-        "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+async function retrieveRound() {
+  let response = await fetch(`/round?roomId=${ROOM_ID}`);
+  let roundMap = await response.json();
+  videoId = roundMap.videoId;
+  startTime = roundMap.startTime;
+  endTime = roundMap.endTime;
+}
 
-      window.onYouTubeIframeAPIReady = function () {
-        window.player = new window.YT.Player("player", {
-          events: {
-            onStateChange: onPlayerStateChange,
-          },
-          playerVars: {
-            rel: 0,
-          },
-        });
-      };
+async function embedVideo() {
+  await retrieveRound();
+  document.getElementById("player").src =
+    "https://www.youtube.com/embed/" +
+    videoId +
+    "?version=3&end=10&loop=1&playlist=" +
+    videoId +
+    "&enablejsapi=1&autoplay=1&controls=0&modestbranding=1&disablekb=1";
+
+  window.onYouTubeIframeAPIReady = function () {
+    window.player = new window.YT.Player("player", {
+      events: {
+        onStateChange: onPlayerStateChange,
+      },
+      playerVars: {
+        rel: 0,
+      },
     });
+  };
 }
 
 function onPlayerStateChange(event) {
@@ -115,11 +151,21 @@ function onPlayerStateChange(event) {
   }
 }
 
-document.onkeypress = function (e) {
-  if (e.key === "Enter") {
-    //checks whether the pressed key is "Enter"
-    addToChat();
+function createTimer() {
+  Timer = setInterval("setTimer()", ONE_SECOND);
+}
+
+function setTimer() {
+  let timer = document.getElementById("timer");
+  let now = new Date().getTime();
+  if (startTime > 0 && now >= startTime) {
+    timer.innerHTML =
+      "Time left in round: " + Math.floor((endTime - now) / ONE_SECOND) + "s";
+    if (now >= endTime) {
+      clearInterval(Timer);
+      timer.innerHTML = "Round Over";
+    }
   }
-};
+}
 
 // Add testing exports here
