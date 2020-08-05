@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.cloud.datastore.Datastore;
+import java.util.Collections;
 
 @WebServlet("/game")
 public final class GameServlet extends HttpServlet {
@@ -88,16 +90,18 @@ public final class GameServlet extends HttpServlet {
     String playlistUrl = (String) currentRoom.getProperty("playlistUrl");
 
     ArrayList<String> playlistVideoIds = parser.getPlaylistVideoIds(playlistUrl);
+    Collections.shuffle(playlistVideoIds);
     long creationTime = System.currentTimeMillis();
     EmbeddedEntity userPoints = createUserPoints(currentRoom);
+    long roundNumber = 0;
 
     Entity gameEntity = new Entity("Game");
     gameEntity.setProperty("roomId", roomId);
     gameEntity.setProperty("playlist", playlistVideoIds);
     gameEntity.setProperty("creationTime", creationTime);
     gameEntity.setProperty("userPoints", userPoints);
+    gameEntity.setProperty("roundNumber", roundNumber);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(gameEntity);
   }
 
