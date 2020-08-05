@@ -77,12 +77,11 @@ button:hover {
 #body{
   display:flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  align-items: center;
 }
 
 form, #chat-input{
   display:flex;
   flex-direction:column;
-  justify-content: space-evenly;
   align-items: center;
 }
