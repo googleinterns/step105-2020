@@ -5,10 +5,10 @@
   --spectator-color: #daa520;
 }
 
-#chat {
+#chat, #score {
   align-items: center;
-  border-width: 1px;
-  border-style: solid;
+  border: 2px solid #4301f9;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -27,12 +27,17 @@
 #container {
   display: flex;
   justify-content: space-evenly;
-  width: 1024px;
+}
+
+#room-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 1080px;
 }
 
 #score-box {
   background: var(--chat-bg);
-  height: 500px;
+  height: 450px;
   margin: 10px 0;
   padding: 5px 10px;
   width: 300px;
@@ -61,7 +66,7 @@ h1{
   text-align:center;
 }
 
-h3{
+h2{
   font-family: 'Quicksand', sans-serif;
   text-align: center;
   font-size: 16px;
@@ -113,6 +118,14 @@ form, #chat-input{
 
 ul{
   list-style-type: none; 
-  text-align: center;
   font-family: 'Quicksand', sans-serif;
+}
+
+#square {
+  width: 640px;
+  height: 400px;
+  background: #678AFE;
+  position: absolute;
+  top: 120px;
+  border-radius: 3px;
 }

@@ -63,9 +63,9 @@ async function loadScore() {
   let userPoints = await userPointsResponse.json();
   let users = Object.keys(userPoints);
   let scoreBox = document.getElementById("score-box");
-  scoreBox.innerHTML = "";
+  scoreBox.innerHTML = '<h3>Points</h3>';
   for (let user of users) {
-    let newPointItem = `<p class="user-point"><span class="username">${user}: </span>${userPoints[user]}</p>`;
+    let newPointItem = `<h4 class="user-point"><span class="username">${user}: </span>${userPoints[user]}</h4>`;
     scoreBox.insertAdjacentHTML("beforeend", newPointItem);
   }
 }
@@ -73,6 +73,7 @@ async function loadScore() {
 function updateScore(data) {
   let newChatItem = createChatItem(data);
   let chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML = '<h3>Chat</h3>';
   chatbox.insertAdjacentHTML("beforeend", newChatItem);
   // Autoscroll to bottom on chat update
   let elem = document.getElementById("chatbox");
@@ -83,7 +84,7 @@ function createChatItem(data) {
   let message = data.message;
   let username = data.username;
   let messageType = CSS_MESSAGE_CLASS_DICT[data.messageType];
-  return `<p class="${messageType}"><span class="username">${username}: </span>${message}</p>`;
+  return `<h4 class="${messageType}"><span class="username">${username}: </span>${message}</h4>`;
 }
 
 async function addToChat() {
