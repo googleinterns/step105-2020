@@ -2,20 +2,40 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Song Guessing Game</title>
+    <title>Guess That Song!</title>
     <script src="common-functions.js"></script>
     <script src="join-room.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
+    <div id="body">
+    <div>
+    <h1>Guess That Song!</h1>
+    </div>
+    <div id="container">
+    <div>
+    <h3>Enter a Youtube Playlist Link to Create a Room</h3>
     <form action="/game" method="POST">
       <input id="playlist-id" name="playlist-link" type="text"
-      placeholder="Enter YouTube playlist"></input>
+      placeholder="YouTube Playlist Link"></input>
+      <br>
+       <br>
       <button id="create-room-btn">Create Room</button>
     </form>
+    </div>
+    <div>
     <form>
+      <h3>Enter a Room Link to Join an Existing Room</h3>
        <input id="room-url-id" name="room-url" type="url"
-       placeholder="Enter room to join"></input>
+       placeholder="Room Link"></input>
+       <br>
+       <br>
       <button id="join-room-btn">Join Room</button>
     </form>
+    </div>
+    </div>
+    </div>
   </body>
 </html>

@@ -2,14 +2,27 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Song Guessing Game</title>
+    <title>Guess That Song!</title>
     <script src="user.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
+    <div id="body">
+      <div>
+      <h1>Guess That Song!</h1>
+    </div>
+    <div>
+     <h3>Enter Your Name to Begin</h3>
     <form action="/user" method="POST">
       <input id="new-player-id" name="user-name" type="text"
-       placeholder="Enter your name"></input>
+       placeholder="Name"></input>
+       <br>
+       <br>
       <button id="new-player-btn">Enter</button>
     </form>
+    </div>
+    </div>
   </body>
 </html>

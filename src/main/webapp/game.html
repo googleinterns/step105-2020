@@ -2,14 +2,20 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Song Guessing Game</title>
+    <title>Guess That Song!</title>
     <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="common-functions.js"></script>
     <script src="game.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body onload="embedPlaylist()">
+    <div id="body">
+    <div>
+    <h1>Guess That Song!</h1>
+    </div>
     <div id="container">
       <iframe id="player" type="text/html" width="640" height="390" src="" 
           frameborder="0" enablejsapi="true" allow="autoplay"></iframe>
@@ -20,9 +26,12 @@
               type="text"
               id="chat-input-box"
               placeholder="Type message here..." />
-          <button onclick="addToChat()">click</button>
+              <br>
+              <br>
+          <button onclick="addToChat()">Enter</button>
         </div>
       </div>
+    </div>
     </div>
   </body>
 </html>

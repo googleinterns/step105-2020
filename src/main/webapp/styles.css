@@ -44,3 +44,45 @@
 .username {
   font-weight: bold;
 }
+
+h1{
+  font-family: 'Bungee Shade', cursive;
+  color: #f9bf01;
+}
+
+h3{
+  font-family: 'Quicksand', sans-serif;
+  color: #4301f9;
+}
+
+button {
+  background-color: #01b7f9;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
+  border-radius: 8px;
+}
+
+button:hover {
+  background-color: white;
+  border: 2px solid #01b7f9;
+  color: #01b7f9;
+}
+
+#body{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+form, #chat-input{
+  display:flex;
+  flex-direction:column;
+  justify-content: space-evenly;
+  align-items: center;
+}
