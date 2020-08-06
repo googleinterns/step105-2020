@@ -53,7 +53,7 @@ public final class TitleFormatter {
                 "music video",
                 "official video",
                 "lyric video",
-                "official audio"),
+                "official audio",
                 "audio",
                 "official",
                 "featuring"));
