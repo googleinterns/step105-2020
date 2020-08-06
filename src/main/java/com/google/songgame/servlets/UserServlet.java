@@ -70,12 +70,11 @@ public final class UserServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userId = getUserId(request);
-
     Cookie[] cookies = request.getCookies();
 
     // Check if current cookie value exists
     if (cookies != null) {
+      String userId = getUserId(request);
       for (Cookie userCookie : cookies) {
         if (userCookie.getValue().equals(userId)) {
           response.sendRedirect("/join-room.html");
@@ -83,8 +82,7 @@ public final class UserServlet extends HttpServlet {
         }
       }
     } else {
-      response.sendRedirect("/index.html");
-      return;
+      response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
   }
 
