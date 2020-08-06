@@ -6,7 +6,7 @@ const createUser = async (ev) => {
         userId: '_' + Math.random().toString(36).substr(2, 9),
     }
     // Save userId to cookie.
-    document.cookie = 'userId=' + user.userId + '; expires=' + new Date(2025, 0, 1).toUTCString();
+    document.cookie = 'userId=' + user.userId;
 
     // Post user object.
     await fetch("/user", {
@@ -19,6 +19,10 @@ const createUser = async (ev) => {
 
     // Sends user to join-room.html on button click.
     window.location.href = 'join-room.html';
+}
+
+window.onload = function() {
+  location.assign("/user");
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
