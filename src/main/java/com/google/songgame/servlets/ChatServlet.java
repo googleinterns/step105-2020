@@ -22,8 +22,12 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+<<<<<<< HEAD
 import com.google.songgame.data.JSONRequestReader;
 import com.google.songgame.data.UserCookieReader;
+=======
+import com.google.songgame.data.GuessChecker;
+>>>>>>> master
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -32,7 +36,12 @@ public final class ChatServlet extends HttpServlet {
   private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
   private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
+<<<<<<< HEAD
   private static final String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+=======
+  private static final String PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
+  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
+>>>>>>> master
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
@@ -54,7 +63,9 @@ public final class ChatServlet extends HttpServlet {
     dataFromChatClient.put("userId", userId);
 
     Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
-    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, responseForPusherChat);
+    String roomId = dataFromChatClient.get("roomId");
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME_BASE + roomId, responseForPusherChat);
     sendResponseToClient(response, "complete");
     return;
   }
@@ -63,18 +74,21 @@ public final class ChatServlet extends HttpServlet {
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
-    Entity currentGame = getCurrentGame();
-    EmbeddedEntity currentRound = (EmbeddedEntity) currentGame.getProperty("currentRound");
-
     String userId = data.get("userId");
-    String username = getUsername(userId);
+
+    Entity currentGame = getCurrentGame();
+    Entity currentUser = getUser(userId);
+
+    String username = (String) currentUser.getProperty("username");
     String message = data.get("message");
     String messageType = "guess";
 
-    if (checkIfUserPreviouslyGuessedCorrect(userId, currentRound)) {
+    if (GuessChecker.hasUserPreviouslyGuessedCorrect(currentUser, currentGame)) {
       messageType = "spectator";
-    } else if (checkIfCorrectGuess(message, currentRound)) {
-      markUserGuessedCorrectly(userId, currentRound, currentGame);
+    } else if (GuessChecker.isCorrectGuess(message, currentGame)) {
+      currentGame = GuessChecker.markUserGuessedCorrectly(currentUser, currentGame);
+      currentGame = GuessChecker.assignUserPoints(currentUser, currentGame);
+      datastore.put(currentGame);
       messageType = "correct";
       message = "guessed correctly!";
     }
@@ -98,30 +112,7 @@ public final class ChatServlet extends HttpServlet {
     Query userQuery = new Query("User").setFilter(userIdFilter);
     PreparedQuery result = datastore.prepare(userQuery);
     Entity currentUser = result.asSingleEntity();
-    return (String) currentUser.getProperty("username");
-  }
-
-  private boolean checkIfUserPreviouslyGuessedCorrect(String userId, EmbeddedEntity currentRound) {
-    EmbeddedEntity userGuessStatuses =
-        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
-    boolean userGuessStatus = (Boolean) userGuessStatuses.getProperty(userId);
-    return userGuessStatus;
-  }
-
-  private void markUserGuessedCorrectly(
-      String userId, EmbeddedEntity currentRound, Entity currentGame) {
-    EmbeddedEntity userGuessStatuses =
-        (EmbeddedEntity) currentRound.getProperty("userGuessStatuses");
-    userGuessStatuses.setProperty(userId, true);
-    currentGame.setProperty("currentRound", currentRound);
-    datastore.put(currentGame);
-  }
-
-  private boolean checkIfCorrectGuess(String message, EmbeddedEntity currentRound) {
-    EmbeddedEntity currentVideo = (EmbeddedEntity) currentRound.getProperty("video");
-    String videoTitle = (String) currentVideo.getProperty("title");
-    String guess = message.toLowerCase();
-    return guess.equals(videoTitle);
+    return currentUser;
   }
 
   private void sendResponseToClient(HttpServletResponse response, String message)

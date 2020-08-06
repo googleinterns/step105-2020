@@ -11,8 +11,7 @@ public final class UserCookieReader {
   /**
    * Helper method that reads and returns the user id stored in a cookie
    */
-  public static String getUserId(HttpServletRequest request) throws IOException {
-    Cookie[] cookies = request.getCookies();
+  public static String getUserId(Cookie[] cookies)  {
     String userId = "";
     for (Cookie cookie : cookies) {
       String name = cookie.getName();

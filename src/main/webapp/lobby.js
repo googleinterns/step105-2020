@@ -10,7 +10,9 @@ async function startGame() {
 }
 
 function redirectToGamePage() {
-  window.location.href = 'game.html';
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+  window.location.href = `game.html?roomId=${paramString}`;
 }
 
 var pusher = new Pusher(CLIENT_KEY, {
@@ -24,22 +26,27 @@ channel.bind(PUSHER_CHAT_CHANNEL_NAME, function (data) {
 
 // Fetches list of usernames, appends each username to html list.
 function loadUsernames() {
-    fetch('/user').then(response => response.json()).then((users) => {
-      const userList = document.getElementById('user-list');
-      users.forEach((username) => {
-        userList.appendChild(createUsernameElement(username));
-      })
-    });
-  }
+  // Get current url.
+  let url = window.location.href;
+  let paramString = parseRoomId(url);
+
+  fetch(`/room?roomId=${paramString}`).then(response => response.json()).then((users) => {
+    const userList = document.getElementById('user-list');
+    users.forEach((username) => {
+      userList.appendChild(createUsernameElement(username));
+    })
+  });
+}
 
 // Appends text node to list node, returns list node.
 function createUsernameElement(username) {
-    var node = document.createElement("li");
-    var textnode = document.createTextNode(username);
-    node.appendChild(textnode);
-    return node;
-  }
+  var node = document.createElement("li");
+  var textnode = document.createTextNode(username);
+  node.appendChild(textnode);
+  return node;
+}
 
-  window.addEventListener('DOMContentLoaded', ()=>{
+window.addEventListener('DOMContentLoaded', ()=>{
+    // Displays url on lobby page.
     document.getElementById("url").innerHTML = "Share the link!:<br>" + (window.location.href);
 });
