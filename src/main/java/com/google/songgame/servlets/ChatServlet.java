@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -22,12 +23,10 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-<<<<<<< HEAD
 import com.google.songgame.data.JSONRequestReader;
 import com.google.songgame.data.UserCookieReader;
-=======
+
 import com.google.songgame.data.GuessChecker;
->>>>>>> master
 
 @WebServlet("/chat")
 public final class ChatServlet extends HttpServlet {
@@ -36,12 +35,7 @@ public final class ChatServlet extends HttpServlet {
   private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
   private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
-<<<<<<< HEAD
-  private static final String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
-=======
   private static final String PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
-  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
->>>>>>> master
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
@@ -58,8 +52,8 @@ public final class ChatServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> dataFromChatClient = JSONRequestReader.readJSONFromRequest(request);
-
-    String userId = UserCookieReader.getUserId(request);
+    Cookie[] cookies = request.getCookies();
+    String userId = UserCookieReader.getUserId(cookies);
     dataFromChatClient.put("userId", userId);
 
     Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
@@ -107,7 +101,7 @@ public final class ChatServlet extends HttpServlet {
     return currentGame;
   }
 
-  private String getUsername(String userId) {
+  private Entity getUser(String userId) {
     Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query userQuery = new Query("User").setFilter(userIdFilter);
     PreparedQuery result = datastore.prepare(userQuery);
