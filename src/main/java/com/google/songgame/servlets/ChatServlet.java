@@ -39,7 +39,7 @@ public final class ChatServlet extends HttpServlet {
   private static final String CLIENT_KEY = "d15fbbe1c77552dc5097";
   private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
-  private static final String PUSHER_CHAT_CHANNEL_NAME = "chat-update";
+  private static final String PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
   private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Pusher pusher;
   private Gson gson;
@@ -58,7 +58,9 @@ public final class ChatServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Map<String, String> dataFromChatClient = readJSONFromRequest(request);
     Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
-    pusher.trigger(PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME, responseForPusherChat);
+    String roomId = dataFromChatClient.get("roomId");
+    pusher.trigger(
+        PUSHER_APPLICATION_NAME, PUSHER_CHAT_CHANNEL_NAME_BASE + roomId, responseForPusherChat);
     sendResponseToClient(response, "complete");
     return;
   }
