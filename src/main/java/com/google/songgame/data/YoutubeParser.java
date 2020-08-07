@@ -108,14 +108,8 @@ public final class YoutubeParser {
     return playlistVideos;
   }
 
-  /**
-   * Return a Video object chosen at random from a given list of videoIds
-   *
-   * <p>Choose a videoId at random from a given ArrayList of videoIds and use the YouTube Data API
-   * to return the Video Object with that particular videoId
-   */
-  public Video getRandomVideoFromPlaylist(ArrayList<String> playlistVideoIds) {
-    String videoId = getRandomVideo(playlistVideoIds);
+  /** Returns a Video object from the Youtube Data API */
+  public Video getVideoFromVideoId(String videoId) {
     Video currentVideo = null;
     try {
       currentVideo = getVideo(videoId);
@@ -123,16 +117,6 @@ public final class YoutubeParser {
       System.err.println("ERROR: Could not read video");
     }
     return currentVideo;
-  }
-
-  /** Retrieve random video from array of videos and stores video in datastore */
-  private String getRandomVideo(ArrayList<String> playlistVideoIds) {
-    Random randomGenerator = new Random();
-    int playlistSize = playlistVideoIds.size();
-    int index = randomGenerator.nextInt(playlistSize);
-    String videoId = playlistVideoIds.get(index);
-
-    return videoId;
   }
 
   /** Retrieves video information given a particular video ID */
