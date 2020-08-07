@@ -3,6 +3,7 @@ package com.google.songgame.servlets;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
+import com.google.songgame.data.JSONRequestReader;
 import com.google.gson.JsonObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -21,13 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.hc.core5.http.ParseException;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
 
 @WebServlet("/user")
 public final class UserServlet extends HttpServlet {
 
-  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Gson gson;
   DatastoreService datastore;
 
@@ -39,7 +37,7 @@ public final class UserServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map<String, String> userProperties = readJSONFromRequest(request);
+    Map<String, String> userProperties = JSONRequestReader.readJSONFromRequest(request);
 
     // Save player username and userId to datastore.
     Entity userEntity = new Entity("User");
@@ -49,9 +47,18 @@ public final class UserServlet extends HttpServlet {
     datastore.put(userEntity);
   }
 
-  private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
-    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
-    return jsonData;
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("User");
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> usernames = new ArrayList<String>();
+    for (Entity entity : results.asIterable()) {
+      String username = (String) entity.getProperty("username");
+      usernames.add(username);
+    }
+
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(usernames));
   }
 }

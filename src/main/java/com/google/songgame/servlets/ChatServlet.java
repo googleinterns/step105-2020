@@ -11,25 +11,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
 import javax.servlet.http.Cookie;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.songgame.data.JSONRequestReader;
+import com.google.songgame.data.UserCookieReader;
+
 import com.google.songgame.data.GuessChecker;
 
 @WebServlet("/chat")
@@ -40,7 +36,6 @@ public final class ChatServlet extends HttpServlet {
   private static final String CLIENT_SECRET = "91fd789bf568ec43d2ee";
   private static final String PUSHER_APPLICATION_NAME = "song-guessing-game";
   private static final String PUSHER_CHAT_CHANNEL_NAME_BASE = "chat-update-";
-  private static final Type MESSAGE_TYPE = new TypeToken<Map<String, String>>() {}.getType();
   private Pusher pusher;
   private Gson gson;
   private DatastoreService datastore;
@@ -56,7 +51,11 @@ public final class ChatServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Map<String, String> dataFromChatClient = readJSONFromRequest(request);
+    Map<String, String> dataFromChatClient = JSONRequestReader.readJSONFromRequest(request);
+    Cookie[] cookies = request.getCookies();
+    String userId = UserCookieReader.getUserId(cookies);
+    dataFromChatClient.put("userId", userId);
+
     Map<String, String> responseForPusherChat = createPusherChatResponse(dataFromChatClient);
     String roomId = dataFromChatClient.get("roomId");
     pusher.trigger(
@@ -65,14 +64,7 @@ public final class ChatServlet extends HttpServlet {
     return;
   }
 
-  private Map<String, String> readJSONFromRequest(HttpServletRequest request) throws IOException {
-    String requestJSONString = request.getReader().lines().collect(Collectors.joining());
-    Map<String, String> jsonData = gson.fromJson(requestJSONString, MESSAGE_TYPE);
-    String userId = getUserId(request);
-    jsonData.put("userId", userId);
-    return jsonData;
-  }
-
+  // TODO: @salilnadkarni modify when points stored in rooms
   private Map<String, String> createPusherChatResponse(Map<String, String> data) {
     Map<String, String> response = new HashMap<String, String>();
 
@@ -107,23 +99,6 @@ public final class ChatServlet extends HttpServlet {
 
     Entity currentGame = result.asList(FetchOptions.Builder.withLimit(1)).get(0);
     return currentGame;
-  }
-
-  private String getUserId(HttpServletRequest request) throws IOException {
-    Cookie[] cookies = request.getCookies();
-    String userId = "";
-    for (Cookie cookie : cookies) {
-      String name = cookie.getName();
-      if (name.equals("userId")) {
-        userId = cookie.getValue();
-      }
-    }
-
-    if (userId.equals("")) {
-      System.err.println("ERROR: UserID cookie could not be found.");
-    }
-
-    return userId;
   }
 
   private Entity getUser(String userId) {
