@@ -2,6 +2,7 @@ const APP_ID = "1024158";
 const CLIENT_KEY = "d15fbbe1c77552dc5097";
 const PUSHER_APPLICATION_NAME = "song-guessing-game";
 const PUSHER_CHAT_CHANNEL_NAME = "start-game";
+const PUSHER_LOBBY_CHANNEL_NAME = "user-list";
 
 async function startGame() {
   await fetch("/round", {
@@ -37,6 +38,14 @@ function loadUsernames() {
     })
   });
 }
+
+channel.bind(PUSHER_LOBBY_CHANNEL_NAME, function (data) {
+  var list = document.getElementById("user-list");
+  while (list.hasChildNodes()) {
+    list.removeChild(list.firstChild);
+  }
+  loadUsernames();
+});
 
 // Appends text node to list node, returns list node.
 function createUsernameElement(username) {
