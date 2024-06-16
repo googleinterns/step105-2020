@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/googleinterns/step105-2020#readme",
   "devDependencies": {
-    "jest": "^26.1.0"
+    "jest": "^29.7.0"
   },
   "dependencies": {
-    "webpack": "^4.43.0"
+    "webpack": "^5.92.0"
   }
 }
